@@ -1,1 +1,1 @@
-# scala-jsonapi
+# scala-jsonapi WIP
