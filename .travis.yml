@@ -1,0 +1,11 @@
+language: scala
+scala:
+  - 2.11.7
+branches:
+  only:
+    - master
+notifications:
+  email:
+    recipients:
+      - boris.malensek@zalando.de
+script: "sbt coveralls"
