@@ -26,8 +26,6 @@ scalariformSettings ++ Seq(
     .setPreference(RewriteArrowSymbols, true)
 )
 
-CoverallsPlugin.coverallsSettings
-
 ScoverageSbtPlugin.ScoverageKeys.coverageMinimum := 80
 
 ScoverageSbtPlugin.ScoverageKeys.coverageFailOnMinimum := true
