@@ -10,8 +10,13 @@ trait JsonapiJsonFormat {
   implicit val rootObjectWriter: RootJsonWriter[RootObject] = new RootJsonWriter[RootObject] {
     override def write(rootObject: RootObject): JsValue = {
       rootObject.data match {
-        case Some(data) ⇒ JsObject(Map("data" -> data.toJson))
-        case None       ⇒ JsObject()
+        case Some(data) ⇒ JsObject(Map(
+          "type" -> rootObject.`type`.toJson,
+          "id" -> rootObject.id.toJson,
+          "data" -> data.toJson))
+        case None ⇒ JsObject(Map(
+          "type" -> rootObject.`type`.toJson,
+          "id" -> rootObject.id.toJson))
       }
     }
   }

@@ -5,7 +5,11 @@
 
 ## Description
 
-A Scala library for producing JSON output based on [JSON API specification](http://jsonapi.org/). At the moment there is only support for _data_ part of the root object.
+A Scala library for producing JSON output based on [JSON API specification](http://jsonapi.org/). 
+
+### Current status
+
+At the moment there is only support for _data_ part of the root object and both mandatory attributes _type_ and _id_.
 
 Library is very much Work-In-Progress and expect API to change.
 

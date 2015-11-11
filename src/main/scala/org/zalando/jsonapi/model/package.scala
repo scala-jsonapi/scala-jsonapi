@@ -3,7 +3,7 @@ package org.zalando.jsonapi
 import collection.immutable.{ Seq ⇒ ImmutableSeq }
 
 package object model {
-  case class RootObject(data: Option[DataProperties])
+  case class RootObject(`type`: String, id: String, data: Option[DataProperties])
 
   type DataProperties = ImmutableSeq[DataProperty]
 
