@@ -1,6 +1,6 @@
 package org.zalando.jsonapi.json
 
-import org.zalando.jsonapi.model.DataProperty.Value
+import org.zalando.jsonapi.model.Attribute._
 import org.zalando.jsonapi.model._
 import spray.json._
 
@@ -9,34 +9,35 @@ trait JsonapiJsonFormat {
 
   implicit val rootObjectWriter: RootJsonWriter[RootObject] = new RootJsonWriter[RootObject] {
     override def write(rootObject: RootObject): JsValue = {
-      rootObject.data match {
-        case Some(data) ⇒ JsObject(Map(
-          "type" -> rootObject.`type`.toJson,
-          "id" -> rootObject.id.toJson,
-          "data" -> data.toJson))
-        case None ⇒ JsObject(Map(
-          "type" -> rootObject.`type`.toJson,
-          "id" -> rootObject.id.toJson))
+      JsObject(Map("data" -> rootObject.data.toJson))
+    }
+  }
+
+  implicit val dataObjectWriter: RootJsonWriter[Data] = new RootJsonWriter[Data] {
+    override def write(data: Data): JsValue = {
+      data.attributes match {
+        case Some(attrs) ⇒ JsObject("type" -> data.`type`.toJson, "id" -> data.id.toJson, "attributes" -> attrs.toJson)
+        case None        ⇒ JsObject("type" -> data.`type`.toJson, "id" -> data.id.toJson)
       }
     }
   }
 
-  implicit val dataPropertiesWriter: RootJsonWriter[DataProperties] = new RootJsonWriter[DataProperties] {
-    override def write(dataProperties: DataProperties): JsValue = {
-      val fields = dataProperties map (p ⇒ p.name -> p.value.toJson)
+  implicit val dataPropertiesWriter: RootJsonWriter[Attributes] = new RootJsonWriter[Attributes] {
+    override def write(attributes: Attributes): JsValue = {
+      val fields = attributes map (p ⇒ p.name -> p.value.toJson)
       JsObject(fields: _*)
     }
   }
 
-  implicit val dataPropertyValueWriter: JsonFormat[DataProperty.Value] = lazyFormat(new JsonFormat[DataProperty.Value] {
-    override def write(dataPropertyValue: DataProperty.Value): JsValue = {
+  implicit val dataPropertyValueWriter: JsonFormat[Attribute.Value] = lazyFormat(new JsonFormat[Attribute.Value] {
+    override def write(dataPropertyValue: Attribute.Value): JsValue = {
       dataPropertyValue match {
-        case DataProperty.StringValue(s)   ⇒ s.toJson
-        case DataProperty.NumberValue(n)   ⇒ n.toJson
-        case DataProperty.BooleanValue(b)  ⇒ b.toJson
-        case DataProperty.JsObjectValue(o) ⇒ o.toJson
-        case DataProperty.JsArrayValue(a)  ⇒ a.toJson
-        case DataProperty.NullValue        ⇒ JsNull
+        case Attribute.StringValue(s)   ⇒ s.toJson
+        case Attribute.NumberValue(n)   ⇒ n.toJson
+        case Attribute.BooleanValue(b)  ⇒ b.toJson
+        case Attribute.JsObjectValue(o) ⇒ o.toJson
+        case Attribute.JsArrayValue(a)  ⇒ a.toJson
+        case Attribute.NullValue        ⇒ JsNull
       }
     }
 

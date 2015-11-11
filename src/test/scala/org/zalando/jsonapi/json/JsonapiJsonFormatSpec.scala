@@ -1,63 +1,71 @@
 package org.zalando.jsonapi.json
 
 import org.scalatest.{ MustMatchers, WordSpec }
-import org.zalando.jsonapi.model.{ DataProperty, RootObject }
+import org.zalando.jsonapi.model._
 import spray.json._
 
 class JsonapiJsonFormatSpec extends WordSpec with MustMatchers with JsonapiJsonFormat with DefaultJsonProtocol {
-  val rootObjectJsonWithData =
+  val rootObjectJsonWithAttributes =
     """
       {
-        "type": "person",
-        "id": "1",
         "data": {
-          "foo": "bar",
-          "number": 42,
-          "bool": true,
-          "anotherObject": { "withNull": null },
-          "array": [ "a", "b", "c" ]
+          "type": "person",
+          "id": "1",
+          "attributes" : {
+            "foo": "bar",
+            "number": 42,
+            "bool": true,
+            "anotherObject": { "withNull": null },
+            "array": [ "a", "b", "c" ]
+          }
         }
       }
     """.stripMargin.parseJson
 
-  val rootObjectWithData = RootObject(
-    `type` = "person",
-    id = "1",
-    data = Some(List(
-      DataProperty("foo", DataProperty.StringValue("bar")),
-      DataProperty("number", DataProperty.NumberValue(42)),
-      DataProperty("bool", DataProperty.BooleanValue(true)),
-      DataProperty("anotherObject", DataProperty.JsObjectValue(List(DataProperty("withNull", DataProperty.NullValue)))),
-      DataProperty("array", DataProperty.JsArrayValue(
-        Seq(
-          DataProperty.StringValue("a"),
-          DataProperty.StringValue("b"),
-          DataProperty.StringValue("c")
-        )
+  val rootObjectWithAttributes = RootObject(
+    data = Data(
+      `type` = "person",
+      id = "1",
+      attributes = Some(List(
+        Attribute("foo", Attribute.StringValue("bar")),
+        Attribute("number", Attribute.NumberValue(42)),
+        Attribute("bool", Attribute.BooleanValue(true)),
+        Attribute("anotherObject", Attribute.JsObjectValue(List(Attribute("withNull", Attribute.NullValue)))),
+        Attribute("array", Attribute.JsArrayValue(
+          Seq(
+            Attribute.StringValue("a"),
+            Attribute.StringValue("b"),
+            Attribute.StringValue("c")
+          )
+        ))
       ))
-    ))
+    )
   )
 
-  val rootObjectWithoutDataJson =
+  val rootObjectWithoutAttributesJson =
     """
       {
-        "type": "person",
-        "id": "abc"
+        "data": {
+          "type": "person",
+          "id": "abc"
+        }
       }
     """.stripMargin.parseJson
 
-  val rootObjectWithoutData = RootObject(
-    `type` = "person",
-    id = "abc",
-    data = None
+  val rootObjectWithoutAttributes = RootObject(
+    data = Data(
+      `type` = "person",
+      id = "abc",
+      attributes = None
+    )
   )
 
   "JsonapiJsonFormat" must {
-    "serialize Jsonapi rootObject with data" in {
-      rootObjectWithData.toJson mustEqual rootObjectJsonWithData
+    "serialize Jsonapi rootObject with attributes" in {
+      rootObjectWithAttributes.toJson mustEqual rootObjectJsonWithAttributes
     }
-    "serialize Jsonapi rootObject without data" in {
-      rootObjectWithoutData.toJson mustEqual rootObjectWithoutDataJson
+    "serialize Jsonapi rootObject without attributes" in {
+      rootObjectWithoutAttributes.toJson mustEqual rootObjectWithoutAttributesJson
     }
   }
 }

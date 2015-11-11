@@ -9,7 +9,7 @@ A Scala library for producing JSON output based on [JSON API specification](http
 
 ### Current status
 
-At the moment there is only support for `data` part of the root object and both mandatory attributes `type` and `id`.
+At the moment there is only support for `data` with `attributes` part of the root object and both mandatory attributes `type` and `id`.
 
 Library is very much Work-In-Progress and expect API to change.
 
@@ -19,7 +19,7 @@ Currently library supports Scala version 2.11.
 
 In order to use current version _scala-jsonapi_ you have to add library dependency assuming that you have [sonatype resolvers](http://www.scala-sbt.org/0.13/docs/Resolvers.html#Maven) set up.
 
-    libraryDependencies += "org.zalando" %% "scala-jsonapi" % "0.1.2"
+    libraryDependencies += "org.zalando" %% "scala-jsonapi" % "0.1.3"
 
 ## Usage
 

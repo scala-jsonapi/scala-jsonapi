@@ -3,18 +3,20 @@ package org.zalando.jsonapi
 import collection.immutable.{ Seq ⇒ ImmutableSeq }
 
 package object model {
-  case class RootObject(`type`: String, id: String, data: Option[DataProperties])
+  case class RootObject(data: Data)
 
-  type DataProperties = ImmutableSeq[DataProperty]
+  case class Data(`type`: String, id: String, attributes: Option[Attributes])
 
-  case class DataProperty(name: String, value: DataProperty.Value)
+  type Attributes = ImmutableSeq[Attribute]
 
-  object DataProperty {
+  case class Attribute(name: String, value: Attribute.Value)
+
+  object Attribute {
     sealed trait Value
     case class StringValue(value: String) extends Value
     case class NumberValue(value: BigDecimal) extends Value
     case class BooleanValue(value: Boolean) extends Value
-    case class JsObjectValue(value: DataProperties) extends Value
+    case class JsObjectValue(value: Attributes) extends Value
     case class JsArrayValue(value: Seq[Value]) extends Value
     case object NullValue extends Value
   }
