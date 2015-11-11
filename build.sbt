@@ -48,21 +48,21 @@ sonatypeProfileName := "org.zalando"
 
 pomExtra := (
   <url>https://github.com/zalando/scala-jsonapi</url>
-    <licenses>
-      <license>
-        <name>MIT</name>
-        <url>http://opensource.org/licenses/MIT</url>
-        <distribution>repo</distribution>
-      </license>
-    </licenses>
-    <scm>
-      <url>git@github.com:zalando/scala-jsonapi.git</url>
-      <connection>scm:git:git@github.com:zalando/scala-jsonapi.git</connection>
-    </scm>
-    <developers>
-      <developer>
-        <id>zmeda</id>
-        <name>Boris Malensek</name>
-        <url>https://github.com/zmeda</url>
-      </developer>
-    </developers>)
+  <licenses>
+    <license>
+      <name>MIT</name>
+      <url>http://opensource.org/licenses/MIT</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <url>git@github.com:zalando/scala-jsonapi.git</url>
+    <connection>scm:git:git@github.com:zalando/scala-jsonapi.git</connection>
+  </scm>
+  <developers>
+    <developer>
+      <id>zmeda</id>
+      <name>Boris Malensek</name>
+      <url>https://github.com/zmeda</url>
+    </developer>
+  </developers>)
