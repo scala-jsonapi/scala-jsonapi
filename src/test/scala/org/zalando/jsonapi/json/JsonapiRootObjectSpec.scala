@@ -7,25 +7,26 @@ import org.zalando.jsonapi.model.Attribute._
 import org.zalando.jsonapi._
 import spray.json._
 
-class JsonapiRootObjectSpec extends WordSpec with MustMatchers with JsonapiJsonFormat with DefaultJsonProtocol {
+class JsonapiRootObjectSpec extends WordSpec with MustMatchers with JsonapiJsonProtocol {
   "JsonapiRootObject" when {
-    "implementing " in {
-      case class Person(id: Int, name: String)
+    "using root object serializer" must {
+      "serialize accordingly" in {
+        case class Person(id: Int, name: String)
 
-      implicit val personJsonapiRootObjectWriter: JsonapiRootObjectWriter[Person] = new JsonapiRootObjectWriter[Person] {
-        override def toJsonapi(person: Person) = {
-          RootObject(data = Data(
-            `type` = "person",
-            id = person.id.toString,
-            attributes = Some(List(
-              Attribute("name", StringValue(person.name))
+        implicit val personJsonapiRootObjectWriter: JsonapiRootObjectWriter[Person] = new JsonapiRootObjectWriter[Person] {
+          override def toJsonapi(person: Person) = {
+            RootObject(data = Data(
+              `type` = "person",
+              id = person.id.toString,
+              attributes = Some(List(
+                Attribute("name", StringValue(person.name))
+              ))
             ))
-          ))
+          }
         }
-      }
 
-      val json =
-        """
+        val json =
+          """
           {
             "data": {
               "id": "42",
@@ -37,7 +38,8 @@ class JsonapiRootObjectSpec extends WordSpec with MustMatchers with JsonapiJsonF
           }
         """.stripMargin.parseJson
 
-      Person(42, "foobar").rootObject.toJson mustEqual json
+        Person(42, "foobar").rootObject.toJson mustEqual json
+      }
     }
   }
 }

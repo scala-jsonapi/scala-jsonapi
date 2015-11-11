@@ -4,7 +4,7 @@ import org.scalatest.{ MustMatchers, WordSpec }
 import org.zalando.jsonapi.model._
 import spray.json._
 
-class JsonapiJsonFormatSpec extends WordSpec with MustMatchers with JsonapiJsonFormat with DefaultJsonProtocol {
+class JsonapiJsonFormatSpec extends WordSpec with MustMatchers with JsonapiJsonProtocol {
   val rootObjectJsonWithAttributes =
     """
       {
