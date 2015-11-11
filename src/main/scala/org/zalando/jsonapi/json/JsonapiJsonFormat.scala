@@ -34,7 +34,7 @@ trait JsonapiJsonFormat {
         case DataProperty.StringValue(s)   ⇒ s.toJson
         case DataProperty.NumberValue(n)   ⇒ n.toJson
         case DataProperty.BooleanValue(b)  ⇒ b.toJson
-        case DataProperty.JsObjectValue(o) ⇒ o.toMap.toJson
+        case DataProperty.JsObjectValue(o) ⇒ o.toJson
         case DataProperty.JsArrayValue(a)  ⇒ a.toJson
         case DataProperty.NullValue        ⇒ JsNull
       }

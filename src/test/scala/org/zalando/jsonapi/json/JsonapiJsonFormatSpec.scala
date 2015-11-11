@@ -27,7 +27,7 @@ class JsonapiJsonFormatSpec extends WordSpec with MustMatchers with JsonapiJsonF
       DataProperty("foo", DataProperty.StringValue("bar")),
       DataProperty("number", DataProperty.NumberValue(42)),
       DataProperty("bool", DataProperty.BooleanValue(true)),
-      DataProperty("anotherObject", DataProperty.JsObjectValue(Seq(("withNull", DataProperty.NullValue)))),
+      DataProperty("anotherObject", DataProperty.JsObjectValue(List(DataProperty("withNull", DataProperty.NullValue)))),
       DataProperty("array", DataProperty.JsArrayValue(
         Seq(
           DataProperty.StringValue("a"),
