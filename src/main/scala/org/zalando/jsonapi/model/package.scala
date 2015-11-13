@@ -10,15 +10,16 @@ package object model {
   /**
    * A root, top-level object.
    */
-  case class RootObject(data: Data)
+  case class RootObject(data: RootObject.Data)
 
-  /**
-   * The root object's "primary data".
-   * @param `type` the type of the root object
-   * @param id the ID of the root object
-   * @param attributes the optional list of attributes of the root object
-   */
-  case class Data(`type`: String, id: String, attributes: Option[Attributes])
+  object RootObject {
+    sealed trait Data
+
+    case class ResourceObject(`type`: String, id: String, attributes: Option[Attributes]) extends Data
+    case class ResourceIdentifierObject(`type`: String, id: String) extends Data
+    case class ResourceObjects(array: ImmutableSeq[ResourceObject]) extends Data
+    case class ResourceIdentifierObjects(array: ImmutableSeq[ResourceIdentifierObject]) extends Data
+  }
 
   type Attributes = ImmutableSeq[Attribute]
 

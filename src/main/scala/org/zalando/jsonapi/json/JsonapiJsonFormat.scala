@@ -1,37 +1,80 @@
 package org.zalando.jsonapi.json
 
 import org.zalando.jsonapi.model.Attribute._
+import org.zalando.jsonapi.model.RootObject._
 import org.zalando.jsonapi.model._
 import spray.json._
 
 trait JsonapiJsonFormat {
   self: DefaultJsonProtocol ⇒
 
+  /**
+   * Spray-JSON format for serializing [[org.zalando.jsonapi.model.RootObject]] to Jsonapi.
+   */
   implicit val rootObjectWriter: RootJsonWriter[RootObject] = new RootJsonWriter[RootObject] {
     override def write(rootObject: RootObject): JsValue = {
       JsObject(Map("data" -> rootObject.data.toJson))
     }
   }
 
-  implicit val dataObjectWriter: RootJsonWriter[Data] = new RootJsonWriter[Data] {
+  implicit val dataWriter: RootJsonWriter[Data] = new RootJsonWriter[Data] {
     override def write(data: Data): JsValue = {
-      data.attributes match {
-        case Some(attrs) ⇒ JsObject("type" -> data.`type`.toJson, "id" -> data.id.toJson, "attributes" -> attrs.toJson)
-        case None        ⇒ JsObject("type" -> data.`type`.toJson, "id" -> data.id.toJson)
+      data match {
+        case ro: ResourceObject            ⇒ ro.toJson
+        case rio: ResourceIdentifierObject ⇒ rio.toJson
+        case ResourceObjects(resourceObjects) ⇒
+          val objects = resourceObjects map (ro ⇒ ro.toJson)
+          JsArray(objects.toVector)
+        case ResourceIdentifierObjects(resourceIdentifierObjects) ⇒
+          val objects = resourceIdentifierObjects map (rio ⇒ rio.toJson)
+          JsArray(objects.toVector)
       }
     }
   }
 
-  implicit val dataPropertiesWriter: RootJsonWriter[Attributes] = new RootJsonWriter[Attributes] {
+  implicit val resourceObjectWriter: RootJsonWriter[ResourceObject] = new RootJsonWriter[ResourceObject] {
+    override def write(resourceObject: ResourceObject): JsValue = {
+      resourceObject.attributes match {
+        case Some(attributes) ⇒
+          JsObject(Map(
+            "type" -> resourceObject.`type`.toJson,
+            "id" -> resourceObject.id.toJson,
+            "attributes" -> attributes.toJson
+          ))
+        case None ⇒
+          JsObject(Map(
+            "type" -> resourceObject.`type`.toJson,
+            "id" -> resourceObject.id.toJson
+          ))
+      }
+    }
+  }
+
+  implicit val resourceIdentifierObjectWriter: RootJsonWriter[ResourceIdentifierObject] = new RootJsonWriter[ResourceIdentifierObject] {
+    override def write(resourceIdentifierObject: ResourceIdentifierObject): JsValue = {
+      JsObject(Map(
+        "type" -> resourceIdentifierObject.`type`.toJson,
+        "id" -> resourceIdentifierObject.id.toJson
+      ))
+    }
+  }
+
+  /**
+   * Spray-JSON format for serializing Jsonapi [[org.zalando.jsonapi.model.Attributes]].
+   */
+  implicit val attributesWriter: RootJsonWriter[Attributes] = new RootJsonWriter[Attributes] {
     override def write(attributes: Attributes): JsValue = {
       val fields = attributes map (p ⇒ p.name -> p.value.toJson)
       JsObject(fields: _*)
     }
   }
 
-  implicit val dataPropertyValueWriter: JsonFormat[Attribute.Value] = lazyFormat(new JsonFormat[Attribute.Value] {
-    override def write(dataPropertyValue: Attribute.Value): JsValue = {
-      dataPropertyValue match {
+  /**
+   * Spray-JSON format for serializing [[org.zalando.jsonapi.model.Attribute]] to Jsonapi.
+   */
+  implicit val attributeValueWriter: JsonFormat[Attribute.Value] = lazyFormat(new JsonFormat[Attribute.Value] {
+    override def write(attributeValue: Attribute.Value): JsValue = {
+      attributeValue match {
         case Attribute.StringValue(s)   ⇒ s.toJson
         case Attribute.NumberValue(n)   ⇒ n.toJson
         case Attribute.BooleanValue(b)  ⇒ b.toJson
