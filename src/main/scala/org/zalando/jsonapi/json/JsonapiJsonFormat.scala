@@ -13,7 +13,13 @@ trait JsonapiJsonFormat {
    */
   implicit val rootObjectWriter: RootJsonWriter[RootObject] = new RootJsonWriter[RootObject] {
     override def write(rootObject: RootObject): JsValue = {
-      JsObject(Map("data" -> rootObject.data.toJson))
+
+      rootObject.links match {
+        case Some(links) ⇒ JsObject(Map("data" -> rootObject.data.toJson, "links" -> links.toJson))
+        case None        ⇒ JsObject(Map("data" -> rootObject.data.toJson))
+      }
+
+      // JsObject(Map("data" -> rootObject.data.toJson, "links" -> rootObject.links.toJson))
     }
   }
 
@@ -34,19 +40,26 @@ trait JsonapiJsonFormat {
 
   implicit val resourceObjectWriter: RootJsonWriter[ResourceObject] = new RootJsonWriter[ResourceObject] {
     override def write(resourceObject: ResourceObject): JsValue = {
-      resourceObject.attributes match {
-        case Some(attributes) ⇒
-          JsObject(Map(
-            "type" -> resourceObject.`type`.toJson,
-            "id" -> resourceObject.id.toJson,
-            "attributes" -> attributes.toJson
-          ))
-        case None ⇒
-          JsObject(Map(
+
+      val attributes = resourceObject.attributes match {
+        case Some(a) ⇒ Some("attributes" -> a.toJson)
+        case None    ⇒ None
+      }
+
+      val links = resourceObject.links match {
+        case Some(l) ⇒ Some("links" -> l.toJson)
+        case None    ⇒ None
+      }
+
+      JsObject(
+        (
+          Seq(
             "type" -> resourceObject.`type`.toJson,
             "id" -> resourceObject.id.toJson
-          ))
-      }
+          ) ++ attributes
+            ++ links
+        ).toMap
+      )
     }
   }
 
@@ -87,4 +100,24 @@ trait JsonapiJsonFormat {
     // We don't need it for now
     override def read(json: JsValue): Value = ???
   })
+
+  /**
+   * Spray-JSON format for serializing Jsonapi [[org.zalando.jsonapi.model.Links]].
+   */
+  implicit val linksWriter: RootJsonWriter[Links] = new RootJsonWriter[Links] {
+    override def write(links: Links): JsValue = {
+      val fields = links map (l ⇒
+        l.linkOption match {
+          case Link.Self(url)    ⇒ "self" -> url.toJson
+          case Link.About(url)   ⇒ "about" -> url.toJson
+          case Link.First(url)   ⇒ "first" -> url.toJson
+          case Link.Last(url)    ⇒ "last" -> url.toJson
+          case Link.Next(url)    ⇒ "next" -> url.toJson
+          case Link.Prev(url)    ⇒ "prev" -> url.toJson
+          case Link.Related(url) ⇒ "related" -> url.toJson
+        }
+      )
+      JsObject(fields: _*)
+    }
+  }
 }

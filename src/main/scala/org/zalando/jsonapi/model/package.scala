@@ -10,15 +10,31 @@ package object model {
   /**
    * A root, top-level object.
    */
-  case class RootObject(data: RootObject.Data)
+  case class RootObject(data: RootObject.Data, links: Option[Links])
 
   object RootObject {
     sealed trait Data
 
-    case class ResourceObject(`type`: String, id: String, attributes: Option[Attributes]) extends Data
+    case class ResourceObject(`type`: String, id: String, attributes: Option[Attributes], links: Option[Links]) extends Data
     case class ResourceIdentifierObject(`type`: String, id: String) extends Data
     case class ResourceObjects(array: ImmutableSeq[ResourceObject]) extends Data
     case class ResourceIdentifierObjects(array: ImmutableSeq[ResourceIdentifierObject]) extends Data
+  }
+
+  type Links = ImmutableSeq[Link]
+
+  case class Link(linkOption: Link.LinkOption)
+
+  object Link {
+    sealed trait LinkOption
+
+    case class Self(address: String) extends LinkOption
+    case class Related(address: String) extends LinkOption
+    case class First(address: String) extends LinkOption
+    case class Last(address: String) extends LinkOption
+    case class Next(address: String) extends LinkOption
+    case class Prev(address: String) extends LinkOption
+    case class About(address: String) extends LinkOption
   }
 
   type Attributes = ImmutableSeq[Attribute]
