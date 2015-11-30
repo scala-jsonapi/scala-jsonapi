@@ -1,11 +1,11 @@
 package org.zalando.jsonapi.json
 
-import java.nio.file.LinkOption
-
 import org.scalatest.{ MustMatchers, WordSpec }
 import org.zalando.jsonapi.model.RootObject._
 import org.zalando.jsonapi.model._
 import spray.json._
+
+import org.zalando.jsonapi.model.JsonApiObject._
 
 class JsonapiJsonFormatSpec extends WordSpec with MustMatchers with JsonapiJsonProtocol {
   val attributesJson =
@@ -20,15 +20,15 @@ class JsonapiJsonFormatSpec extends WordSpec with MustMatchers with JsonapiJsonP
     """.stripMargin.parseJson
 
   val attributes: Attributes = List(
-    Attribute("foo", Attribute.StringValue("bar")),
-    Attribute("number", Attribute.NumberValue(42)),
-    Attribute("bool", Attribute.BooleanValue(true)),
-    Attribute("anotherObject", Attribute.JsObjectValue(List(Attribute("withNull", Attribute.NullValue)))),
-    Attribute("array", Attribute.JsArrayValue(
+    Attribute("foo", StringValue("bar")),
+    Attribute("number", NumberValue(42)),
+    Attribute("bool", BooleanValue(true)),
+    Attribute("anotherObject", JsObjectValue(List(Attribute("withNull", NullValue)))),
+    Attribute("array", JsArrayValue(
       List(
-        Attribute.StringValue("a"),
-        Attribute.StringValue("b"),
-        Attribute.StringValue("c")
+        StringValue("a"),
+        StringValue("b"),
+        StringValue("c")
       )
     ))
   )
@@ -44,7 +44,7 @@ class JsonapiJsonFormatSpec extends WordSpec with MustMatchers with JsonapiJsonP
     """.stripMargin.parseJson
 
   val rootObjectWithResourceObjectWithoutAttributes =
-    RootObject(ResourceObject(`type` = "person", id = "1", attributes = None, links = None), links = None)
+    RootObject(data = Some(ResourceObject(`type` = "person", id = "1")))
 
   val rootObjectWithResourceObjectsJson =
     """
@@ -66,11 +66,11 @@ class JsonapiJsonFormatSpec extends WordSpec with MustMatchers with JsonapiJsonP
     """.stripMargin.parseJson
 
   val rootObjectWithResourceObjects =
-    RootObject(ResourceObjects(List(
+    RootObject(Some(ResourceObjects(List(
       ResourceObject(`type` = "person", id = "1", attributes = Some(
-        List(Attribute("name", Attribute.StringValue("foobar")))
+        List(Attribute("name", StringValue("foobar")))
       ), links = Some(List(Link(linkOption = Link.Self("/persons/1")))))
-    )), links = Some(List(Link(linkOption = Link.Next("/persons/2")))))
+    ))), links = Some(List(Link(linkOption = Link.Next("/persons/2")))))
 
   val rootObjectWithResourceIdentifierObjectJson =
     """
@@ -83,7 +83,7 @@ class JsonapiJsonFormatSpec extends WordSpec with MustMatchers with JsonapiJsonP
     """.stripMargin.parseJson
 
   val rootObjectWithResourceIdentifierObject =
-    RootObject(ResourceIdentifierObject(`type` = "person", id = "42"), links = None)
+    RootObject(Some(ResourceIdentifierObject(`type` = "person", id = "42")))
 
   val rootObjectWithResourceIdentifierObjectsJson =
     """
@@ -101,7 +101,13 @@ class JsonapiJsonFormatSpec extends WordSpec with MustMatchers with JsonapiJsonP
       |}
     """.stripMargin.parseJson
 
-  val rootObjectWithResourceObjectsWithAllLinks = RootObject(ResourceObjects(List(
+  val rootObjectWithResourceIdentifierObjects =
+    RootObject(Some(ResourceIdentifierObjects(List(
+      ResourceIdentifierObject(`type` = "person", id = "42"),
+      ResourceIdentifierObject(`type` = "cat", id = "felix")
+    ))))
+
+  val rootObjectWithResourceObjectsWithAllLinks = RootObject(Some(ResourceObjects(List(
     ResourceObject(`type` = "person", id = "1", attributes = None, links = Some(
       List(
         Link(linkOption = Link.Self("/persons/2")),
@@ -111,7 +117,7 @@ class JsonapiJsonFormatSpec extends WordSpec with MustMatchers with JsonapiJsonP
         Link(linkOption = Link.About("/persons/11")),
         Link(linkOption = Link.First("/persons/0")),
         Link(linkOption = Link.Last("/persons/99"))
-      ))))), links = None)
+      )))))))
 
   val rootObjectWithResourceObjectsWithAllLinksJson =
     """
@@ -132,11 +138,63 @@ class JsonapiJsonFormatSpec extends WordSpec with MustMatchers with JsonapiJsonP
       |}
     """.stripMargin.parseJson
 
-  val rootObjectWithResourceIdentifierObjects =
-    RootObject(ResourceIdentifierObjects(List(
-      ResourceIdentifierObject(`type` = "person", id = "42"),
-      ResourceIdentifierObject(`type` = "cat", id = "felix")
-    )), links = None)
+  val rootObjectWithResourceObjectsWithMeta = RootObject(Some(ResourceObjects(List(ResourceObject(`type` = "person", id = "1", meta = Some(List(MetaProperty("foo", StringValue("bar")))))))))
+
+  val rootObjectWithResourceObjectsWithMetaJson =
+    """
+      |{
+      |  "data": [{
+      |    "type": "person",
+      |    "id": "1",
+      |    "meta": {
+      |      "foo": "bar"
+      |    }
+      |  }]
+      |}
+    """.stripMargin.parseJson
+
+  val rootObjectWithMeta = RootObject(Some(ResourceObjects(List(ResourceObject(`type` = "person", id = "1")))), meta = Some(List(MetaProperty("foo", StringValue("bar")), MetaProperty("array", JsArrayValue(List(StringValue("one"), StringValue("two")))))))
+
+  val rootObjectWithMetaJson =
+    """
+      |{
+      |  "data": [{
+      |    "type": "person",
+      |    "id": "1"
+      |  }],
+      |  "meta": {
+      |    "foo": "bar",
+      |    "array": [
+      |      "one", "two"
+      |    ]
+      |  }
+      |}
+    """.stripMargin.parseJson
+
+  val rootObjectWithErrors = RootObject(Some(ResourceObjects(List(ResourceObject(`type` = "person", id = "1")))), errors = Some(List(Error(id = Some("1"),
+    links = Some(List(Link(Link.Self("self-link")))), status = Some("status1"), code = Some("code1"), title = Some("title1"), detail = Some("something really bad happened")))))
+
+  val rootObjectWithErrorsJson =
+    """
+      |{
+      |  "data": [{
+      |    "type": "person",
+      |    "id": "1"
+      |  }],
+      |  "errors": [
+      |    {
+      |      "id": "1",
+      |      "links": {
+      |        "self": "self-link"
+      |      },
+      |      "status": "status1",
+      |      "code": "code1",
+      |      "title": "title1",
+      |      "detail": "something really bad happened"
+      |    }
+      |  ]
+      |}
+    """.stripMargin.parseJson
 
   "JsonapiJsonFormat" must {
     "serialize Jsonapi attributes" in {
@@ -156,6 +214,15 @@ class JsonapiJsonFormatSpec extends WordSpec with MustMatchers with JsonapiJsonP
     }
     "serialize all link types correctly" in {
       rootObjectWithResourceObjectsWithAllLinks.toJson mustEqual rootObjectWithResourceObjectsWithAllLinksJson
+    }
+    "serialize all meta object inside resource object correctly" in {
+      rootObjectWithResourceObjectsWithMeta.toJson mustEqual rootObjectWithResourceObjectsWithMetaJson
+    }
+    "serialize a meta object in root object correctly" in {
+      rootObjectWithMeta.toJson mustEqual rootObjectWithMetaJson
+    }
+    "serialize a Jsonapi error object correctly" in {
+      rootObjectWithErrors.toJson mustEqual rootObjectWithErrorsJson
     }
   }
 }

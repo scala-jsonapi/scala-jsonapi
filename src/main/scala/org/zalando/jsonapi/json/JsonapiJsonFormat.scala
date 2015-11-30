@@ -1,6 +1,5 @@
 package org.zalando.jsonapi.json
 
-import org.zalando.jsonapi.model.Attribute._
 import org.zalando.jsonapi.model.RootObject._
 import org.zalando.jsonapi.model._
 import spray.json._
@@ -14,12 +13,33 @@ trait JsonapiJsonFormat {
   implicit val rootObjectWriter: RootJsonWriter[RootObject] = new RootJsonWriter[RootObject] {
     override def write(rootObject: RootObject): JsValue = {
 
-      rootObject.links match {
-        case Some(links) ⇒ JsObject(Map("data" -> rootObject.data.toJson, "links" -> links.toJson))
-        case None        ⇒ JsObject(Map("data" -> rootObject.data.toJson))
+      val data = rootObject.data match {
+        case Some(d) ⇒ Some("data" -> d.toJson)
+        case None    ⇒ None
       }
 
-      // JsObject(Map("data" -> rootObject.data.toJson, "links" -> rootObject.links.toJson))
+      val links = rootObject.links match {
+        case Some(l) ⇒ Some("links" -> l.toJson)
+        case None    ⇒ None
+      }
+
+      val meta = rootObject.meta match {
+        case Some(m) ⇒ Some("meta" -> m.toJson)
+        case None    ⇒ None
+      }
+
+      val errors = rootObject.errors match {
+        case Some(e) ⇒ Some("errors" -> e.toJson)
+        case None    ⇒ None
+      }
+
+      JsObject(
+        Map()
+          ++ data
+          ++ links
+          ++ meta
+          ++ errors
+      )
     }
   }
 
@@ -41,13 +61,21 @@ trait JsonapiJsonFormat {
   implicit val resourceObjectWriter: RootJsonWriter[ResourceObject] = new RootJsonWriter[ResourceObject] {
     override def write(resourceObject: ResourceObject): JsValue = {
 
+      // check if there are some attributes to add
       val attributes = resourceObject.attributes match {
         case Some(a) ⇒ Some("attributes" -> a.toJson)
         case None    ⇒ None
       }
 
+      // check if there are some links to add
       val links = resourceObject.links match {
         case Some(l) ⇒ Some("links" -> l.toJson)
+        case None    ⇒ None
+      }
+
+      // check if there are some meta object to add
+      val meta = resourceObject.meta match {
+        case Some(m) ⇒ Some("meta" -> m.toJson)
         case None    ⇒ None
       }
 
@@ -58,6 +86,7 @@ trait JsonapiJsonFormat {
             "id" -> resourceObject.id.toJson
           ) ++ attributes
             ++ links
+            ++ meta
         ).toMap
       )
     }
@@ -83,22 +112,69 @@ trait JsonapiJsonFormat {
   }
 
   /**
-   * Spray-JSON format for serializing [[org.zalando.jsonapi.model.Attribute]] to Jsonapi.
+   * Spray-JSON format for serializing Jsonapi [[org.zalando.jsonapi.model.Meta]].
    */
-  implicit val attributeValueWriter: JsonFormat[Attribute.Value] = lazyFormat(new JsonFormat[Attribute.Value] {
-    override def write(attributeValue: Attribute.Value): JsValue = {
-      attributeValue match {
-        case Attribute.StringValue(s)   ⇒ s.toJson
-        case Attribute.NumberValue(n)   ⇒ n.toJson
-        case Attribute.BooleanValue(b)  ⇒ b.toJson
-        case Attribute.JsObjectValue(o) ⇒ o.toJson
-        case Attribute.JsArrayValue(a)  ⇒ a.toJson
-        case Attribute.NullValue        ⇒ JsNull
+  implicit val metaWriter: RootJsonWriter[Meta] = new RootJsonWriter[Meta] {
+    override def write(meta: Meta): JsValue = {
+      val fields = meta map (m ⇒ m.name -> m.value.toJson)
+      JsObject(fields: _*)
+    }
+  }
+
+  implicit val errorsWriter: RootJsonWriter[Errors] = new RootJsonWriter[Errors] {
+    override def write(errors: Errors): JsValue = {
+      val objects = errors map (e ⇒ e.toJson)
+      JsArray(objects.toVector)
+    }
+  }
+
+  /**
+   * Spray-JSON format for serializing Jsonapi [[org.zalando.jsonapi.model.Meta]].
+   */
+  implicit val errorWriter: RootJsonWriter[Error] = new RootJsonWriter[Error] {
+    override def write(error: Error): JsObject = {
+
+      // check if there are some links to add
+      val links = error.links match {
+        case Some(l) ⇒ Some("links" -> l.toJson)
+        case None    ⇒ None
+      }
+
+      val meta = error.meta match {
+        case Some(m) ⇒ Some("meta" -> m.toJson)
+        case None    ⇒ None
+      }
+
+      JsObject(Map(
+        "id" -> error.id.getOrElse("").toJson,
+        "status" -> error.status.getOrElse("").toJson,
+        "code" -> error.code.getOrElse("").toJson,
+        "title" -> error.title.getOrElse("").toJson,
+        "detail" -> error.detail.getOrElse("").toJson)
+        //"source" -> error.source.getOrElse("").toJson,
+        ++ links
+        ++ meta
+      )
+    }
+  }
+
+  /**
+   * Spray-JSON format for serializing [[org.zalando.jsonapi.model.JsonApiObject]] to Jsonapi.
+   */
+  implicit val jsonApiObjectValueWriter: JsonFormat[JsonApiObject.Value] = lazyFormat(new JsonFormat[JsonApiObject.Value] {
+    override def write(oValue: JsonApiObject.Value): JsValue = {
+      oValue match {
+        case JsonApiObject.StringValue(s)   ⇒ s.toJson
+        case JsonApiObject.NumberValue(n)   ⇒ n.toJson
+        case JsonApiObject.BooleanValue(b)  ⇒ b.toJson
+        case JsonApiObject.JsObjectValue(o) ⇒ o.toJson
+        case JsonApiObject.JsArrayValue(a)  ⇒ a.toJson
+        case JsonApiObject.NullValue        ⇒ JsNull
       }
     }
 
     // We don't need it for now
-    override def read(json: JsValue): Value = ???
+    override def read(json: JsValue): JsonApiObject.Value = ???
   })
 
   /**
