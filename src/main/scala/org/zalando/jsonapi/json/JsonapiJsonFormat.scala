@@ -33,12 +33,24 @@ trait JsonapiJsonFormat {
         case None    ⇒ None
       }
 
+      val included = rootObject.included match {
+        case Some(i) ⇒ Some("included" -> i.toJson)
+        case None    ⇒ None
+      }
+
+      val jsonApi = rootObject.jsonApi match {
+        case Some(j) ⇒ Some("jsonapi" -> j.toJson)
+        case None    ⇒ None
+      }
+
       JsObject(
         Map()
           ++ data
           ++ links
           ++ meta
           ++ errors
+          ++ included
+          ++ jsonApi
       )
     }
   }
@@ -79,6 +91,11 @@ trait JsonapiJsonFormat {
         case None    ⇒ None
       }
 
+      val relationships = resourceObject.relationships match {
+        case Some(r) ⇒ Some("relationships" -> r.toJson)
+        case None    ⇒ None
+      }
+
       JsObject(
         (
           Seq(
@@ -87,8 +104,16 @@ trait JsonapiJsonFormat {
           ) ++ attributes
             ++ links
             ++ meta
+            ++ relationships
         ).toMap
       )
+    }
+  }
+
+  implicit val resourceIdentifierObjectsWriter: RootJsonWriter[ResourceIdentifierObjects] = new RootJsonWriter[ResourceIdentifierObjects] {
+    override def write(resourceIdentifierObjects: ResourceIdentifierObjects): JsValue = {
+      val objects = resourceIdentifierObjects.array map (o ⇒ o.toJson)
+      JsArray(objects.toVector)
     }
   }
 
@@ -121,6 +146,13 @@ trait JsonapiJsonFormat {
     }
   }
 
+  implicit val jsonApiWriter: RootJsonWriter[JsonApi] = new RootJsonWriter[JsonApi] {
+    override def write(jsonApi: JsonApi): JsValue = {
+      val fields = jsonApi map (jap ⇒ jap.name -> jap.value.toJson)
+      JsObject(fields: _*)
+    }
+  }
+
   implicit val errorsWriter: RootJsonWriter[Errors] = new RootJsonWriter[Errors] {
     override def write(errors: Errors): JsValue = {
       val objects = errors map (e ⇒ e.toJson)
@@ -145,15 +177,59 @@ trait JsonapiJsonFormat {
         case None    ⇒ None
       }
 
+      val source = error.source match {
+        case Some(s) ⇒ Some("source" -> s.toJson)
+        case None    ⇒ None
+      }
+
       JsObject(Map(
         "id" -> error.id.getOrElse("").toJson,
         "status" -> error.status.getOrElse("").toJson,
         "code" -> error.code.getOrElse("").toJson,
         "title" -> error.title.getOrElse("").toJson,
         "detail" -> error.detail.getOrElse("").toJson)
-        //"source" -> error.source.getOrElse("").toJson,
+        ++ source
         ++ links
         ++ meta
+      )
+    }
+  }
+
+  implicit val errorSourceWriter: RootJsonWriter[ErrorSource] = new RootJsonWriter[ErrorSource] {
+    override def write(errorSource: ErrorSource): JsValue = {
+      JsObject(Map(
+        "pointer" -> errorSource.pointer.toJson,
+        "parameter" -> errorSource.parameter.toJson
+      ))
+    }
+  }
+
+  implicit val relationshipsWriter: RootJsonWriter[Relationships] = new RootJsonWriter[Relationships] {
+    override def write(relationships: Relationships): JsValue = {
+      JsObject(relationships map { relationship ⇒
+        relationship._1 -> relationship._2.toJson
+      })
+      //      relationships.foreach(kv ⇒ JsObject(kv._1 -> kv._2.toJson))
+    }
+  }
+
+  implicit val relationshipWriter: RootJsonWriter[Relationship] = new RootJsonWriter[Relationship] {
+    override def write(relationship: Relationship): JsValue = {
+
+      val links = relationship.links match {
+        case Some(l) ⇒ Some("links" -> l.toJson)
+        case None    ⇒ None
+      }
+
+      val data = relationship.data match {
+        case Some(d) ⇒ Some("data" -> d.toJson)
+        case None    ⇒ None
+      }
+
+      JsObject(
+        Map()
+          ++ links
+          ++ data
       )
     }
   }
@@ -194,6 +270,13 @@ trait JsonapiJsonFormat {
         }
       )
       JsObject(fields: _*)
+    }
+  }
+
+  implicit val includedWriter: RootJsonWriter[Included] = new RootJsonWriter[Included] {
+    override def write(included: Included): JsValue = {
+      val objects = included.resourceObjects.array map (i ⇒ i.toJson)
+      JsArray(objects.toVector)
     }
   }
 }

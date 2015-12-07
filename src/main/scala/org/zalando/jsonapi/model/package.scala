@@ -1,6 +1,6 @@
 package org.zalando.jsonapi
 
-import org.zalando.jsonapi.model.RootObject.ResourceObjects
+import org.zalando.jsonapi.model.RootObject.{ ResourceIdentifierObjects, ResourceObjects }
 
 import scala.collection.immutable.{ Seq ⇒ ImmutableSeq }
 
@@ -12,7 +12,7 @@ package object model {
   /**
    * A root, top-level object.
    */
-  case class RootObject(data: Option[RootObject.Data], links: Option[Links] = None, errors: Option[Errors] = None, meta: Option[Meta] = None, included: Option[Included] = None, jsonApi: Option[JsonApi] = None)
+  case class RootObject(data: Option[RootObject.Data] = None, links: Option[Links] = None, errors: Option[Errors] = None, meta: Option[Meta] = None, included: Option[Included] = None, jsonApi: Option[JsonApi] = None)
 
   object RootObject {
     sealed trait Data
@@ -93,18 +93,16 @@ package object model {
    * A collection of [[Error]] objects.
    */
   type Errors = ImmutableSeq[Error]
+  case class Error(id: Option[String] = None, links: Option[Links] = None, status: Option[String] = None, code: Option[String] = None, title: Option[String] = None, detail: Option[String] = None, source: Option[ErrorSource] = None, meta: Option[Meta] = None)
+  case class ErrorSource(pointer: Option[String] = None, parameter: Option[String] = None)
 
   type Meta = ImmutableSeq[MetaProperty]
-
   case class MetaProperty(name: String, value: JsonApiObject.Value)
-
-  case class Error(id: Option[String] = None, links: Option[Links] = None, status: Option[String] = None, code: Option[String] = None, title: Option[String] = None, detail: Option[String] = None, source: Option[ErrorSource] = None, meta: Option[Meta] = None)
-
-  case class ErrorSource(pointer: Option[String] = None, parameter: Option[String] = None)
 
   case class Included(resourceObjects: ResourceObjects)
 
-  case class JsonApi(name: String, value: JsonApiObject.Value)
+  type JsonApi = ImmutableSeq[JsonApiProperty]
+  case class JsonApiProperty(name: String, value: JsonApiObject.Value)
 
   object JsonApiObject {
 
@@ -147,8 +145,7 @@ package object model {
 
   }
 
-  type Relationships = ImmutableSeq[Relationship]
-
-  case class Relationship(name: String, links: Option[Links], data: Option[ImmutableSeq[RootObject.ResourceIdentifierObject]])
+  type Relationships = Map[String, Relationship]
+  case class Relationship(links: Option[Links] = None, data: Option[RootObject.Data] = None)
 
 }

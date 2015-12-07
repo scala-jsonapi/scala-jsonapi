@@ -171,16 +171,11 @@ class JsonapiJsonFormatSpec extends WordSpec with MustMatchers with JsonapiJsonP
       |}
     """.stripMargin.parseJson
 
-  val rootObjectWithErrors = RootObject(Some(ResourceObjects(List(ResourceObject(`type` = "person", id = "1")))), errors = Some(List(Error(id = Some("1"),
-    links = Some(List(Link(Link.Self("self-link")))), status = Some("status1"), code = Some("code1"), title = Some("title1"), detail = Some("something really bad happened")))))
+  val rootObjectWithErrors = RootObject(data = None, errors = Some(List(Error(id = Some("1"), links = Some(List(Link(Link.Self("self-link")))), status = Some("status1"), code = Some("code1"), title = Some("title1"), detail = Some("something really bad happened"), source = Some(ErrorSource(Some("id"), Some("/data/attributes/id")))))))
 
   val rootObjectWithErrorsJson =
     """
       |{
-      |  "data": [{
-      |    "type": "person",
-      |    "id": "1"
-      |  }],
       |  "errors": [
       |    {
       |      "id": "1",
@@ -190,11 +185,77 @@ class JsonapiJsonFormatSpec extends WordSpec with MustMatchers with JsonapiJsonP
       |      "status": "status1",
       |      "code": "code1",
       |      "title": "title1",
-      |      "detail": "something really bad happened"
+      |      "detail": "something really bad happened",
+      |      "source": {
+      |        "pointer": "id",
+      |        "parameter": "/data/attributes/id"
+      |      }
       |    }
       |  ]
       |}
     """.stripMargin.parseJson
+
+  val rootObjectWithIncluded = RootObject(Some(ResourceObjects(List(
+    ResourceObject(`type` = "person", id = "1",
+      attributes = Some(List(Attribute("name", StringValue("foo")))))))),
+    included = Some(Included(ResourceObjects(List(ResourceObject(`type` = "person", id = "2"))))))
+
+  val rootObjectWithIncludedJson =
+    """
+      |{
+      |  "data": [{
+      |    "type": "person",
+      |    "id": "1",
+      |    "attributes": {
+      |      "name": "foo"
+      |    }
+      |  }],
+      |  "included": [{
+      |    "type": "person",
+      |    "id": "2"
+      |  }]
+      |}
+    """.stripMargin.parseJson
+
+  val rootObjectWithJsonApiObject = RootObject(
+    jsonApi = Some(List(JsonApiProperty("one", StringValue("two")), JsonApiProperty("foo", JsArrayValue(Seq(StringValue("bar1"), StringValue("bar2"), StringValue("bar3")))))))
+
+  val rootObjectWithJsonApiObjectJson =
+    """
+      |{
+      |  "jsonapi": {
+      |    "one": "two",
+      |    "foo": ["bar1", "bar2", "bar3"]
+      |  }
+      |}
+    """.stripMargin.parseJson
+
+  val resourceObjectWithRelationshipsJson =
+    """
+      |{
+      |  "data": [{
+      |    "type": "person",
+      |    "id": "1",
+      |    "attributes": {
+      |      "name": "foobar"
+      |    },
+      |    "relationships": {
+      |      "father": {
+      |        "data": {
+      |          "id": "2",
+      |          "type": "person"
+      |        }
+      |      }
+      |    }
+      |  }]
+      |}
+    """.stripMargin.parseJson
+
+  val resourceObjectWithRelationships = RootObject(Some(ResourceObjects(List(
+    ResourceObject(`type` = "person", id = "1",
+      attributes = Some(List(Attribute("name", StringValue("foobar")))),
+      relationships = Some(Map("father" -> Relationship(data = Some(ResourceIdentifierObject(`type` = "person", id = "2")))))
+    )))))
 
   "JsonapiJsonFormat" must {
     "serialize Jsonapi attributes" in {
@@ -223,6 +284,15 @@ class JsonapiJsonFormatSpec extends WordSpec with MustMatchers with JsonapiJsonP
     }
     "serialize a Jsonapi error object correctly" in {
       rootObjectWithErrors.toJson mustEqual rootObjectWithErrorsJson
+    }
+    "serialize a Jsonapi included object correctly" in {
+      rootObjectWithIncluded.toJson mustEqual rootObjectWithIncludedJson
+    }
+    "serialize a Jsonapi jsonapi object correctly" in {
+      rootObjectWithJsonApiObject.toJson mustEqual rootObjectWithJsonApiObjectJson
+    }
+    "serialize a Jsonapi relationship object correctly" in {
+      resourceObjectWithRelationships.toJson mustEqual resourceObjectWithRelationshipsJson
     }
   }
 }
