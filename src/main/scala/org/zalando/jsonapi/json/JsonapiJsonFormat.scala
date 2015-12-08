@@ -73,28 +73,13 @@ trait JsonapiJsonFormat {
   implicit val resourceObjectWriter: RootJsonWriter[ResourceObject] = new RootJsonWriter[ResourceObject] {
     override def write(resourceObject: ResourceObject): JsValue = {
 
-      // check if there are some attributes to add
-      val attributes = resourceObject.attributes match {
-        case Some(a) ⇒ Some("attributes" -> a.toJson)
-        case None    ⇒ None
-      }
+      val attributes = resourceObject.attributes.map(a ⇒ "attributes" -> a.toJson)
 
-      // check if there are some links to add
-      val links = resourceObject.links match {
-        case Some(l) ⇒ Some("links" -> l.toJson)
-        case None    ⇒ None
-      }
+      val links = resourceObject.links.map(l ⇒ "links" -> l.toJson)
 
-      // check if there are some meta object to add
-      val meta = resourceObject.meta match {
-        case Some(m) ⇒ Some("meta" -> m.toJson)
-        case None    ⇒ None
-      }
+      val meta = resourceObject.meta.map(m ⇒ "meta" -> m.toJson)
 
-      val relationships = resourceObject.relationships match {
-        case Some(r) ⇒ Some("relationships" -> r.toJson)
-        case None    ⇒ None
-      }
+      val relationships = resourceObject.relationships.map(r ⇒ "relationships" -> r.toJson)
 
       JsObject(
         (
@@ -107,13 +92,6 @@ trait JsonapiJsonFormat {
             ++ relationships
         ).toMap
       )
-    }
-  }
-
-  implicit val resourceIdentifierObjectsWriter: RootJsonWriter[ResourceIdentifierObjects] = new RootJsonWriter[ResourceIdentifierObjects] {
-    override def write(resourceIdentifierObjects: ResourceIdentifierObjects): JsValue = {
-      val objects = resourceIdentifierObjects.array map (o ⇒ o.toJson)
-      JsArray(objects.toVector)
     }
   }
 
@@ -166,21 +144,11 @@ trait JsonapiJsonFormat {
   implicit val errorWriter: RootJsonWriter[Error] = new RootJsonWriter[Error] {
     override def write(error: Error): JsObject = {
 
-      // check if there are some links to add
-      val links = error.links match {
-        case Some(l) ⇒ Some("links" -> l.toJson)
-        case None    ⇒ None
-      }
+      val links = error.links.map(l ⇒ "links" -> l.toJson)
 
-      val meta = error.meta match {
-        case Some(m) ⇒ Some("meta" -> m.toJson)
-        case None    ⇒ None
-      }
+      val meta = error.meta.map(m ⇒ "meta" -> m.toJson)
 
-      val source = error.source match {
-        case Some(s) ⇒ Some("source" -> s.toJson)
-        case None    ⇒ None
-      }
+      val source = error.source.map(s ⇒ "source" -> s.toJson)
 
       JsObject(Map(
         "id" -> error.id.getOrElse("").toJson,
@@ -209,22 +177,15 @@ trait JsonapiJsonFormat {
       JsObject(relationships map { relationship ⇒
         relationship._1 -> relationship._2.toJson
       })
-      //      relationships.foreach(kv ⇒ JsObject(kv._1 -> kv._2.toJson))
     }
   }
 
   implicit val relationshipWriter: RootJsonWriter[Relationship] = new RootJsonWriter[Relationship] {
     override def write(relationship: Relationship): JsValue = {
 
-      val links = relationship.links match {
-        case Some(l) ⇒ Some("links" -> l.toJson)
-        case None    ⇒ None
-      }
+      val links = relationship.links.map(l ⇒ "links" -> l.toJson)
 
-      val data = relationship.data match {
-        case Some(d) ⇒ Some("data" -> d.toJson)
-        case None    ⇒ None
-      }
+      val data = relationship.data.map(d ⇒ "data" -> d.toJson)
 
       JsObject(
         Map()
