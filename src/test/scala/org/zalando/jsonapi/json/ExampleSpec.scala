@@ -4,7 +4,7 @@ import org.scalatest.{ MustMatchers, WordSpec }
 import org.zalando.jsonapi.{ JsonapiRootObjectWriter, _ }
 import org.zalando.jsonapi.model.JsonApiObject.StringValue
 import org.zalando.jsonapi.model.RootObject.ResourceObject
-import org.zalando.jsonapi.model.{ Attribute, Link, RootObject }
+import org.zalando.jsonapi.model.{ Attribute, Links, RootObject }
 import spray.json._
 
 class ExampleSpec extends WordSpec with MustMatchers with JsonapiJsonProtocol {
@@ -51,7 +51,7 @@ class ExampleSpec extends WordSpec with MustMatchers with JsonapiJsonProtocol {
             id = person.id.toString,
             attributes = Some(List(
               Attribute("name", StringValue(person.name))
-            )), links = Some(List(Link(linkOption = Link.Self("http://test.link/person/42")))))))
+            )), links = Some(List(Links.Self("http://test.link/person/42"))))))
         }
       }
 
@@ -84,7 +84,7 @@ class ExampleSpec extends WordSpec with MustMatchers with JsonapiJsonProtocol {
             id = person.id.toString,
             attributes = Some(List(
               Attribute("name", StringValue(person.name))
-            )))), links = Some(List(Link(linkOption = Link.Next("http://test.link/person/43")))))
+            )))), links = Some(List(Links.Next("http://test.link/person/43"))))
         }
       }
 

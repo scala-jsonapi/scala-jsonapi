@@ -219,17 +219,15 @@ trait JsonapiJsonFormat {
    */
   implicit val linksWriter: RootJsonWriter[Links] = new RootJsonWriter[Links] {
     override def write(links: Links): JsValue = {
-      val fields = links map (l ⇒
-        l.linkOption match {
-          case Link.Self(url)    ⇒ "self" -> url.toJson
-          case Link.About(url)   ⇒ "about" -> url.toJson
-          case Link.First(url)   ⇒ "first" -> url.toJson
-          case Link.Last(url)    ⇒ "last" -> url.toJson
-          case Link.Next(url)    ⇒ "next" -> url.toJson
-          case Link.Prev(url)    ⇒ "prev" -> url.toJson
-          case Link.Related(url) ⇒ "related" -> url.toJson
-        }
-      )
+      val fields = links map (l ⇒ l match {
+        case Links.Self(url)    ⇒ "self" -> url.toJson
+        case Links.About(url)   ⇒ "about" -> url.toJson
+        case Links.First(url)   ⇒ "first" -> url.toJson
+        case Links.Last(url)    ⇒ "last" -> url.toJson
+        case Links.Next(url)    ⇒ "next" -> url.toJson
+        case Links.Prev(url)    ⇒ "prev" -> url.toJson
+        case Links.Related(url) ⇒ "related" -> url.toJson
+      })
       JsObject(fields: _*)
     }
   }

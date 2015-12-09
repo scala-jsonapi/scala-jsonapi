@@ -69,8 +69,8 @@ class JsonapiJsonFormatSpec extends WordSpec with MustMatchers with JsonapiJsonP
     RootObject(Some(ResourceObjects(List(
       ResourceObject(`type` = "person", id = "1", attributes = Some(
         List(Attribute("name", StringValue("foobar")))
-      ), links = Some(List(Link(linkOption = Link.Self("/persons/1")))))
-    ))), links = Some(List(Link(linkOption = Link.Next("/persons/2")))))
+      ), links = Some(List(Links.Self("/persons/1"))))
+    ))), links = Some(List(Links.Next("/persons/2"))))
 
   val rootObjectWithResourceIdentifierObjectJson =
     """
@@ -110,13 +110,13 @@ class JsonapiJsonFormatSpec extends WordSpec with MustMatchers with JsonapiJsonP
   val rootObjectWithResourceObjectsWithAllLinks = RootObject(Some(ResourceObjects(List(
     ResourceObject(`type` = "person", id = "1", attributes = None, links = Some(
       List(
-        Link(linkOption = Link.Self("/persons/2")),
-        Link(linkOption = Link.Related("/persons/10")),
-        Link(linkOption = Link.Next("/persons/3")),
-        Link(linkOption = Link.Prev("/persons/1")),
-        Link(linkOption = Link.About("/persons/11")),
-        Link(linkOption = Link.First("/persons/0")),
-        Link(linkOption = Link.Last("/persons/99"))
+        Links.Self("/persons/2"),
+        Links.Related("/persons/10"),
+        Links.Next("/persons/3"),
+        Links.Prev("/persons/1"),
+        Links.About("/persons/11"),
+        Links.First("/persons/0"),
+        Links.Last("/persons/99")
       )))))))
 
   val rootObjectWithResourceObjectsWithAllLinksJson =
@@ -176,7 +176,7 @@ class JsonapiJsonFormatSpec extends WordSpec with MustMatchers with JsonapiJsonP
       data = None,
       errors = Some(List(Error(
         id = Some("1"),
-        links = Some(List(Link(Link.Self("self-link")))),
+        links = Some(List(Links.Self("self-link"))),
         status = Some("status1"),
         code = Some("code1"),
         title = Some("title1"),
@@ -282,7 +282,7 @@ class JsonapiJsonFormatSpec extends WordSpec with MustMatchers with JsonapiJsonP
         relationships =
           Some(Map("father" -> Relationship(
             data = Some(ResourceIdentifierObject(`type` = "person", id = "2")),
-            links = Some(List(Link(Link.Self("http://link.to.self"))))
+            links = Some(List(Links.Self("http://link.to.self")))
           )))
       )
     ))))
