@@ -1,6 +1,7 @@
 package org.zalando.jsonapi
 
-import org.zalando.jsonapi.model.RootObject.{ ResourceIdentifierObjects, ResourceObjects }
+import org.zalando.jsonapi.model.Links.Link
+import org.zalando.jsonapi.model.RootObject.ResourceObjects
 
 import scala.collection.immutable.{ Seq ⇒ ImmutableSeq }
 
@@ -12,14 +13,40 @@ package object model {
   /**
    * A root, top-level object.
    */
-  case class RootObject(data: Option[RootObject.Data] = None, links: Option[Links] = None, errors: Option[Errors] = None, meta: Option[Meta] = None, included: Option[Included] = None, jsonApi: Option[JsonApi] = None)
+  case class RootObject(
+    data: Option[RootObject.Data] = None,
+    links: Option[Links] = None,
+    errors: Option[Errors] = None,
+    meta: Option[Meta] = None,
+    included: Option[Included] = None,
+    jsonApi: Option[JsonApi] = None)
 
+  /**
+   * A companion object for root level support types.
+   */
   object RootObject {
     sealed trait Data
 
-    case class ResourceObject(`type`: String, id: String, attributes: Option[Attributes] = None, relationships: Option[Relationships] = None, links: Option[Links] = None, meta: Option[Meta] = None) extends Data
-    case class ResourceIdentifierObject(`type`: String, id: String) extends Data
+    case class ResourceObject(
+      `type`: String,
+      id: String,
+      attributes: Option[Attributes] = None,
+      relationships: Option[Relationships] = None,
+      links: Option[Links] = None,
+      meta: Option[Meta] = None) extends Data
+
+    /**
+     * A collection of [[ResourceObject]] objects.
+     */
     case class ResourceObjects(array: ImmutableSeq[ResourceObject]) extends Data
+
+    case class ResourceIdentifierObject(
+      `type`: String,
+      id: String) extends Data
+
+    /**
+     * A collection of [[ResourceIdentifierObject]] objects.
+     */
     case class ResourceIdentifierObjects(array: ImmutableSeq[ResourceIdentifierObject]) extends Data
   }
 
@@ -29,57 +56,57 @@ package object model {
   type Links = ImmutableSeq[Link]
 
   /**
-   * An object representing a Link
-   * @param linkOption the kind of link to be addded with its URL
+   * Companion object for links.
    */
-  case class Link(linkOption: Link.LinkOption)
-
-  object Link {
-    sealed trait LinkOption
+  object Links {
+    sealed trait Link
 
     /**
-     * A Link of the "self" type.
+     * A link of the "self" type.
      * @param url The url to link to.
      */
-    case class Self(url: String) extends LinkOption
+    case class Self(url: String) extends Link
 
     /**
-     * A Link of the "related" type.
+     * A link of the "related" type.
      * @param url The url to link to.
      */
-    case class Related(url: String) extends LinkOption
+    case class Related(url: String) extends Link
 
     /**
-     * A Link of the "first" type.
+     * A link of the "first" type.
      * @param url The url to link to.
      */
-    case class First(url: String) extends LinkOption
+    case class First(url: String) extends Link
 
     /**
-     * A Link of the "last" type.
+     * A link of the "last" type.
      * @param url The url to link to.
      */
-    case class Last(url: String) extends LinkOption
+    case class Last(url: String) extends Link
 
     /**
-     * A Link of the "next" type.
+     * A link of the "next" type.
      * @param url The url to link to.
      */
-    case class Next(url: String) extends LinkOption
+    case class Next(url: String) extends Link
 
     /**
-     * A Link of the "prev" type.
+     * A link of the "prev" type.
      * @param url The url to link to.
      */
-    case class Prev(url: String) extends LinkOption
+    case class Prev(url: String) extends Link
 
     /**
-     * A Link of the "about" type.
+     * A link of the "about" type.
      * @param url The url to link to.
      */
-    case class About(url: String) extends LinkOption
+    case class About(url: String) extends Link
   }
 
+  /**
+   * A collection of [[Attribute]] objects.
+   */
   type Attributes = ImmutableSeq[Attribute]
 
   /**
@@ -93,20 +120,71 @@ package object model {
    * A collection of [[Error]] objects.
    */
   type Errors = ImmutableSeq[Error]
-  case class Error(id: Option[String] = None, links: Option[Links] = None, status: Option[String] = None, code: Option[String] = None, title: Option[String] = None, detail: Option[String] = None, source: Option[ErrorSource] = None, meta: Option[Meta] = None)
+
+  /**
+   * The representation of an error object.
+   * @param id an unique identifier of the error
+   * @param links the links of the error
+   * @param status the HTTP status code of the error
+   * @param code an application specific code of the error
+   * @param title a short human-readable description about the error
+   * @param detail a detailed human-readable description about the error
+   * @param source the source of the error
+   * @param meta the meta information about the error
+   */
+  case class Error(
+    id: Option[String] = None,
+    links: Option[Links] = None,
+    status: Option[String] = None,
+    code: Option[String] = None,
+    title: Option[String] = None,
+    detail: Option[String] = None,
+    source: Option[ErrorSource] = None,
+    meta: Option[Meta] = None)
+
+  /**
+   * An object containing references to the source of the error.
+   * @param pointer the optional pointer based on <a href="https://tools.ietf.org/html/rfc6901">RFC6901</a> standard
+   * @param parameter a optional string indicating which URI query parameter caused the error
+   */
   case class ErrorSource(pointer: Option[String] = None, parameter: Option[String] = None)
 
+  /**
+   * A collection of [[MetaProperty]] objects.
+   */
   type Meta = ImmutableSeq[MetaProperty]
+
+  /**
+   * A meta, non-standard information about the resource.
+   * @param name the name of the meta information
+   * @param value the value of meta information
+   */
   case class MetaProperty(name: String, value: JsonApiObject.Value)
 
+  /**
+   * An array of resource objects.
+   * @param resourceObjects the array
+   */
   case class Included(resourceObjects: ResourceObjects)
 
+  /**
+   * A collection of [[JsonApiProperty]] objects.
+   */
   type JsonApi = ImmutableSeq[JsonApiProperty]
+
+  /**
+   * An information about the implementation.
+   * @param name the name of the json api implementation detail
+   * @param value the value of the json api implementation detail
+   */
   case class JsonApiProperty(name: String, value: JsonApiObject.Value)
 
+  /**
+   * A companion object for json api implementation specific data.
+   */
   object JsonApiObject {
 
-    sealed trait Value;
+    sealed trait Value
 
     /**
      * An attribute value that is string-typed.
@@ -145,7 +223,16 @@ package object model {
 
   }
 
+  /**
+   * A collection of [[Relationship]] objects.
+   */
   type Relationships = Map[String, Relationship]
+
+  /**
+   * An object represents the relationship and describes underlying object.
+   * @param links the links of underlying object
+   * @param data the data of underlying object
+   */
   case class Relationship(links: Option[Links] = None, data: Option[RootObject.Data] = None)
 
 }
