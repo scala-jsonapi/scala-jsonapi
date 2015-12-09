@@ -2,7 +2,7 @@ package org.zalando.jsonapi.json
 
 import org.scalatest.{ MustMatchers, WordSpec }
 import org.zalando.jsonapi.{ JsonapiRootObjectWriter, _ }
-import org.zalando.jsonapi.model.Attribute.StringValue
+import org.zalando.jsonapi.model.JsonApiObject.StringValue
 import org.zalando.jsonapi.model.RootObject.ResourceObject
 import org.zalando.jsonapi.model.{ Attribute, Link, RootObject }
 import spray.json._
@@ -15,12 +15,12 @@ class ExampleSpec extends WordSpec with MustMatchers with JsonapiJsonProtocol {
 
         implicit val personJsonapiRootObjectWriter: JsonapiRootObjectWriter[Person] = new JsonapiRootObjectWriter[Person] {
           override def toJsonapi(person: Person) = {
-            RootObject(data = ResourceObject(
+            RootObject(data = Some(ResourceObject(
               `type` = "person",
               id = person.id.toString,
               attributes = Some(List(
                 Attribute("name", StringValue(person.name))
-              )), links = None), links = None)
+              )), links = None)))
           }
         }
 
@@ -46,12 +46,12 @@ class ExampleSpec extends WordSpec with MustMatchers with JsonapiJsonProtocol {
 
       implicit val personJsonapiRootObjectWriter: JsonapiRootObjectWriter[Person] = new JsonapiRootObjectWriter[Person] {
         override def toJsonapi(person: Person) = {
-          RootObject(data = ResourceObject(
+          RootObject(data = Some(ResourceObject(
             `type` = "person",
             id = person.id.toString,
             attributes = Some(List(
               Attribute("name", StringValue(person.name))
-            )), links = Some(List(Link(linkOption = Link.Self("http://test.link/person/42"))))), links = None)
+            )), links = Some(List(Link(linkOption = Link.Self("http://test.link/person/42")))))))
         }
       }
 
@@ -79,12 +79,12 @@ class ExampleSpec extends WordSpec with MustMatchers with JsonapiJsonProtocol {
 
       implicit val personJsonapiRootObjectWriter: JsonapiRootObjectWriter[Person] = new JsonapiRootObjectWriter[Person] {
         override def toJsonapi(person: Person) = {
-          RootObject(data = ResourceObject(
+          RootObject(data = Some(ResourceObject(
             `type` = "person",
             id = person.id.toString,
             attributes = Some(List(
               Attribute("name", StringValue(person.name))
-            )), links = None), links = Some(List(Link(linkOption = Link.Next("http://test.link/person/43")))))
+            )))), links = Some(List(Link(linkOption = Link.Next("http://test.link/person/43")))))
         }
       }
 
