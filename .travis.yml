@@ -8,5 +8,5 @@ notifications:
   email:
     recipients:
       - boris.malensek@zalando.de
-script: "sbt clean coverage test"
+script: "sbt clean coverage +test"
 after_success: "sbt coveralls"
