@@ -2,201 +2,211 @@ package org.zalando.jsonapi.json
 
 import org.zalando.jsonapi.model.RootObject._
 import org.zalando.jsonapi.model._
+import org.zalando.jsonapi.json.SprayJsonReadSupport._
 import spray.json._
+import scala.language.postfixOps
 
 trait JsonapiJsonFormat {
   self: DefaultJsonProtocol ⇒
 
   /**
-   * Spray-JSON format for serializing [[org.zalando.jsonapi.model.RootObject]] to Jsonapi.
+   * Spray-JSON format for serializing and deserializing [[RootObject]] to Jsonapi.
    */
-  implicit val rootObjectWriter: RootJsonWriter[RootObject] = new RootJsonWriter[RootObject] {
+  implicit val rootObjectFormat: RootJsonFormat[RootObject] = new RootJsonFormat[RootObject] {
     override def write(rootObject: RootObject): JsValue = {
-
-      val data = rootObject.data match {
-        case Some(d) ⇒ Some("data" -> d.toJson)
-        case None    ⇒ None
-      }
-
-      val links = rootObject.links match {
-        case Some(l) ⇒ Some("links" -> l.toJson)
-        case None    ⇒ None
-      }
-
-      val meta = rootObject.meta match {
-        case Some(m) ⇒ Some("meta" -> m.toJson)
-        case None    ⇒ None
-      }
-
-      val errors = rootObject.errors match {
-        case Some(e) ⇒ Some("errors" -> e.toJson)
-        case None    ⇒ None
-      }
-
-      val included = rootObject.included match {
-        case Some(i) ⇒ Some("included" -> i.toJson)
-        case None    ⇒ None
-      }
-
-      val jsonApi = rootObject.jsonApi match {
-        case Some(j) ⇒ Some("jsonapi" -> j.toJson)
-        case None    ⇒ None
-      }
-
-      JsObject(
-        Map()
-          ++ data
-          ++ links
-          ++ meta
-          ++ errors
-          ++ included
-          ++ jsonApi
-      )
+      val data = rootObject.data map (FieldNames.`data` -> _.toJson)
+      val links = rootObject.links map (FieldNames.`links` -> _.toJson)
+      val meta = rootObject.meta map (FieldNames.`meta` -> _.toJson)
+      val errors = rootObject.errors map (FieldNames.`errors` -> _.toJson)
+      val included = rootObject.included map (FieldNames.`included` -> _.toJson)
+      val jsonApi = rootObject.jsonApi map (FieldNames.`jsonapi` -> _.toJson)
+      JsObject(collectSome(data, links, meta, errors, included, jsonApi) toMap)
     }
-  }
 
-  implicit val dataWriter: RootJsonWriter[Data] = new RootJsonWriter[Data] {
-    override def write(data: Data): JsValue = {
-      data match {
-        case ro: ResourceObject            ⇒ ro.toJson
-        case rio: ResourceIdentifierObject ⇒ rio.toJson
-        case ResourceObjects(resourceObjects) ⇒
-          val objects = resourceObjects map (ro ⇒ ro.toJson)
-          JsArray(objects.toVector)
-        case ResourceIdentifierObjects(resourceIdentifierObjects) ⇒
-          val objects = resourceIdentifierObjects map (rio ⇒ rio.toJson)
-          JsArray(objects.toVector)
-      }
-    }
-  }
-
-  implicit val resourceObjectWriter: RootJsonWriter[ResourceObject] = new RootJsonWriter[ResourceObject] {
-    override def write(resourceObject: ResourceObject): JsValue = {
-
-      val attributes = resourceObject.attributes.map(a ⇒ "attributes" -> a.toJson)
-
-      val links = resourceObject.links.map(l ⇒ "links" -> l.toJson)
-
-      val meta = resourceObject.meta.map(m ⇒ "meta" -> m.toJson)
-
-      val relationships = resourceObject.relationships.map(r ⇒ "relationships" -> r.toJson)
-
-      JsObject(
-        (
-          Seq(
-            "type" -> resourceObject.`type`.toJson,
-            "id" -> resourceObject.id.toJson
-          ) ++ attributes
-            ++ links
-            ++ meta
-            ++ relationships
-        ).toMap
-      )
-    }
-  }
-
-  implicit val resourceIdentifierObjectWriter: RootJsonWriter[ResourceIdentifierObject] = new RootJsonWriter[ResourceIdentifierObject] {
-    override def write(resourceIdentifierObject: ResourceIdentifierObject): JsValue = {
-      JsObject(Map(
-        "type" -> resourceIdentifierObject.`type`.toJson,
-        "id" -> resourceIdentifierObject.id.toJson
-      ))
+    override def read(json: JsValue): RootObject = {
+      val obj = json.asJsObject
+      val data = (obj \? FieldNames.`data`) map (_.convertTo[Data])
+      val links = (obj \? FieldNames.`links`) map (_.convertTo[Links])
+      val meta = (obj \? FieldNames.`meta`) map (_.convertTo[Meta])
+      val errors = (obj \? FieldNames.`errors`) map (_.convertTo[Errors])
+      val included = (obj \? FieldNames.`included`) map (_.convertTo[Included])
+      val jsonapi = (obj \? FieldNames.`jsonapi`) map (_.convertTo[JsonApi])
+      RootObject(data, links, errors, meta, included, jsonapi)
     }
   }
 
   /**
-   * Spray-JSON format for serializing Jsonapi [[org.zalando.jsonapi.model.Attributes]].
+   * Spray-JSON format for serializing and deserializing Jsonapi [[Data]]
    */
-  implicit val attributesWriter: RootJsonWriter[Attributes] = new RootJsonWriter[Attributes] {
+  implicit val dataFormat: RootJsonFormat[Data] = new RootJsonFormat[Data] {
+    override def write(data: Data): JsValue = {
+      data match {
+        case ro: ResourceObject ⇒ ro.toJson
+        case ResourceObjects(resourceObjects) ⇒
+          val objects = resourceObjects map (ro ⇒ ro.toJson)
+          JsArray(objects.toVector)
+      }
+    }
+
+    override def read(json: JsValue): Data = {
+      json match {
+        case obj: JsObject ⇒ obj.convertTo[ResourceObject]
+        case arr: JsArray  ⇒ ResourceObjects(arr.convertTo[List[ResourceObject]])
+        case _             ⇒ throwDesEx(s"Unable to serialize Data type from json: $json")
+      }
+    }
+  }
+
+  /**
+   * Spray-JSON format for serializing and deserializing Jsonapi [[ResourceObject]]
+   */
+  implicit val resourceObjectFormat: RootJsonFormat[ResourceObject] = new RootJsonFormat[ResourceObject] {
+    override def write(resourceObject: ResourceObject): JsValue = {
+      val `type` = Some(FieldNames.`type` -> resourceObject.`type`.toJson)
+      val id = Some(FieldNames.`id` -> resourceObject.id.toJson)
+      val attributes = resourceObject.attributes map (FieldNames.`attributes` -> _.toJson)
+      val links = resourceObject.links map (FieldNames.`links` -> _.toJson)
+      val meta = resourceObject.meta map (FieldNames.`meta` -> _.toJson)
+      val relationships = resourceObject.relationships map (FieldNames.`relationships` -> _.toJson)
+      JsObject(collectSome(`type`, id, attributes, relationships, links, meta) toMap)
+    }
+
+    override def read(json: JsValue): ResourceObject = {
+      val obj = json.asJsObject
+      val `type` = (obj \ FieldNames.`type`).asString
+      val id = (obj \ FieldNames.`id`).asString
+      val attributes = (obj \? FieldNames.`attributes`) map (_.convertTo[Attributes])
+      val links = (obj \? FieldNames.`links`) map (_.convertTo[Links])
+      val meta = (obj \? FieldNames.`meta`) map (_.convertTo[Meta])
+      val relationships = (obj \? FieldNames.`relationships`) map (_.convertTo[Relationships])
+      ResourceObject(`type`, id, attributes, relationships, links, meta)
+    }
+  }
+
+  /**
+   * Spray-JSON format for serializing and deserializing Jsonapi [[Attributes]].
+   */
+  implicit val attributesFormat: RootJsonFormat[Attributes] = new RootJsonFormat[Attributes] {
     override def write(attributes: Attributes): JsValue = {
       val fields = attributes map (p ⇒ p.name -> p.value.toJson)
       JsObject(fields: _*)
     }
+
+    override def read(json: JsValue): Attributes = {
+      json.asJsObject.fields map { case (name, value) ⇒ Attribute(name, value.convertTo[JsonApiObject.Value]) } toList
+    }
   }
 
   /**
-   * Spray-JSON format for serializing Jsonapi [[org.zalando.jsonapi.model.Meta]].
+   * Spray-JSON format for serializing and deserializing Jsonapi [[Meta]].
    */
-  implicit val metaWriter: RootJsonWriter[Meta] = new RootJsonWriter[Meta] {
+  implicit val metaFormat: RootJsonFormat[Meta] = new RootJsonFormat[Meta] {
     override def write(meta: Meta): JsValue = {
       val fields = meta map (m ⇒ m.name -> m.value.toJson)
       JsObject(fields: _*)
     }
+
+    override def read(json: JsValue): Meta = {
+      json.asJsObject.fields map { case (name, value) ⇒ MetaProperty(name, value.convertTo[JsonApiObject.Value]) } toList
+    }
   }
 
-  implicit val jsonApiWriter: RootJsonWriter[JsonApi] = new RootJsonWriter[JsonApi] {
+  /**
+   * Spray-JSON format for serializing and deserializing Jsonapi [[JsonApi]]
+   */
+  implicit val jsonApiFormat: RootJsonFormat[JsonApi] = new RootJsonFormat[JsonApi] {
     override def write(jsonApi: JsonApi): JsValue = {
       val fields = jsonApi map (jap ⇒ jap.name -> jap.value.toJson)
       JsObject(fields: _*)
     }
+
+    override def read(json: JsValue): JsonApi = {
+      json.asJsObject.fields map (jap ⇒ JsonApiProperty(jap._1, jap._2.convertTo[JsonApiObject.Value])) toList
+    }
   }
 
-  implicit val errorsWriter: RootJsonWriter[Errors] = new RootJsonWriter[Errors] {
+  /**
+   * Spray-JSON format for serializing and deserializing Jsonapi [[Errors]]
+   */
+  implicit val errorsFormat: RootJsonFormat[Errors] = new RootJsonFormat[Errors] {
     override def write(errors: Errors): JsValue = {
       val objects = errors map (e ⇒ e.toJson)
       JsArray(objects.toVector)
     }
+
+    override def read(json: JsValue): Errors = {
+      json.convertTo[List[Error]]
+    }
   }
 
   /**
-   * Spray-JSON format for serializing Jsonapi [[org.zalando.jsonapi.model.Meta]].
+   * Spray-JSON format for serializing and deserializing Jsonapi [[Error]].
    */
-  implicit val errorWriter: RootJsonWriter[Error] = new RootJsonWriter[Error] {
+  implicit val errorFormat: RootJsonFormat[Error] = new RootJsonFormat[Error] {
     override def write(error: Error): JsObject = {
-
-      val links = error.links.map(l ⇒ "links" -> l.toJson)
-
-      val meta = error.meta.map(m ⇒ "meta" -> m.toJson)
-
-      val source = error.source.map(s ⇒ "source" -> s.toJson)
-
-      JsObject(Map(
-        "id" -> error.id.getOrElse("").toJson,
-        "status" -> error.status.getOrElse("").toJson,
-        "code" -> error.code.getOrElse("").toJson,
-        "title" -> error.title.getOrElse("").toJson,
-        "detail" -> error.detail.getOrElse("").toJson)
-        ++ source
-        ++ links
-        ++ meta
-      )
+      val id = error.id map (FieldNames.`id` -> _.toJson)
+      val status = error.status map (FieldNames.`status` -> _.toJson)
+      val code = error.code map (FieldNames.`code` -> _.toJson)
+      val title = error.title map (FieldNames.`title` -> _.toJson)
+      val detail = error.detail map (FieldNames.`detail` -> _.toJson)
+      val links = error.links map (FieldNames.`links` -> _.toJson)
+      val meta = error.meta map (FieldNames.`meta` -> _.toJson)
+      val source = error.source map (FieldNames.`source` -> _.toJson)
+      JsObject(collectSome(id, status, code, title, detail, links, meta, source) toMap)
     }
-  }
 
-  implicit val errorSourceWriter: RootJsonWriter[ErrorSource] = new RootJsonWriter[ErrorSource] {
-    override def write(errorSource: ErrorSource): JsValue = {
-      JsObject(Map(
-        "pointer" -> errorSource.pointer.toJson,
-        "parameter" -> errorSource.parameter.toJson
-      ))
-    }
-  }
-
-  implicit val relationshipsWriter: RootJsonWriter[Relationships] = new RootJsonWriter[Relationships] {
-    override def write(relationships: Relationships): JsValue = {
-      JsObject(relationships map { relationship ⇒
-        relationship._1 -> relationship._2.toJson
-      })
-    }
-  }
-
-  implicit val relationshipWriter: RootJsonWriter[Relationship] = new RootJsonWriter[Relationship] {
-    override def write(relationship: Relationship): JsValue = {
-
-      val links = relationship.links.map(l ⇒ "links" -> l.toJson)
-
-      val data = relationship.data.map(d ⇒ "data" -> d.toJson)
-
-      JsObject(
-        Map()
-          ++ links
-          ++ data
-      )
+    override def read(json: JsValue): Error = {
+      val obj = json.asJsObject
+      val id = (obj \? FieldNames.`id`) map (_.asString)
+      val status = (obj \? FieldNames.`status`) map (_.asString)
+      val code = (obj \? FieldNames.`code`) map (_.asString)
+      val title = (obj \? FieldNames.`title`) map (_.asString)
+      val detail = (obj \? FieldNames.`detail`) map (_.asString)
+      val links = (obj \? FieldNames.`links`) map (_.convertTo[Links])
+      val meta = (obj \? FieldNames.`meta`) map (_.convertTo[Meta])
+      val source = (obj \? FieldNames.`source`) map (_.convertTo[ErrorSource])
+      Error(id, links, status, code, title, detail, source, meta)
     }
   }
 
   /**
-   * Spray-JSON format for serializing [[org.zalando.jsonapi.model.JsonApiObject]] to Jsonapi.
+   * Spray-JSON format for serializing and deserializing Jsonapi [[ErrorSource]]
+   */
+  implicit val errorSourceFormat: RootJsonFormat[ErrorSource] = new RootJsonFormat[ErrorSource] {
+    override def write(errorSource: ErrorSource): JsValue = {
+      val pointer = errorSource.pointer map (FieldNames.`pointer` -> _.toJson)
+      val parameter = errorSource.parameter map (FieldNames.`parameter` -> _.toJson)
+      JsObject(collectSome(pointer, parameter) toMap)
+    }
+
+    override def read(json: JsValue): ErrorSource = {
+      val obj = json.asJsObject
+      val pointer = (obj \? FieldNames.`pointer`) map (_.asString)
+      val parameter = (obj \? FieldNames.`parameter`) map (_.asString)
+      ErrorSource(pointer, parameter)
+    }
+  }
+
+  /**
+   * Spray-JSON format for serializing and deserializing Jsonapi [[Relationship]]
+   */
+  implicit val relationshipFormat: RootJsonFormat[Relationship] = new RootJsonFormat[Relationship] {
+    override def write(relationship: Relationship): JsValue = {
+      val links = relationship.links map (FieldNames.`links` -> _.toJson)
+      val data = relationship.data map (FieldNames.`data` -> _.toJson)
+      JsObject(collectSome(links, data) toMap)
+    }
+
+    override def read(json: JsValue): Relationship = {
+      val obj = json.asJsObject
+      val links = (obj \? FieldNames.`links`) map (_.convertTo[Links])
+      val data = (obj \? FieldNames.`data`) map (_.convertTo[Data])
+      Relationship(links, data)
+    }
+  }
+
+  /**
+   * Spray-JSON format for serializing and deserializing Jsonapi [[JsonApiObject]].
    */
   implicit val jsonApiObjectValueWriter: JsonFormat[JsonApiObject.Value] = lazyFormat(new JsonFormat[JsonApiObject.Value] {
     override def write(oValue: JsonApiObject.Value): JsValue = {
@@ -210,14 +220,22 @@ trait JsonapiJsonFormat {
       }
     }
 
-    // We don't need it for now
-    override def read(json: JsValue): JsonApiObject.Value = ???
+    override def read(json: JsValue): JsonApiObject.Value = {
+      json match {
+        case JsString(s)  ⇒ JsonApiObject.StringValue(s)
+        case JsNumber(n)  ⇒ JsonApiObject.NumberValue(n)
+        case JsBoolean(b) ⇒ JsonApiObject.BooleanValue(b)
+        case JsNull       ⇒ JsonApiObject.NullValue
+        case JsArray(a)   ⇒ JsonApiObject.JsArrayValue(a map (jsValue ⇒ jsValue.convertTo[JsonApiObject.Value]) toList)
+        case JsObject(o)  ⇒ JsonApiObject.JsObjectValue(o map { case (name, value) ⇒ Attribute(name, value.convertTo[JsonApiObject.Value]) } toList)
+      }
+    }
   })
 
   /**
-   * Spray-JSON format for serializing Jsonapi [[org.zalando.jsonapi.model.Links]].
+   * Spray-JSON format for serializing and deserializing Jsonapi [[Links]].
    */
-  implicit val linksWriter: RootJsonWriter[Links] = new RootJsonWriter[Links] {
+  implicit val linksFormat: RootJsonFormat[Links] = new RootJsonFormat[Links] {
     override def write(links: Links): JsValue = {
       val fields = links map (l ⇒ l match {
         case Links.Self(url)    ⇒ "self" -> url.toJson
@@ -230,12 +248,31 @@ trait JsonapiJsonFormat {
       })
       JsObject(fields: _*)
     }
+
+    override def read(json: JsValue): Links = {
+      val obj = json.asJsObject
+      val self = (obj \? FieldNames.`self`) map (url ⇒ Links.Self(url.asString))
+      val about = (obj \? FieldNames.`about`) map (url ⇒ Links.About(url.asString))
+      val first = (obj \? FieldNames.`first`) map (url ⇒ Links.First(url.asString))
+      val last = (obj \? FieldNames.`last`) map (url ⇒ Links.Last(url.asString))
+      val next = (obj \? FieldNames.`next`) map (url ⇒ Links.Next(url.asString))
+      val prev = (obj \? FieldNames.`prev`) map (url ⇒ Links.Prev(url.asString))
+      val related = (obj \? FieldNames.`related`) map (url ⇒ Links.Related(url.asString))
+      collectSome(self, about, first, last, next, prev, related)
+    }
   }
 
-  implicit val includedWriter: RootJsonWriter[Included] = new RootJsonWriter[Included] {
+  /**
+   * Spray-JSON format for serializing and deserializing Jsonapi [[Included]]
+   */
+  implicit val includedFormat: RootJsonFormat[Included] = new RootJsonFormat[Included] {
     override def write(included: Included): JsValue = {
       val objects = included.resourceObjects.array map (i ⇒ i.toJson)
       JsArray(objects.toVector)
+    }
+
+    override def read(json: JsValue): Included = {
+      Included(ResourceObjects(json.convertTo[List[ResourceObject]]))
     }
   }
 }
