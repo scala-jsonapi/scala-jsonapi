@@ -10,6 +10,8 @@ name := "scala-jsonapi"
 
 scalaVersion := "2.11.7"
 
+scalacOptions ++= Seq("-feature", "-unchecked", "-deprecation")
+
 crossScalaVersions := Seq("2.11.7", "2.10.6")
 
 resolvers += "spray" at "http://repo.spray.io/"

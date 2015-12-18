@@ -39,15 +39,6 @@ package object model {
      * A collection of [[ResourceObject]] objects.
      */
     case class ResourceObjects(array: ImmutableSeq[ResourceObject]) extends Data
-
-    case class ResourceIdentifierObject(
-      `type`: String,
-      id: String) extends Data
-
-    /**
-     * A collection of [[ResourceIdentifierObject]] objects.
-     */
-    case class ResourceIdentifierObjects(array: ImmutableSeq[ResourceIdentifierObject]) extends Data
   }
 
   /**
