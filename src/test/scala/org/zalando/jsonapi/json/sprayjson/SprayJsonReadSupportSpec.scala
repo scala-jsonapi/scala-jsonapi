@@ -1,7 +1,7 @@
-package org.zalando.jsonapi.json
+package org.zalando.jsonapi.json.sprayjson
 
 import org.scalatest.{ MustMatchers, WordSpec }
-import org.zalando.jsonapi.json.SprayJsonReadSupport._
+import org.zalando.jsonapi.json.sprayjson.SprayJsonReadSupport._
 import spray.json._
 
 class SprayJsonReadSupportSpec extends WordSpec with MustMatchers {

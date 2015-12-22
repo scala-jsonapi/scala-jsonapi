@@ -1,13 +1,13 @@
-package org.zalando.jsonapi.json
+package org.zalando.jsonapi.json.sprayjson
 
 import spray.json.DefaultJsonProtocol
 
 /**
  * Jsonapi JSON pootocol for serializing and deserializing Jsonapi representations.
  */
-trait JsonapiJsonProtocol extends DefaultJsonProtocol with JsonapiJsonFormat
+trait SprayJsonJsonapiProtocol extends DefaultJsonProtocol with SprayJsonJsonapiFormat
 
 /**
  * Import this to get the Jsonapi Spray-JSON serialization into scope without mixing in the trait
  */
-object JsonapiJsonProtocol extends JsonapiJsonProtocol
+object SprayJsonJsonapiProtocol extends SprayJsonJsonapiProtocol

@@ -14,10 +14,14 @@ scalacOptions ++= Seq("-feature", "-unchecked", "-deprecation")
 
 crossScalaVersions := Seq("2.11.7", "2.10.6")
 
-resolvers += "spray" at "http://repo.spray.io/"
+resolvers ++= Seq(
+  "spray" at "http://repo.spray.io/",
+  "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/"
+)
 
 libraryDependencies ++= Seq(
-  "io.spray" %% "spray-json" % "1.3.1",
+  "io.spray" %% "spray-json" % "1.3.1" % "provided",
+  "com.typesafe.play" %% "play-json" % "2.3.8" % "provided",
   "org.scalatest" %% "scalatest" % "2.2.4" % "test"
 )
 
