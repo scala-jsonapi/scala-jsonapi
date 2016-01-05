@@ -34,7 +34,12 @@ trait PlayJsonJsonapiFormat {
         JsArray(values)
     }
 
-    override def reads(json: JsValue): JsResult[Data] = ???
+    override def reads(json: JsValue): JsResult[Data] = {
+      json.asOpt[ResourceObject] match {
+        case Some(ro) ⇒ JsSuccess(ro)
+        case None     ⇒ JsSuccess(ResourceObjects(json.as[ImmutableSeq[ResourceObject]]))
+      }
+    }
   }
 
   /**
@@ -85,7 +90,22 @@ trait PlayJsonJsonapiFormat {
       JsObject(fields)
     }
 
-    override def reads(json: JsValue): JsResult[Meta] = ???
+    override def reads(json: JsValue): JsResult[Meta] = json match {
+      case JsObject(fields) ⇒
+        fields.foldLeft[JsResult[Meta]](JsSuccess(Vector.empty)) {
+          case (acc, (name, jsValue)) ⇒ (acc, jsValue.validate[JsonApiObject.Value]) match {
+            case (JsSuccess(metaProps, _), JsSuccess(value, _)) ⇒
+              JsSuccess(metaProps :+ MetaProperty(name, value))
+            case (JsSuccess(_, _), JsError(errors)) ⇒
+              JsError(Seq(JsPath \ name -> errors.flatMap(_._2)))
+            case (e: JsError, s: JsSuccess[_]) ⇒
+              e
+            case (e: JsError, JsError(errors)) ⇒
+              e ++ JsError(Seq(JsPath \ name -> errors.flatMap(_._2)))
+          }
+        }
+      case _ ⇒ JsError("error.expected.jsobject")
+    }
   }
 
   /**
@@ -97,7 +117,22 @@ trait PlayJsonJsonapiFormat {
       JsObject(fields)
     }
 
-    override def reads(json: JsValue): JsResult[JsonApi] = ???
+    override def reads(json: JsValue): JsResult[JsonApi] = json match {
+      case JsObject(fields) ⇒
+        fields.foldLeft[JsResult[JsonApi]](JsSuccess(Vector.empty)) {
+          case (acc, (name, jsValue)) ⇒ (acc, jsValue.validate[JsonApiObject.Value]) match {
+            case (JsSuccess(jsonApiProps, _), JsSuccess(value, _)) ⇒
+              JsSuccess(jsonApiProps :+ JsonApiProperty(name, value))
+            case (JsSuccess(_, _), JsError(errors)) ⇒
+              JsError(Seq(JsPath \ name -> errors.flatMap(_._2)))
+            case (e: JsError, s: JsSuccess[_]) ⇒
+              e
+            case (e: JsError, JsError(errors)) ⇒
+              e ++ JsError(Seq(JsPath \ name -> errors.flatMap(_._2)))
+          }
+        }
+      case _ ⇒ JsError("error.expected.jsobject")
+    }
   }
 
   /**
@@ -109,7 +144,21 @@ trait PlayJsonJsonapiFormat {
       JsArray(fields)
     }
 
-    override def reads(json: JsValue): JsResult[Errors] = ???
+    override def reads(json: JsValue): JsResult[Errors] = json match {
+      case JsArray(a) ⇒ a.foldLeft[JsResult[Errors]](JsSuccess(Vector.empty)) {
+        case (acc, jsValue) ⇒ (acc, jsValue.validate[Error]) match {
+          case (JsSuccess(errs, _), JsSuccess(value, _)) ⇒
+            JsSuccess(errs :+ value)
+          case (JsSuccess(_, _), JsError(errors)) ⇒
+            JsError(errors)
+          case (e: JsError, s: JsSuccess[_]) ⇒
+            e
+          case (e: JsError, JsError(errors)) ⇒
+            e ++ JsError(errors)
+        }
+      }
+      case _ ⇒ JsError("error.expected.jsarray")
+    }
   }
 
   /**
@@ -150,12 +199,32 @@ trait PlayJsonJsonapiFormat {
       case JsonApiObject.StringValue(s)   ⇒ JsString(s)
       case JsonApiObject.NumberValue(n)   ⇒ JsNumber(n)
       case JsonApiObject.BooleanValue(b)  ⇒ JsBoolean(b)
-      case JsonApiObject.JsObjectValue(o) ⇒ JsObject(o.map (a ⇒ a.name -> Json.toJson[JsonApiObject.Value](a.value)))
+      case JsonApiObject.JsObjectValue(o) ⇒ JsObject(o.map (a ⇒ a.name -> Json.toJson(a.value)))
       case JsonApiObject.JsArrayValue(a)  ⇒ JsArray(a.map(v ⇒ Json.toJson[JsonApiObject.Value](v)))
       case JsonApiObject.NullValue        ⇒ JsNull
     }
 
-    override def reads(json: JsValue): JsResult[Value] = ???
+    override def reads(json: JsValue): JsResult[Value] = json match {
+      case JsString(s)  ⇒ JsSuccess(JsonApiObject.StringValue(s))
+      case JsNumber(n)  ⇒ JsSuccess(JsonApiObject.NumberValue(n))
+      case JsBoolean(b) ⇒ JsSuccess(JsonApiObject.BooleanValue(b))
+      case JsObject(o) ⇒ {
+        val attrs = o.map(keyValue ⇒ {
+          val (key, jsValue) = keyValue
+          val read = reads(jsValue).getOrElse(JsonApiObject.NullValue)
+          Attribute(key, read)
+        }).toList
+        JsSuccess(JsonApiObject.JsObjectValue(attrs))
+      }
+      case JsArray(a) ⇒ {
+        val arrayValues = a.map(jsValue ⇒ {
+          reads(jsValue).getOrElse(JsonApiObject.NullValue)
+        }).toList
+        JsSuccess(JsonApiObject.JsArrayValue(arrayValues))
+      }
+      case JsNull ⇒ JsSuccess(JsonApiObject.NullValue)
+      case _      ⇒ JsError("error.expected.jsonapivalue")
+    }
   }
 
   /**
@@ -177,7 +246,20 @@ trait PlayJsonJsonapiFormat {
       JsObject(fields)
     }
 
-    override def reads(json: JsValue): JsResult[Links] = ???
+    override def reads(json: JsValue): JsResult[Links] = json match {
+      case JsObject(o) ⇒ JsSuccess(o.map { keyValue ⇒
+        keyValue match {
+          case (FieldNames.`about`, JsString(u))   ⇒ Links.About(u)
+          case (FieldNames.`first`, JsString(u))   ⇒ Links.First(u)
+          case (FieldNames.`last`, JsString(u))    ⇒ Links.Last(u)
+          case (FieldNames.`next`, JsString(u))    ⇒ Links.Next(u)
+          case (FieldNames.`prev`, JsString(u))    ⇒ Links.Prev(u)
+          case (FieldNames.`related`, JsString(u)) ⇒ Links.Related(u)
+          case (FieldNames.`self`, JsString(u))    ⇒ Links.Self(u)
+        }
+      }.toVector)
+      case _ ⇒ JsError("error.expected.links")
+    }
   }
 
   /**
@@ -189,6 +271,7 @@ trait PlayJsonJsonapiFormat {
       JsArray(objects)
     }
 
-    override def reads(json: JsValue): JsResult[Included] = ???
+    override def reads(json: JsValue): JsResult[Included] =
+      JsSuccess(Included(ResourceObjects(json.as[ImmutableSeq[ResourceObject]])))
   }
 }

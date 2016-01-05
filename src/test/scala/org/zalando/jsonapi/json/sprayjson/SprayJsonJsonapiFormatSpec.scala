@@ -48,7 +48,7 @@ class SprayJsonJsonapiFormatSpec extends JsonBaseSpec[JsValue] with MustMatchers
         rootObjectWithJsonApiObject.toJson mustEqual rootObjectWithJsonApiObjectJson
       }
       "transform relationship object correctly" in {
-        resourceObjectWithRelationships.toJson mustEqual resourceObjectWithRelationshipsJson
+        RootObjectWithRelationships.toJson mustEqual rootObjectWithRelationshipsJson
       }
       "transform empty relationship object correctly" in {
         resourceObjectWithEmptyRelationshipsObject.toJson mustEqual resourceObjectWithEmptyRelationshipsJson
@@ -92,7 +92,7 @@ class SprayJsonJsonapiFormatSpec extends JsonBaseSpec[JsValue] with MustMatchers
         rootObjectWithJsonApiObjectJson.convertTo[RootObject] === rootObjectWithJsonApiObject
       }
       "transform relationship object correctly" in {
-        resourceObjectWithRelationshipsJson.convertTo[RootObject] === resourceObjectWithRelationships
+        rootObjectWithRelationshipsJson.convertTo[RootObject] === RootObjectWithRelationships
       }
       "transform empty relationship object correctly" in {
         resourceObjectWithEmptyRelationshipsJson.convertTo[RootObject] === resourceObjectWithEmptyRelationshipsObject

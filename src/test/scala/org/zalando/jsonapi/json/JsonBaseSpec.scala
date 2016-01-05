@@ -32,7 +32,11 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
 
   protected lazy val rootObjectWithJsonApiObjectJson = parseJson(rootObjectWithJsonApiObjectJsonString)
 
+  protected lazy val rootObjectWithRelationshipsJson = parseJson(rootObjectWithRelationshipsJsonString)
+
   protected lazy val resourceObjectWithRelationshipsJson = parseJson(resourceObjectWithRelationshipsJsonString)
+
+  protected lazy val relationshipsJson = parseJson(relationshipsJsonString)
 
   protected lazy val resourceObjectWithEmptyRelationshipsJson = parseJson(resourceObjectWithEmptyRelationshipsJsonString)
 
@@ -321,7 +325,7 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
     ))
   )
 
-  protected lazy val resourceObjectWithRelationshipsJsonString =
+  protected lazy val rootObjectWithRelationshipsJsonString =
     """
     |{
     |  "data": [{
@@ -345,20 +349,77 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
     |}
   """.stripMargin
 
-  protected lazy val resourceObjectWithRelationships = RootObject(Some(
-    ResourceObjects(List(
-      ResourceObject(
-        `type` = "person",
-        id = "1",
-        attributes = Some(List(Attribute("name", StringValue("foobar")))),
-        relationships =
-          Some(Map("father" -> Relationship(
-            data = Some(ResourceObject(`type` = "person", id = "2")),
-            links = Some(List(Links.Self("http://link.to.self")))
-          )))
-      )
-    ))
-  ))
+  protected lazy val RootObjectWithRelationships = RootObject(
+    data = Some(
+      ResourceObjects(List(
+        ResourceObject(
+          `type` = "person",
+          id = "1",
+          attributes = Some(List(Attribute("name", StringValue("foobar")))),
+          relationships =
+            Some(Map("father" -> Relationship(
+              data = Some(ResourceObject(`type` = "person", id = "2")),
+              links = Some(List(Links.Self("http://link.to.self")))
+            )))
+        )
+      ))
+    )
+  )
+
+  protected lazy val resourceObjectWithRelationshipsJsonString =
+    """
+      |{
+      |  "type": "person",
+      |  "id": "1",
+      |  "attributes": {
+      |    "name": "foobar"
+      |  },
+      |  "relationships": {
+      |    "father": {
+      |      "data": {
+      |        "id": "2",
+      |        "type": "person"
+      |      },
+      |      "links": {
+      |        "self": "http://link.to.self"
+      |      }
+      |    }
+      |  }
+      |}
+    """.stripMargin
+
+  protected lazy val resourceObjectWithRelationshipsObject = ResourceObject(
+    `type` = "person",
+    id = "1",
+    attributes = Some(List(Attribute("name", StringValue("foobar")))),
+    relationships =
+      Some(Map("father" -> Relationship(
+        data = Some(ResourceObject(`type` = "person", id = "2")),
+        links = Some(List(Links.Self("http://link.to.self")))
+      )))
+  )
+
+  protected lazy val relationshipsJsonString =
+    """
+      |{
+      |  "father": {
+      |    "data": {
+      |      "id": "2",
+      |      "type": "person"
+      |    },
+      |    "links": {
+      |      "self": "http://link.to.self"
+      |    }
+      |  }
+      |}
+    """.stripMargin
+
+  protected lazy val relationshipsObject = Map(
+    "father" -> Relationship(
+      data = Some(ResourceObject(`type` = "person", id = "2")),
+      links = Some(List(Links.Self("http://link.to.self")))
+    )
+  )
 
   protected lazy val resourceObjectWithEmptyRelationshipsJsonString =
     """
