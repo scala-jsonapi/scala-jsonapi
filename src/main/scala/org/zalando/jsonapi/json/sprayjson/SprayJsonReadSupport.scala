@@ -1,4 +1,4 @@
-package org.zalando.jsonapi.json
+package org.zalando.jsonapi.json.sprayjson
 
 import spray.json._
 
