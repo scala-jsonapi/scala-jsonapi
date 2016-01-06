@@ -21,6 +21,8 @@ resolvers ++= Seq(
 
 libraryDependencies ++= Seq(
   "io.spray" %% "spray-json" % "1.3.1" % "provided",
+  "io.spray" %% "spray-httpx" % "1.3.2",
+  "com.typesafe.akka" %% "akka-actor" % "2.3.6" % "provided",
   "com.typesafe.play" %% "play-json" % "2.3.8" % "provided",
   "org.scalatest" %% "scalatest" % "2.2.4" % "test"
 )
