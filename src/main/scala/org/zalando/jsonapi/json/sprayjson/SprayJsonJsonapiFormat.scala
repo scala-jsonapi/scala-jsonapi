@@ -64,7 +64,7 @@ trait SprayJsonJsonapiFormat {
   implicit lazy val resourceObjectFormat: RootJsonFormat[ResourceObject] = new RootJsonFormat[ResourceObject] {
     override def write(resourceObject: ResourceObject): JsValue = {
       val `type` = Some(FieldNames.`type` -> resourceObject.`type`.toJson)
-      val id = Some(FieldNames.`id` -> resourceObject.id.toJson)
+      val id = resourceObject.id map (FieldNames.`id` -> _.toJson)
       val attributes = resourceObject.attributes map (FieldNames.`attributes` -> _.toJson)
       val links = resourceObject.links map (FieldNames.`links` -> _.toJson)
       val meta = resourceObject.meta map (FieldNames.`meta` -> _.toJson)
@@ -75,7 +75,7 @@ trait SprayJsonJsonapiFormat {
     override def read(json: JsValue): ResourceObject = {
       val obj = json.asJsObject
       val `type` = (obj \ FieldNames.`type`).asString
-      val id = (obj \ FieldNames.`id`).asString
+      val id = (obj \? FieldNames.`id`) map (_.asString)
       val attributes = (obj \? FieldNames.`attributes`) map (_.convertTo[Attributes])
       val links = (obj \? FieldNames.`links`) map (_.convertTo[Links])
       val meta = (obj \? FieldNames.`meta`) map (_.convertTo[Meta])

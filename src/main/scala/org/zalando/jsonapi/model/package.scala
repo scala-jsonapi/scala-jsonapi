@@ -29,7 +29,7 @@ package object model {
 
     case class ResourceObject(
       `type`: String,
-      id: String,
+      id: Option[String] = None,
       attributes: Option[Attributes] = None,
       relationships: Option[Relationships] = None,
       links: Option[Links] = None,

@@ -47,7 +47,7 @@ trait PlayJsonJsonapiFormat {
    */
   implicit lazy val resourceObjectFormat: Format[ResourceObject] = (
     (JsPath \ FieldNames.`type`).format[String] and
-    (JsPath \ FieldNames.`id`).format[String] and
+    (JsPath \ FieldNames.`id`).formatNullable[String] and
     (JsPath \ FieldNames.`attributes`).formatNullable[Attributes] and
     (JsPath \ FieldNames.`relationships`).formatNullable[Relationships] and
     (JsPath \ FieldNames.`links`).formatNullable[Links] and

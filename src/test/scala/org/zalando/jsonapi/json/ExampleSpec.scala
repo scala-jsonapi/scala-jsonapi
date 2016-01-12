@@ -18,7 +18,7 @@ class ExampleSpec extends WordSpec with MustMatchers with SprayJsonJsonapiProtoc
           override def toJsonapi(person: Person) = {
             RootObject(data = Some(ResourceObject(
               `type` = "person",
-              id = person.id.toString,
+              id = Some(person.id.toString),
               attributes = Some(List(
                 Attribute("name", StringValue(person.name))
               )), links = None)))
@@ -49,7 +49,7 @@ class ExampleSpec extends WordSpec with MustMatchers with SprayJsonJsonapiProtoc
         override def toJsonapi(person: Person) = {
           RootObject(data = Some(ResourceObject(
             `type` = "person",
-            id = person.id.toString,
+            id = Some(person.id.toString),
             attributes = Some(List(
               Attribute("name", StringValue(person.name))
             )), links = Some(List(Links.Self("http://test.link/person/42"))))))
@@ -82,7 +82,7 @@ class ExampleSpec extends WordSpec with MustMatchers with SprayJsonJsonapiProtoc
         override def toJsonapi(person: Person) = {
           RootObject(data = Some(ResourceObject(
             `type` = "person",
-            id = person.id.toString,
+            id = Some(person.id.toString),
             attributes = Some(List(
               Attribute("name", StringValue(person.name))
             )))), links = Some(List(Links.Next("http://test.link/person/43"))))
