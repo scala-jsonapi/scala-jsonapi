@@ -69,21 +69,19 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
     """
       |{
       |  "data": {
-      |    "type": "person",
-      |    "id": "1"
+      |    "type": "person"
       |  }
       |}
     """.stripMargin
 
   protected lazy val rootObjectWithResourceObjectWithoutAttributes =
-    RootObject(data = Some(ResourceObject(`type` = "person", id = "1")))
+    RootObject(data = Some(ResourceObject(`type` = "person")))
 
   protected lazy val rootObjectWithResourceObjectsJsonString =
     """
       |{
       |  "data": [{
       |    "type": "person",
-      |    "id": "1",
       |    "attributes": {
       |      "name": "foobar"
       |    },
@@ -98,24 +96,27 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
     """.stripMargin
 
   protected lazy val rootObjectWithResourceObjects =
-    RootObject(Some(ResourceObjects(List(
-      ResourceObject(`type` = "person", id = "1", attributes = Some(
-        List(Attribute("name", StringValue("foobar")))
-      ), links = Some(List(Links.Self("/persons/1"))))
-    ))), links = Some(List(Links.Next("/persons/2"))))
+    RootObject(
+      data = Some(ResourceObjects(List(
+        ResourceObject(
+          `type` = "person",
+          attributes = Some(List(Attribute("name", StringValue("foobar")))),
+          links = Some(List(Links.Self("/persons/1")))
+        )))),
+      links = Some(List(Links.Next("/persons/2")))
+    )
 
   protected lazy val rootObjectWithResourceIdentifierObjectJsonString =
     """
       |{
       |  "data": {
-      |    "type": "person",
-      |    "id": "42"
+      |    "type": "person"
       |  }
       |}
     """.stripMargin
 
   protected lazy val rootObjectWithResourceIdentifierObject =
-    RootObject(Some(ResourceObject(`type` = "person", id = "42")))
+    RootObject(Some(ResourceObject(`type` = "person")))
 
   protected lazy val rootObjectWithResourceIdentifierObjectsJsonString =
     """
@@ -135,8 +136,8 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
 
   protected lazy val rootObjectWithResourceIdentifierObjects =
     RootObject(Some(ResourceObjects(List(
-      ResourceObject(`type` = "person", id = "42"),
-      ResourceObject(`type` = "cat", id = "felix")
+      ResourceObject(`type` = "person", id = Some("42")),
+      ResourceObject(`type` = "cat", id = Some("felix"))
     ))))
 
   protected lazy val rootObjectWithResourceObjectsWithAllLinksJsonString =
@@ -144,7 +145,6 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
       |{
       |  "data": [{
       |    "type": "person",
-      |    "id": "1",
       |    "links": {
       |      "self": "/persons/2",
       |      "related": "/persons/10",
@@ -159,7 +159,7 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
     """.stripMargin
 
   protected lazy val rootObjectWithResourceObjectsWithAllLinks = RootObject(Some(ResourceObjects(List(
-    ResourceObject(`type` = "person", id = "1", attributes = None, links = Some(
+    ResourceObject(`type` = "person", links = Some(
       List(
         Links.Self("/persons/2"),
         Links.Related("/persons/10"),
@@ -175,7 +175,6 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
     |{
     |  "data": [{
     |    "type": "person",
-    |    "id": "1",
     |    "meta": {
     |      "foo": "bar"
     |    }
@@ -185,7 +184,7 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
 
   protected lazy val rootObjectWithResourceObjectsWithMeta = RootObject(Some(
     ResourceObjects(List(
-      ResourceObject(`type` = "person", id = "1", meta = Some(List(MetaProperty("foo", StringValue("bar")))))
+      ResourceObject(`type` = "person", meta = Some(List(MetaProperty("foo", StringValue("bar")))))
     ))
   ))
 
@@ -193,8 +192,7 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
     """
     |{
     |  "data": [{
-    |    "type": "person",
-    |    "id": "1"
+    |    "type": "person"
     |  }],
     |  "meta": {
     |    "foo": "bar",
@@ -209,8 +207,7 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
     data = Some(
       ResourceObjects(List(
         ResourceObject(
-          `type` = "person",
-          id = "1"
+          `type` = "person"
         )))
     ),
     meta = Some(List(
@@ -291,22 +288,20 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
     |{
     |  "data": [{
     |    "type": "person",
-    |    "id": "1",
     |    "attributes": {
     |      "name": "foo"
     |    }
     |  }],
     |  "included": [{
-    |    "type": "person",
-    |    "id": "2"
+    |    "type": "person"
     |  }]
     |}
   """.stripMargin
 
   protected lazy val rootObjectWithIncluded = RootObject(Some(ResourceObjects(List(
-    ResourceObject(`type` = "person", id = "1",
+    ResourceObject(`type` = "person",
       attributes = Some(List(Attribute("name", StringValue("foo")))))))),
-    included = Some(Included(ResourceObjects(List(ResourceObject(`type` = "person", id = "2"))))))
+    included = Some(Included(ResourceObjects(List(ResourceObject(`type` = "person"))))))
 
   protected lazy val rootObjectWithJsonApiObjectJsonString =
     """
@@ -330,14 +325,12 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
     |{
     |  "data": [{
     |    "type": "person",
-    |    "id": "1",
     |    "attributes": {
     |      "name": "foobar"
     |    },
     |    "relationships": {
     |      "father": {
     |        "data": {
-    |          "id": "2",
     |          "type": "person"
     |        },
     |        "links": {
@@ -354,11 +347,10 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
       ResourceObjects(List(
         ResourceObject(
           `type` = "person",
-          id = "1",
           attributes = Some(List(Attribute("name", StringValue("foobar")))),
           relationships =
             Some(Map("father" -> Relationship(
-              data = Some(ResourceObject(`type` = "person", id = "2")),
+              data = Some(ResourceObject(`type` = "person")),
               links = Some(List(Links.Self("http://link.to.self")))
             )))
         )
@@ -370,14 +362,12 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
     """
       |{
       |  "type": "person",
-      |  "id": "1",
       |  "attributes": {
       |    "name": "foobar"
       |  },
       |  "relationships": {
       |    "father": {
       |      "data": {
-      |        "id": "2",
       |        "type": "person"
       |      },
       |      "links": {
@@ -390,11 +380,10 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
 
   protected lazy val resourceObjectWithRelationshipsObject = ResourceObject(
     `type` = "person",
-    id = "1",
     attributes = Some(List(Attribute("name", StringValue("foobar")))),
     relationships =
       Some(Map("father" -> Relationship(
-        data = Some(ResourceObject(`type` = "person", id = "2")),
+        data = Some(ResourceObject(`type` = "person")),
         links = Some(List(Links.Self("http://link.to.self")))
       )))
   )
@@ -404,7 +393,6 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
       |{
       |  "father": {
       |    "data": {
-      |      "id": "2",
       |      "type": "person"
       |    },
       |    "links": {
@@ -416,7 +404,7 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
 
   protected lazy val relationshipsObject = Map(
     "father" -> Relationship(
-      data = Some(ResourceObject(`type` = "person", id = "2")),
+      data = Some(ResourceObject(`type` = "person")),
       links = Some(List(Links.Self("http://link.to.self")))
     )
   )
@@ -426,7 +414,6 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
     |{
     |  "data": [{
     |    "type": "person",
-    |    "id": "1",
     |    "attributes": {
     |      "name": "foobar"
     |    },
@@ -441,7 +428,6 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
     ResourceObjects(List(
       ResourceObject(
         `type` = "person",
-        id = "1",
         attributes = Some(List(Attribute("name", StringValue("foobar")))),
         relationships = Some(Map("father" -> Relationship()))
       )
