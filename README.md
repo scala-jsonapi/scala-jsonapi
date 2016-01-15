@@ -1,9 +1,8 @@
 # Description
 
-[![Join the chat at https://gitter.im/zalando/scala-jsonapi](https://badges.gitter.im/zalando/scala-jsonapi.svg)](https://gitter.im/zalando/scala-jsonapi?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 [![Build Status](https://travis-ci.org/zalando/scala-jsonapi.svg)](https://travis-ci.org/zalando/scala-jsonapi)
 [![Coverage Status](https://coveralls.io/repos/zalando/scala-jsonapi/badge.svg?branch=master&service=github)](https://coveralls.io/github/zalando/scala-jsonapi?branch=master)
+[![Join the chat at https://gitter.im/zalando/scala-jsonapi](https://badges.gitter.im/zalando/scala-jsonapi.svg)](https://gitter.im/zalando/scala-jsonapi?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 A Scala library for producing JSON output based on [JSON API specification](http://jsonapi.org/). 
 
