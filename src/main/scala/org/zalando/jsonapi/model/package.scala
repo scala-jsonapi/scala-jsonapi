@@ -141,16 +141,9 @@ package object model {
   case class ErrorSource(pointer: Option[String] = None, parameter: Option[String] = None)
 
   /**
-   * A collection of [[MetaProperty]] objects.
+   * The meta object as a map of string - json object value pairs
    */
-  type Meta = ImmutableSeq[MetaProperty]
-
-  /**
-   * A meta, non-standard information about the resource.
-   * @param name the name of the meta information
-   * @param value the value of meta information
-   */
-  case class MetaProperty(name: String, value: JsonApiObject.Value)
+  type Meta = Map[String, JsonApiObject.Value]
 
   /**
    * An array of resource objects.

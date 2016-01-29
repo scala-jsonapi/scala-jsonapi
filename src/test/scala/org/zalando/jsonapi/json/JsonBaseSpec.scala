@@ -184,7 +184,7 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
 
   protected lazy val rootObjectWithResourceObjectsWithMeta = RootObject(Some(
     ResourceObjects(List(
-      ResourceObject(`type` = "person", meta = Some(List(MetaProperty("foo", StringValue("bar")))))
+      ResourceObject(`type` = "person", meta = Some(Map("foo" -> StringValue("bar"))))
     ))
   ))
 
@@ -210,9 +210,9 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
           `type` = "person"
         )))
     ),
-    meta = Some(List(
-      MetaProperty("foo", StringValue("bar")),
-      MetaProperty("array", JsArrayValue(List(StringValue("one"), StringValue("two"))))
+    meta = Some(Map(
+      "foo" -> StringValue("bar"),
+      "array" -> JsArrayValue(List(StringValue("one"), StringValue("two")))
     ))
   )
 
@@ -252,7 +252,7 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
         title = Some("title1"),
         detail = Some("something really bad happened"),
         source = Some(ErrorSource(Some("id"), Some("/data/attributes/id"))),
-        meta = Some(List(MetaProperty("metaInfo", StringValue("MetaValue"))))
+        meta = Some(Map("metaInfo" -> StringValue("MetaValue")))
       )))
     )
 

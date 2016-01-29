@@ -82,33 +82,6 @@ trait PlayJsonJsonapiFormat {
   }
 
   /**
-   * Play-JSON format for serializing and deserializing Jsonapi [[Meta]].
-   */
-  implicit lazy val metaFormat: Format[Meta] = new Format[Meta] {
-    override def writes(meta: Meta): JsValue = {
-      val fields = meta.map(mp ⇒ (mp.name, Json.toJson(mp.value)))
-      JsObject(fields)
-    }
-
-    override def reads(json: JsValue): JsResult[Meta] = json match {
-      case JsObject(fields) ⇒
-        fields.foldLeft[JsResult[Meta]](JsSuccess(Vector.empty)) {
-          case (acc, (name, jsValue)) ⇒ (acc, jsValue.validate[JsonApiObject.Value]) match {
-            case (JsSuccess(metaProps, _), JsSuccess(value, _)) ⇒
-              JsSuccess(metaProps :+ MetaProperty(name, value))
-            case (JsSuccess(_, _), JsError(errors)) ⇒
-              JsError(Seq(JsPath \ name -> errors.flatMap(_._2)))
-            case (e: JsError, s: JsSuccess[_]) ⇒
-              e
-            case (e: JsError, JsError(errors)) ⇒
-              e ++ JsError(Seq(JsPath \ name -> errors.flatMap(_._2)))
-          }
-        }
-      case _ ⇒ JsError("error.expected.jsobject")
-    }
-  }
-
-  /**
    * Play-JSON format for serializing and deserializing Jsonapi [[JsonApi]].
    */
   implicit lazy val jsonApiFormat: Format[JsonApi] = new Format[JsonApi] {
