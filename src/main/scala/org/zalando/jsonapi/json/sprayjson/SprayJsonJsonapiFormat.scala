@@ -99,20 +99,6 @@ trait SprayJsonJsonapiFormat {
   }
 
   /**
-   * Spray-JSON format for serializing and deserializing Jsonapi [[Meta]].
-   */
-  implicit lazy val metaFormat: RootJsonFormat[Meta] = new RootJsonFormat[Meta] {
-    override def write(meta: Meta): JsValue = {
-      val fields = meta map (m ⇒ m.name -> m.value.toJson)
-      JsObject(fields: _*)
-    }
-
-    override def read(json: JsValue): Meta = {
-      json.asJsObject.fields map { case (name, value) ⇒ MetaProperty(name, value.convertTo[JsonApiObject.Value]) } toList
-    }
-  }
-
-  /**
    * Spray-JSON format for serializing and deserializing Jsonapi [[JsonApi]].
    */
   implicit lazy val jsonApiFormat: RootJsonFormat[JsonApi] = new RootJsonFormat[JsonApi] {
