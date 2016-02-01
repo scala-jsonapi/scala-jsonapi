@@ -8,12 +8,14 @@ notifications:
   email:
     recipients:
       - boris.malensek@zalando.de
-script: "sbt clean coverage +test"
-after_success: "sbt coveralls"
-notifications:
+    on_success: never
+    on_failure: always
+    on_start: never
   webhooks:
     urls:
       - https://webhooks.gitter.im/e/3eb93f2a0c2931a59d0d
-    on_success: change  # options: [always|never|change] default: always
-    on_failure: always  # options: [always|never|change] default: always
-    on_start: never     # options: [always|never|change] default: always
+    on_success: change
+    on_failure: always
+    on_start: never
+script: "sbt clean coverage +test"
+after_success: "sbt coveralls"
