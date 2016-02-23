@@ -18,7 +18,7 @@ Currently library supports Scala version `2.11` and `2.10`.
 
 In order to use current version _scala-jsonapi_ you have to add library dependency assuming that you have [sonatype resolvers](http://www.scala-sbt.org/0.13/docs/Resolvers.html#Maven) set up.
 
-    libraryDependencies += "org.zalando" %% "scala-jsonapi" % "0.3.2"
+    libraryDependencies += "org.zalando" %% "scala-jsonapi" % "0.3.3"
 
 # Usage
 
