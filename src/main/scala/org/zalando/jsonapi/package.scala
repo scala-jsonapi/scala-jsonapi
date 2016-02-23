@@ -16,6 +16,12 @@ package object jsonapi {
     def toJsonapi(a: A): RootObject
   }
 
+  trait JsonapiRootObjectReader[A] {
+    def fromJsonapi[A](rootObject: RootObject): A
+  }
+
+  trait JsonRootObjectFormat[A] extends JsonapiRootObjectWriter[A] with JsonapiRootObjectReader[A]
+
   /**
    * Implicit class that provides operations on types that are instances of the [[JsonapiRootObjectWriter]] type class.
    */
@@ -28,6 +34,12 @@ package object jsonapi {
     }
   }
 
+  implicit class FromJsonapiRootObjectReaderOps[A](rootObject: RootObject) {
+    def jsonapi(implicit reader: JsonapiRootObjectReader[A]): A = {
+      Jsonapi.asJsonapi(rootObject)
+    }
+  }
+
   /**
    * Entry point for interacting with the Jsonapi library.
    */
@@ -37,5 +49,8 @@ package object jsonapi {
      */
     def asRootObject[A](a: A)(implicit writer: JsonapiRootObjectWriter[A]): RootObject =
       writer toJsonapi a
+
+    def asJsonapi[A](rootObject: RootObject)(implicit reader: JsonapiRootObjectReader[A]): A =
+      reader fromJsonapi rootObject
   }
 }
