@@ -23,5 +23,5 @@ package object json {
     Marshaller.delegate[T, RootObject](`application/vnd.api+json`)(Jsonapi.asRootObject(_))
 
   implicit def jsonapiJsonConvertableUnmarshaller[T: JsonapiRootObjectReader](implicit u: Unmarshaller[RootObject]): Unmarshaller[T] =
-    Unmarshaller.delegate[RootObject, T](`application/vnd.api+json`)(Jsonapi.asJsonapi(_))
+    Unmarshaller.delegate[RootObject, T](`application/vnd.api+json`)(Jsonapi.fromRootObject(_))
 }
