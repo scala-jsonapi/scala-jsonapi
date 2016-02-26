@@ -16,11 +16,19 @@ package object jsonapi {
     def toJsonapi(a: A): RootObject
   }
 
+  /**
+   * Returns a provided object [[A]] from Jsonapi [[model.RootObject]] object.
+   * @tparam A the type that is an instance of this type class
+   */
   trait JsonapiRootObjectReader[A] {
-    def fromJsonapi[A](rootObject: RootObject): A
+    def fromJsonapi(rootObject: RootObject): A
   }
 
-  trait JsonRootObjectFormat[A] extends JsonapiRootObjectWriter[A] with JsonapiRootObjectReader[A]
+  /**
+   * A combination of reader and writer in one since place.
+   * @tparam A the type that is an instance of this type class
+   */
+  trait JsonapiRootObjectFormat[A] extends JsonapiRootObjectWriter[A] with JsonapiRootObjectReader[A]
 
   /**
    * Implicit class that provides operations on types that are instances of the [[JsonapiRootObjectWriter]] type class.
@@ -34,9 +42,15 @@ package object jsonapi {
     }
   }
 
-  implicit class FromJsonapiRootObjectReaderOps[A](rootObject: RootObject) {
-    def jsonapi(implicit reader: JsonapiRootObjectReader[A]): A = {
-      Jsonapi.asJsonapi(rootObject)
+  /**
+   * Implicit class that provides operations on types that are instances of the provided type class.
+   */
+  implicit class FromJsonapiRootObjectReaderOps(rootObject: RootObject) {
+    /**
+     * Returns a provided type object from Jsonapi [[model.RootObject]].
+     */
+    def jsonapi[A](implicit reader: JsonapiRootObjectReader[A]): A = {
+      Jsonapi.fromRootObject(rootObject)
     }
   }
 
@@ -50,7 +64,10 @@ package object jsonapi {
     def asRootObject[A](a: A)(implicit writer: JsonapiRootObjectWriter[A]): RootObject =
       writer toJsonapi a
 
-    def asJsonapi[A](rootObject: RootObject)(implicit reader: JsonapiRootObjectReader[A]): A =
+    /**
+     * Returns a provided value from the Jsonapi [[model.RootObject]]
+     */
+    def fromRootObject[A](rootObject: RootObject)(implicit reader: JsonapiRootObjectReader[A]): A =
       reader fromJsonapi rootObject
   }
 }

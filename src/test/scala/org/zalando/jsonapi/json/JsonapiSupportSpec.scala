@@ -2,7 +2,7 @@ package org.zalando.jsonapi.json
 
 import org.scalactic.TypeCheckedTripleEquals
 import org.scalatest.{ EitherValues, WordSpec }
-import org.zalando.jsonapi.JsonapiRootObjectWriter
+import org.zalando.jsonapi.{ JsonapiRootObjectReader, JsonapiRootObjectWriter }
 import org.zalando.jsonapi.model.{ JsonApiObject, JsonApiProperty, RootObject }
 import spray.http.HttpEntity
 import spray.httpx.marshalling._
@@ -15,8 +15,9 @@ trait JsonapiSupportSpec extends WordSpec with TypeCheckedTripleEquals with Eith
 
   s"$jsonapiSupportClassName" must {
     trait Context {
-      val rootObject = RootObject(jsonApi = Some(List(JsonApiProperty("foo", JsonApiObject.StringValue("bar")))))
       case class Foo(bar: String)
+      val rootObject = RootObject(jsonApi = Some(List(JsonApiProperty("foo", JsonApiObject.StringValue("bar")))))
+      val foo = Foo("bar")
     }
 
     "allow marshalling a Jsonapi root object with the correct content type" in new Context {
@@ -28,15 +29,22 @@ trait JsonapiSupportSpec extends WordSpec with TypeCheckedTripleEquals with Eith
       implicit val fooWriter = new JsonapiRootObjectWriter[Foo] {
         override def toJsonapi(a: Foo) = rootObject
       }
-      assert(marshal(Foo("bar")).right.value.toString ===
+      assert(marshal(foo).right.value.toString ===
         """HttpEntity(application/vnd.api+json; charset=UTF-8,{"jsonapi":{"foo":"bar"}})""")
     }
 
     // TODO Fix Play framework unmarshalling problem (issue #25 on github)
-    //    "allow unmarshalling a Json to a root object" in {
-    //      val rootObject = RootObject(jsonApi = Some(List(JsonApiProperty("foo", JsonApiObject.StringValue("bar")))))
+    //    "allow unmarshalling a Json to a root object with the correct content type" in new Context {
     //      val httpEntity = HttpEntity(`application/vnd.api+json`, """{"jsonapi":{"foo":"bar"}}""")
     //      assert(httpEntity.as[RootObject] === Right(rootObject))
+    //    }
+    //
+    //    "allow unmarshalling Jsonapi root object to a value type" in new Context {
+    //      implicit val fooReader = new JsonapiRootObjectReader[Foo] {
+    //        override def fromJsonapi(ro: RootObject) = foo
+    //      }
+    //      val httpEntity = HttpEntity(`application/vnd.api+json`, """{"jsonapi":{"foo":"bar"}}""")
+    //      assert(httpEntity.as[Foo] === Right(foo))
     //    }
   }
 }

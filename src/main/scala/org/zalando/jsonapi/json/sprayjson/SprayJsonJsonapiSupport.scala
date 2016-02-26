@@ -13,8 +13,8 @@ trait SprayJsonJsonapiSupport extends SprayJsonJsonapiFormat with DefaultJsonPro
     }
 
   implicit def sprayJsonJsonapiUnmarshaller =
-    Unmarshaller.delegate[String, RootObject](`application/vnd.api+json`) { json ⇒
-      json.parseJson.convertTo[RootObject]
+    Unmarshaller.delegate[String, RootObject](`application/vnd.api+json`) { string ⇒
+      string.parseJson.convertTo[RootObject]
     }
 }
 
