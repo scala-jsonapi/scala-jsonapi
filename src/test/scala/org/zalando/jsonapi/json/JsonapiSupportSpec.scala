@@ -33,18 +33,17 @@ trait JsonapiSupportSpec extends WordSpec with TypeCheckedTripleEquals with Eith
         """HttpEntity(application/vnd.api+json; charset=UTF-8,{"jsonapi":{"foo":"bar"}})""")
     }
 
-    // TODO Fix Play framework unmarshalling problem (issue #25 on github)
-    //    "allow unmarshalling a Json to a root object with the correct content type" in new Context {
-    //      val httpEntity = HttpEntity(`application/vnd.api+json`, """{"jsonapi":{"foo":"bar"}}""")
-    //      assert(httpEntity.as[RootObject] === Right(rootObject))
-    //    }
-    //
-    //    "allow unmarshalling Jsonapi root object to a value type" in new Context {
-    //      implicit val fooReader = new JsonapiRootObjectReader[Foo] {
-    //        override def fromJsonapi(ro: RootObject) = foo
-    //      }
-    //      val httpEntity = HttpEntity(`application/vnd.api+json`, """{"jsonapi":{"foo":"bar"}}""")
-    //      assert(httpEntity.as[Foo] === Right(foo))
-    //    }
+    "allow unmarshalling a Json to a root object with the correct content type" in new Context {
+      val httpEntity = HttpEntity(`application/vnd.api+json`, """{"jsonapi":{"foo":"bar"}}""")
+      assert(httpEntity.as[RootObject] === Right(rootObject))
+    }
+
+    "allow unmarshalling Jsonapi root object to a value type" in new Context {
+      implicit val fooReader = new JsonapiRootObjectReader[Foo] {
+        override def fromJsonapi(ro: RootObject) = foo
+      }
+      val httpEntity = HttpEntity(`application/vnd.api+json`, """{"jsonapi":{"foo":"bar"}}""")
+      assert(httpEntity.as[Foo] === Right(foo))
+    }
   }
 }
