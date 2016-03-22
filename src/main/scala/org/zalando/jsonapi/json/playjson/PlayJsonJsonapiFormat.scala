@@ -220,16 +220,15 @@ trait PlayJsonJsonapiFormat {
     }
 
     override def reads(json: JsValue): JsResult[Links] = json match {
-      case JsObject(o) ⇒ JsSuccess(o.map { keyValue ⇒
-        keyValue match {
-          case (FieldNames.`about`, JsString(u))   ⇒ Links.About(u)
-          case (FieldNames.`first`, JsString(u))   ⇒ Links.First(u)
-          case (FieldNames.`last`, JsString(u))    ⇒ Links.Last(u)
-          case (FieldNames.`next`, JsString(u))    ⇒ Links.Next(u)
-          case (FieldNames.`prev`, JsString(u))    ⇒ Links.Prev(u)
-          case (FieldNames.`related`, JsString(u)) ⇒ Links.Related(u)
-          case (FieldNames.`self`, JsString(u))    ⇒ Links.Self(u)
-        }
+      case JsObject(o) ⇒ JsSuccess(o.flatMap {
+        case (FieldNames.`about`, JsString(u))   ⇒ Option(Links.About(u))
+        case (FieldNames.`first`, JsString(u))   ⇒ Option(Links.First(u))
+        case (FieldNames.`last`, JsString(u))    ⇒ Option(Links.Last(u))
+        case (FieldNames.`next`, JsString(u))    ⇒ Option(Links.Next(u))
+        case (FieldNames.`prev`, JsString(u))    ⇒ Option(Links.Prev(u))
+        case (FieldNames.`related`, JsString(u)) ⇒ Option(Links.Related(u))
+        case (FieldNames.`self`, JsString(u))    ⇒ Option(Links.Self(u))
+        case _                                   ⇒ None
       }.toVector)
       case _ ⇒ JsError("error.expected.links")
     }
