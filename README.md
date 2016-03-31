@@ -27,7 +27,7 @@ The rich JSON API model is available by following import:
 
     import org.zalando.jsonapi.model._
     
-Yhe library provides serialization and deserialization of Jsonapi root objects to JSON using either Spray-JSON or Play-JSON. 
+The library provides serialization and deserialization of Jsonapi root objects to JSON using either Spray-JSON or Play-JSON. 
 Please note that you need to explicitly add a dependency to either spray-json or play-json to your project.
 
 ## Spray-JSON
