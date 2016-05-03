@@ -205,31 +205,15 @@ trait PlayJsonJsonapiFormat {
    */
   implicit lazy val linksFormat: Format[Links] = new Format[Links] {
     override def writes(links: Links): JsValue = {
-      val fields = links.map {
-        _ match {
-          case Links.About(u)   ⇒ (FieldNames.`about`, JsString(u))
-          case Links.First(u)   ⇒ (FieldNames.`first`, JsString(u))
-          case Links.Last(u)    ⇒ (FieldNames.`last`, JsString(u))
-          case Links.Next(u)    ⇒ (FieldNames.`next`, JsString(u))
-          case Links.Prev(u)    ⇒ (FieldNames.`prev`, JsString(u))
-          case Links.Related(u) ⇒ (FieldNames.`related`, JsString(u))
-          case Links.Self(u)    ⇒ (FieldNames.`self`, JsString(u))
-        }
+      val fields = links.map { l =>
+        (l.name, JsString(l.url))
       }
       JsObject(fields)
     }
 
     override def reads(json: JsValue): JsResult[Links] = json match {
       case JsObject(o) ⇒ JsSuccess(o.map { keyValue ⇒
-        keyValue match {
-          case (FieldNames.`about`, JsString(u))   ⇒ Links.About(u)
-          case (FieldNames.`first`, JsString(u))   ⇒ Links.First(u)
-          case (FieldNames.`last`, JsString(u))    ⇒ Links.Last(u)
-          case (FieldNames.`next`, JsString(u))    ⇒ Links.Next(u)
-          case (FieldNames.`prev`, JsString(u))    ⇒ Links.Prev(u)
-          case (FieldNames.`related`, JsString(u)) ⇒ Links.Related(u)
-          case (FieldNames.`self`, JsString(u))    ⇒ Links.Self(u)
-        }
+        Link(keyValue._1, keyValue._2.as[JsString].value)
       }.toVector)
       case _ ⇒ JsError("error.expected.links")
     }

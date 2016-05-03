@@ -2,10 +2,12 @@ package org.zalando.jsonapi.json.sprayjson
 
 import SprayJsonReadSupport._
 import org.zalando.jsonapi.json._
-import org.zalando.jsonapi.model.RootObject.{ Data, ResourceObject, ResourceObjects }
+import org.zalando.jsonapi.model.RootObject.{Data, ResourceObject, ResourceObjects}
 import org.zalando.jsonapi.model._
 import spray.json._
+
 import scala.language.postfixOps
+import scala.collection.immutable.{Seq => ImmutableSeq}
 
 trait SprayJsonJsonapiFormat {
   self: DefaultJsonProtocol ⇒
@@ -219,33 +221,34 @@ trait SprayJsonJsonapiFormat {
     }
   })
 
+  implicit lazy val linkFormat = new RootJsonFormat[Link] {
+    override def write(l: Link): JsValue = {
+      JsObject(l.name -> l.url.toJson)
+    }
+
+    override def read(json: JsValue): Link = {
+      json.asJsObject.fields.map {
+        case (name, JsString(href)) => Link(name, href)
+      }.head
+    }
+  }
+
   /**
    * Spray-JSON format for serializing and deserializing Jsonapi [[Links]].
    */
   implicit lazy val linksFormat: RootJsonFormat[Links] = new RootJsonFormat[Links] {
     override def write(links: Links): JsValue = {
-      val fields = links map (l ⇒ l match {
-        case Links.Self(url)    ⇒ "self" -> url.toJson
-        case Links.About(url)   ⇒ "about" -> url.toJson
-        case Links.First(url)   ⇒ "first" -> url.toJson
-        case Links.Last(url)    ⇒ "last" -> url.toJson
-        case Links.Next(url)    ⇒ "next" -> url.toJson
-        case Links.Prev(url)    ⇒ "prev" -> url.toJson
-        case Links.Related(url) ⇒ "related" -> url.toJson
-      })
-      JsObject(fields: _*)
+      links.map {
+        l => l.name -> l.url.toJson
+      }.toMap.toJson
     }
 
     override def read(json: JsValue): Links = {
       val obj = json.asJsObject
-      val self = (obj \? FieldNames.`self`) map (url ⇒ Links.Self(url.asString))
-      val about = (obj \? FieldNames.`about`) map (url ⇒ Links.About(url.asString))
-      val first = (obj \? FieldNames.`first`) map (url ⇒ Links.First(url.asString))
-      val last = (obj \? FieldNames.`last`) map (url ⇒ Links.Last(url.asString))
-      val next = (obj \? FieldNames.`next`) map (url ⇒ Links.Next(url.asString))
-      val prev = (obj \? FieldNames.`prev`) map (url ⇒ Links.Prev(url.asString))
-      val related = (obj \? FieldNames.`related`) map (url ⇒ Links.Related(url.asString))
-      collectSome(self, about, first, last, next, prev, related)
+
+      obj.fields.map{
+        o => Link(o._1, o._2.asString)
+      }.toVector
     }
   }
 

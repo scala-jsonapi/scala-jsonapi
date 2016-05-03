@@ -1,6 +1,5 @@
 package org.zalando.jsonapi
 
-import org.zalando.jsonapi.model.Links.Link
 import org.zalando.jsonapi.model.RootObject.ResourceObjects
 
 import scala.collection.immutable.{ Seq ⇒ ImmutableSeq }
@@ -47,53 +46,11 @@ package object model {
   type Links = ImmutableSeq[Link]
 
   /**
-   * Companion object for links.
-   */
-  object Links {
-    sealed trait Link
-
-    /**
-     * A link of the "self" type.
-     * @param url The url to link to.
-     */
-    case class Self(url: String) extends Link
-
-    /**
-     * A link of the "related" type.
-     * @param url The url to link to.
-     */
-    case class Related(url: String) extends Link
-
-    /**
-     * A link of the "first" type.
-     * @param url The url to link to.
-     */
-    case class First(url: String) extends Link
-
-    /**
-     * A link of the "last" type.
-     * @param url The url to link to.
-     */
-    case class Last(url: String) extends Link
-
-    /**
-     * A link of the "next" type.
-     * @param url The url to link to.
-     */
-    case class Next(url: String) extends Link
-
-    /**
-     * A link of the "prev" type.
-     * @param url The url to link to.
-     */
-    case class Prev(url: String) extends Link
-
-    /**
-     * A link of the "about" type.
-     * @param url The url to link to.
-     */
-    case class About(url: String) extends Link
-  }
+    * The representation of the link
+    * @param name the name of the link, for example "self"
+    * @param url the value of the URL where link is pointing to
+    */
+  case class Link(name: String, url: String)
 
   /**
    * A collection of [[Attribute]] objects.

@@ -101,9 +101,9 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
         ResourceObject(
           `type` = "person",
           attributes = Some(List(Attribute("name", StringValue("foobar")))),
-          links = Some(List(Links.Self("/persons/1")))
+          links = Some(List(Link("self", "/persons/1")))
         )))),
-      links = Some(List(Links.Next("/persons/2")))
+      links = Some(List(Link("next", "/persons/2")))
     )
 
   protected lazy val rootObjectWithResourceIdentifierObjectJsonString =
@@ -161,13 +161,13 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
   protected lazy val rootObjectWithResourceObjectsWithAllLinks = RootObject(Some(ResourceObjects(List(
     ResourceObject(`type` = "person", links = Some(
       List(
-        Links.Self("/persons/2"),
-        Links.Related("/persons/10"),
-        Links.Next("/persons/3"),
-        Links.Prev("/persons/1"),
-        Links.About("/persons/11"),
-        Links.First("/persons/0"),
-        Links.Last("/persons/99")
+        Link("self", "/persons/2"),
+        Link("related", "/persons/10"),
+        Link("next", "/persons/3"),
+        Link("prev", "/persons/1"),
+        Link("about", "/persons/11"),
+        Link("first", "/persons/0"),
+        Link("last", "/persons/99")
       )))))))
 
   protected lazy val rootObjectWithResourceObjectsWithMetaJsonString =
@@ -246,7 +246,7 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
       data = None,
       errors = Some(List(Error(
         id = Some("1"),
-        links = Some(List(Links.Self("self-link"))),
+        links = Some(List(Link("self", "self-link"))),
         status = Some("status1"),
         code = Some("code1"),
         title = Some("title1"),
@@ -351,7 +351,7 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
           relationships =
             Some(Map("father" -> Relationship(
               data = Some(ResourceObject(`type` = "person")),
-              links = Some(List(Links.Self("http://link.to.self")))
+              links = Some(List(Link("self", "http://link.to.self")))
             )))
         )
       ))
@@ -384,7 +384,7 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
     relationships =
       Some(Map("father" -> Relationship(
         data = Some(ResourceObject(`type` = "person")),
-        links = Some(List(Links.Self("http://link.to.self")))
+        links = Some(List(Link("self", "http://link.to.self")))
       )))
   )
 
@@ -405,7 +405,7 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
   protected lazy val relationshipsObject = Map(
     "father" -> Relationship(
       data = Some(ResourceObject(`type` = "person")),
-      links = Some(List(Links.Self("http://link.to.self")))
+      links = Some(List(Link("self", "http://link.to.self")))
     )
   )
 
