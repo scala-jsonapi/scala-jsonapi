@@ -50,9 +50,27 @@ trait PlayJsonJsonapiFormat {
     (JsPath \ FieldNames.`id`).formatNullable[String] and
     (JsPath \ FieldNames.`attributes`).formatNullable[Attributes] and
     (JsPath \ FieldNames.`relationships`).formatNullable[Relationships] and
-    (JsPath \ FieldNames.`links`).formatNullable[Links] and
+    (JsPath \ FieldNames.`links`).formatNullable[ResourceLinks] and
     (JsPath \ FieldNames.`meta`).formatNullable[Meta]
   )(ResourceObject.apply, unlift(ResourceObject.unapply))
+
+  /**
+   * Play-JSON format for serializing and deserializing Jsonapi [[ResourceLinks]].
+   */
+  implicit lazy val resourceLinksFormat: Format[ResourceLinks] = new Format[ResourceLinks] {
+    override def writes(links: ResourceLinks): JsValue = {
+      val fields = links.map { l ⇒
+        (l.name, JsString(l.url))
+      }
+      JsObject(fields)
+    }
+    override def reads(json: JsValue): JsResult[ResourceLinks] = json match {
+      case JsObject(o) ⇒ JsSuccess(o.map { keyValue ⇒
+        ResourceLink(keyValue._1, keyValue._2.as[JsString].value)
+      }.toVector)
+      case _ ⇒ JsError("error.expected.links")
+    }
+  }
 
   /**
    * Play-JSON format for serializing and deserializing Jsonapi [[Attributes]].

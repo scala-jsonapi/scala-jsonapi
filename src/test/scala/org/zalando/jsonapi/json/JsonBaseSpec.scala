@@ -18,6 +18,8 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
 
   protected lazy val rootObjectWithResourceIdentifierObjectsJson = parseJson(rootObjectWithResourceIdentifierObjectsJsonString)
 
+  protected lazy val rootObjectWithLinksJson = parseJson(rootObjectWithLinksJsonString)
+
   protected lazy val rootObjectWithResourceObjectsWithAllLinksJson = parseJson(rootObjectWithResourceObjectsWithAllLinksJsonString)
 
   protected lazy val rootObjectWithResourceObjectsWithMetaJson = parseJson(rootObjectWithResourceObjectsWithMetaJsonString)
@@ -101,7 +103,7 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
         ResourceObject(
           `type` = "person",
           attributes = Some(List(Attribute("name", StringValue("foobar")))),
-          links = Some(List(Links.Self("/persons/1")))
+          links = Some(List(ResourceLink("self", "/persons/1")))
         )))),
       links = Some(List(Links.Next("/persons/2")))
     )
@@ -140,6 +142,36 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
       ResourceObject(`type` = "cat", id = Some("felix"))
     ))))
 
+  protected lazy val rootObjectWithLinksJsonString =
+    """
+      |{
+      |  "data": [{
+      |    "type": "list"
+      |    }],
+      |  "links": {
+      |    "self": "/persons/2",
+      |    "related": "/persons/10",
+      |    "next": "/persons/3",
+      |    "prev": "/persons/1",
+      |    "about": "/persons/11",
+      |    "first": "/persons/0",
+      |    "last": "/persons/99"
+      |  }
+      |}
+    """.stripMargin
+
+  protected lazy val rootObjectWithLinks = RootObject(
+    data = Some(ResourceObjects(List(ResourceObject(`type` = "list")))),
+    links = Some(List(
+      Links.Self("/persons/2"),
+      Links.Related("/persons/10"),
+      Links.Next("/persons/3"),
+      Links.Prev("/persons/1"),
+      Links.About("/persons/11"),
+      Links.First("/persons/0"),
+      Links.Last("/persons/99")
+    )))
+
   protected lazy val rootObjectWithResourceObjectsWithAllLinksJsonString =
     """
       |{
@@ -147,27 +179,17 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
       |    "type": "person",
       |    "links": {
       |      "self": "/persons/2",
-      |      "related": "/persons/10",
-      |      "next": "/persons/3",
-      |      "prev": "/persons/1",
-      |      "about": "/persons/11",
-      |      "first": "/persons/0",
-      |      "last": "/persons/99"
+      |      "friend": "/persons/10"
       |    }
       |  }]
       |}
     """.stripMargin
 
-  protected lazy val rootObjectWithResourceObjectsWithAllLinks = RootObject(Some(ResourceObjects(List(
+  protected lazy val rootObjectWithResourceObjectsWithLinks = RootObject(Some(ResourceObjects(List(
     ResourceObject(`type` = "person", links = Some(
       List(
-        Links.Self("/persons/2"),
-        Links.Related("/persons/10"),
-        Links.Next("/persons/3"),
-        Links.Prev("/persons/1"),
-        Links.About("/persons/11"),
-        Links.First("/persons/0"),
-        Links.Last("/persons/99")
+        ResourceLink("self", "/persons/2"),
+        ResourceLink("friend", "/persons/10")
       )))))))
 
   protected lazy val rootObjectWithResourceObjectsWithMetaJsonString =

@@ -4,7 +4,7 @@ import org.scalatest.{ MustMatchers, WordSpec }
 import org.zalando.jsonapi.json.sprayjson.SprayJsonJsonapiProtocol
 import org.zalando.jsonapi.model.JsonApiObject.StringValue
 import org.zalando.jsonapi.model.RootObject.ResourceObject
-import org.zalando.jsonapi.model.{ Attribute, Links, RootObject }
+import org.zalando.jsonapi.model.{ Attribute, Links, ResourceLink, RootObject }
 import org.zalando.jsonapi.{ JsonapiRootObjectWriter, _ }
 import spray.json._
 
@@ -52,7 +52,7 @@ class ExampleSpec extends WordSpec with MustMatchers with SprayJsonJsonapiProtoc
             id = Some(person.id.toString),
             attributes = Some(List(
               Attribute("name", StringValue(person.name))
-            )), links = Some(List(Links.Self("http://test.link/person/42"))))))
+            )), links = Some(List(ResourceLink("self", "http://test.link/person/42"))))))
         }
       }
 

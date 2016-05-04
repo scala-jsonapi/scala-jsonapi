@@ -77,10 +77,27 @@ trait SprayJsonJsonapiFormat {
       val `type` = (obj \ FieldNames.`type`).asString
       val id = (obj \? FieldNames.`id`) map (_.asString)
       val attributes = (obj \? FieldNames.`attributes`) map (_.convertTo[Attributes])
-      val links = (obj \? FieldNames.`links`) map (_.convertTo[Links])
+      val links = (obj \? FieldNames.`links`) map (_.convertTo[ResourceLinks])
       val meta = (obj \? FieldNames.`meta`) map (_.convertTo[Meta])
       val relationships = (obj \? FieldNames.`relationships`) map (_.convertTo[Relationships])
       ResourceObject(`type`, id, attributes, relationships, links, meta)
+    }
+  }
+
+  /**
+   * Spray-JSON format for serializing and deserializing Jsonapi [[ResourceLinks]].
+   */
+  implicit lazy val resourceLinksFormat: RootJsonFormat[ResourceLinks] = new RootJsonFormat[ResourceLinks] {
+    override def write(links: ResourceLinks): JsValue = {
+      links.map {
+        l ⇒ l.name -> l.url.toJson
+      }.toMap.toJson
+    }
+    override def read(json: JsValue): ResourceLinks = {
+      val obj = json.asJsObject
+      obj.fields.map{
+        o ⇒ ResourceLink(o._1, o._2.asString)
+      }.toVector
     }
   }
 

@@ -27,8 +27,11 @@ class PlayJsonJsonapiFormatSpec extends JsonBaseSpec[JsValue] with MustMatchers 
       "transform a list of resource identifier objects correctly" in {
         Json.toJson(rootObjectWithResourceIdentifierObjects) mustEqual rootObjectWithResourceIdentifierObjectsJson
       }
-      "transform all link types correctly" in {
-        Json.toJson(rootObjectWithResourceObjectsWithAllLinks) mustEqual rootObjectWithResourceObjectsWithAllLinksJson
+      "transform root link types correctly" in {
+        Json.toJson(rootObjectWithLinks) mustEqual rootObjectWithLinksJson
+      }
+      "transform resource link types correctly" in {
+        Json.toJson(rootObjectWithResourceObjectsWithLinks) mustEqual rootObjectWithResourceObjectsWithAllLinksJson
       }
       "transform all meta object inside resource object correctly" in {
         Json.toJson(rootObjectWithResourceObjectsWithMeta) mustEqual rootObjectWithResourceObjectsWithMetaJson
@@ -71,8 +74,11 @@ class PlayJsonJsonapiFormatSpec extends JsonBaseSpec[JsValue] with MustMatchers 
       "transform a list of resource identifier objects correctly" in {
         Json.fromJson[RootObject](rootObjectWithResourceIdentifierObjectsJson) mustEqual JsSuccess(rootObjectWithResourceIdentifierObjects)
       }
-      "transform all link types correctly" in {
-        Json.fromJson[RootObject](rootObjectWithResourceObjectsWithAllLinksJson) mustEqual JsSuccess(rootObjectWithResourceObjectsWithAllLinks)
+      "transform root link types correctly" in {
+        Json.fromJson[RootObject](rootObjectWithLinksJson) mustEqual JsSuccess(rootObjectWithLinks)
+      }
+      "transform resource link types correctly" in {
+        Json.fromJson[RootObject](rootObjectWithResourceObjectsWithAllLinksJson) mustEqual JsSuccess(rootObjectWithResourceObjectsWithLinks)
       }
       "transform all meta object inside resource object correctly" in {
         Json.fromJson[RootObject](rootObjectWithResourceObjectsWithMetaJson) mustEqual JsSuccess(rootObjectWithResourceObjectsWithMeta)
