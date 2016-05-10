@@ -15,7 +15,7 @@ private[json] object SprayJsonReadSupport {
 
     def field(fieldName: String): JsValue = obj.getFields(fieldName).toList match {
       case Seq(value) ⇒ value
-      case x          ⇒ throwDesEx(s"No value for fieldName $fieldName in $obj: $x")
+      case x          ⇒ deserializationError(s"No value for fieldName $fieldName in $obj: $x")
     }
 
     def \(fieldName: String): JsValue = field(fieldName)
@@ -26,22 +26,18 @@ private[json] object SprayJsonReadSupport {
   implicit class RichJsValue(val v: JsValue) extends AnyVal {
     def asString: String = v match {
       case JsString(s) ⇒ s
-      case x           ⇒ throwDesEx(s"$x is not a JSON string")
+      case x           ⇒ deserializationError(s"$x is not a JSON string")
     }
 
     def asStringSeq: Seq[String] = v match {
       case JsArray(elements) ⇒
         elements map {
           case JsString(s) ⇒ s
-          case x           ⇒ throwDesEx(s"$x is not a JSON string")
+          case x           ⇒ deserializationError(s"$x is not a JSON string")
         }
-      case x ⇒ throwDesEx(s"$x is not a JSON array")
+      case x ⇒
+        deserializationError(s"$x is not a JSON array")
     }
   }
-
-  /**
-   * Throws a Spray [[DeserializationException]] with the given message.
-   */
-  private[json] def throwDesEx(msg: String) = throw new DeserializationException(msg)
 
 }

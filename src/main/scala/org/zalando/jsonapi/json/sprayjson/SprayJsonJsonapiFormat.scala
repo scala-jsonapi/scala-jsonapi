@@ -53,7 +53,7 @@ trait SprayJsonJsonapiFormat {
       json match {
         case obj: JsObject ⇒ obj.convertTo[ResourceObject]
         case arr: JsArray  ⇒ ResourceObjects(arr.convertTo[List[ResourceObject]])
-        case _             ⇒ throwDesEx(s"Unable to serialize Data type from json: $json")
+        case _             ⇒ deserializationError(s"Unable to serialize Data type from json: $json")
       }
     }
   }

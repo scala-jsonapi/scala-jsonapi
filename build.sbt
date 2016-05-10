@@ -8,11 +8,11 @@ organization := "org.zalando"
 
 name := "scala-jsonapi"
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 
 scalacOptions ++= Seq("-feature", "-unchecked", "-deprecation")
 
-crossScalaVersions := Seq("2.11.7", "2.10.6")
+crossScalaVersions := Seq("2.11.8", "2.10.6")
 
 resolvers ++= Seq(
   "spray" at "http://repo.spray.io/",
@@ -20,11 +20,11 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "io.spray" %% "spray-json" % "1.3.1" % "provided",
-  "io.spray" %% "spray-httpx" % "1.3.2",
-  "com.typesafe.akka" %% "akka-actor" % "2.3.6" % "provided",
-  "com.typesafe.play" %% "play-json" % "2.3.8" % "provided",
-  "org.scalatest" %% "scalatest" % "2.2.4" % "test"
+  "io.spray"          %% "spray-json"  % "1.3.2"  % "provided",
+  "io.spray"          %% "spray-httpx" % "1.3.3"  % "provided",
+  "com.typesafe.akka" %% "akka-actor"  % "2.3.6"  % "provided",
+  "com.typesafe.play" %% "play-json"   % "2.3.8"  % "provided",
+  "org.scalatest"     %% "scalatest"   % "2.2.4"  % "test"
 )
 
 scalariformSettings ++ Seq(

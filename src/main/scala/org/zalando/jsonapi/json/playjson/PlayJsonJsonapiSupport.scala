@@ -1,13 +1,14 @@
-package org.zalando.jsonapi.json
-package playjson
+package org.zalando.jsonapi.json.playjson
 
-import org.zalando.jsonapi.model.RootObject
-import play.api.libs.json.{ Json, JsValue }
 import spray.httpx.PlayJsonSupport
 import spray.httpx.marshalling.Marshaller
 import spray.httpx.unmarshalling.Unmarshaller
+import org.zalando.jsonapi.model.RootObject
+import play.api.libs.json.{ JsValue, Json }
+import spray.http.MediaTypes.`application/vnd.api+json`
 
 trait PlayJsonJsonapiSupport extends PlayJsonJsonapiFormat with PlayJsonSupport {
+
   implicit val playJsonJsonapiMarshaller =
     Marshaller.delegate[RootObject, JsValue](`application/vnd.api+json`)(Json.toJson(_))
 
