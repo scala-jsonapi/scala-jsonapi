@@ -2,13 +2,13 @@ package org.zalando.jsonapi.json
 
 import org.scalactic.TypeCheckedTripleEquals
 import org.scalatest.{ EitherValues, WordSpec }
-import org.zalando.jsonapi.{ JsonapiRootObjectReader, JsonapiRootObjectWriter }
+import org.zalando.jsonapi.JsonapiRootObjectWriter
+import org.zalando.jsonapi.json.sprayhttpx.SprayJsonapiSupport
 import org.zalando.jsonapi.model.{ JsonApiObject, JsonApiProperty, RootObject }
-import spray.http.HttpEntity
 import spray.httpx.marshalling._
 import spray.httpx.unmarshalling._
 
-trait JsonapiSupportSpec extends WordSpec with TypeCheckedTripleEquals with EitherValues {
+trait JsonapiSupportSpec extends WordSpec with TypeCheckedTripleEquals with EitherValues with SprayJsonapiSupport {
   def jsonapiSupportClassName: String
   implicit def jsonapiRootObjectMarshaller: Marshaller[RootObject]
   implicit def jsonapiRootObjectUnmarshaller: Unmarshaller[RootObject]

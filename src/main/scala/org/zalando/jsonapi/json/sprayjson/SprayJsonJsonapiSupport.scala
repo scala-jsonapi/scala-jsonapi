@@ -5,8 +5,10 @@ import org.zalando.jsonapi.model.RootObject
 import spray.httpx.unmarshalling.Unmarshaller
 import spray.json._
 import spray.httpx.marshalling.Marshaller
+import spray.http.MediaTypes.`application/vnd.api+json`
 
 trait SprayJsonJsonapiSupport extends SprayJsonJsonapiFormat with DefaultJsonProtocol {
+
   implicit def sprayJsonJsonapiMarshaller(implicit printer: JsonPrinter = PrettyPrinter) =
     Marshaller.delegate[RootObject, String](`application/vnd.api+json`) { jsonapi ⇒
       printer(jsonapi.toJson)
