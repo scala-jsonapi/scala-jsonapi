@@ -12,7 +12,7 @@ scalaVersion := "2.11.8"
 
 scalacOptions ++= Seq("-feature", "-unchecked", "-deprecation")
 
-crossScalaVersions := Seq("2.11.8", "2.10.6")
+crossScalaVersions := Seq("2.11.8")
 
 resolvers ++= Seq(
   "spray" at "http://repo.spray.io/",
