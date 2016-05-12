@@ -1,10 +1,10 @@
 package org.zalando.jsonapi.json.sprayjson
 
-import akka.http.scaladsl.marshalling.{ToEntityMarshaller, Marshaller}
+import akka.http.scaladsl.marshalling.{ ToEntityMarshaller, Marshaller }
 import org.zalando.jsonapi.model.RootObject
 import spray.json._
 import akka.http.scaladsl.model.MediaTypes.`application/vnd.api+json`
-import akka.http.scaladsl.unmarshalling.{FromEntityUnmarshaller, Unmarshaller}
+import akka.http.scaladsl.unmarshalling.{ FromEntityUnmarshaller, Unmarshaller }
 
 trait AkkaHttpJsonapiSupport extends SprayJsonJsonapiFormat with DefaultJsonProtocol {
   implicit def akkaHttpJsonJsonapiMarshaller(implicit printer: JsonPrinter = PrettyPrinter): ToEntityMarshaller[RootObject] = {
@@ -15,7 +15,7 @@ trait AkkaHttpJsonapiSupport extends SprayJsonJsonapiFormat with DefaultJsonProt
     Unmarshaller
       .byteStringUnmarshaller
       .forContentTypes(`application/vnd.api+json`)
-      .mapWithCharset((data, charset) => data.decodeString(charset.nioCharset.name).parseJson.convertTo[RootObject])
+      .mapWithCharset((data, charset) ⇒ data.decodeString(charset.nioCharset.name).parseJson.convertTo[RootObject])
   }
 }
 
