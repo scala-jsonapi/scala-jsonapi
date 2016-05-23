@@ -32,7 +32,7 @@ package object model {
       id: Option[String] = None,
       attributes: Option[Attributes] = None,
       relationships: Option[Relationships] = None,
-      links: Option[Links] = None,
+      links: Option[ResourceLinks] = None,
       meta: Option[Meta] = None) extends Data
 
     /**
@@ -94,6 +94,10 @@ package object model {
      */
     case class About(url: String) extends Link
   }
+
+  type ResourceLinks = ImmutableSeq[ResourceLink]
+
+  case class ResourceLink(name: String, url: String)
 
   /**
    * A collection of [[Attribute]] objects.

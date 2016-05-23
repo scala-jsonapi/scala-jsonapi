@@ -26,8 +26,11 @@ class SprayJsonJsonapiFormatSpec extends JsonBaseSpec[JsValue] with MustMatchers
       "transform a list of resource identifier objects correctly" in {
         rootObjectWithResourceIdentifierObjects.toJson mustEqual rootObjectWithResourceIdentifierObjectsJson
       }
-      "transform all link types correctly" in {
-        rootObjectWithResourceObjectsWithAllLinks.toJson mustEqual rootObjectWithResourceObjectsWithAllLinksJson
+      "transform root link types correctly" in {
+        rootObjectWithLinks.toJson mustEqual rootObjectWithLinksJson
+      }
+      "transform resource link types correctly" in {
+        rootObjectWithResourceObjectsWithLinks.toJson mustEqual rootObjectWithResourceObjectsWithAllLinksJson
       }
       "transform all meta object inside resource object correctly" in {
         rootObjectWithResourceObjectsWithMeta.toJson mustEqual rootObjectWithResourceObjectsWithMetaJson
@@ -70,8 +73,11 @@ class SprayJsonJsonapiFormatSpec extends JsonBaseSpec[JsValue] with MustMatchers
       "transform a list of resource identifier objects correctly" in {
         rootObjectWithResourceIdentifierObjectsJson.convertTo[RootObject] === rootObjectWithResourceIdentifierObjects
       }
-      "transform all link types correctly" in {
-        rootObjectWithResourceObjectsWithAllLinksJson.convertTo[RootObject] === rootObjectWithResourceObjectsWithAllLinks
+      "transform root link types correctly" in {
+        rootObjectWithLinksJson.convertTo[RootObject] === rootObjectWithLinks
+      }
+      "transform resource link types correctly" in {
+        rootObjectWithResourceObjectsWithAllLinksJson.convertTo[RootObject] === rootObjectWithResourceObjectsWithLinks
       }
       "transform all meta object inside resource object correctly" in {
         rootObjectWithResourceObjectsWithMetaJson.convertTo[RootObject] === rootObjectWithResourceObjectsWithMeta
