@@ -12,7 +12,7 @@ scalaVersion := "2.11.8"
 
 scalacOptions ++= Seq("-feature", "-unchecked", "-deprecation")
 
-crossScalaVersions := Seq("2.11.8", "2.10.6")
+crossScalaVersions := Seq("2.11.8")
 
 resolvers ++= Seq(
   "spray" at "http://repo.spray.io/",
@@ -24,6 +24,7 @@ libraryDependencies ++= Seq(
   "io.spray"          %% "spray-httpx" % "1.3.3"  % "provided",
   "com.typesafe.akka" %% "akka-actor"  % "2.3.6"  % "provided",
   "com.typesafe.play" %% "play-json"   % "2.3.8"  % "provided",
+  "com.typesafe.akka" %% "akka-http-spray-json-experimental" % "2.4.4" % "provided",
   "org.scalatest"     %% "scalatest"   % "2.2.4"  % "test"
 )
 
