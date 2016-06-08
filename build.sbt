@@ -19,13 +19,20 @@ resolvers ++= Seq(
   "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/"
 )
 
-libraryDependencies ++= Seq(
-  "io.spray"          %% "spray-json"  % "1.3.2"  % "provided",
-  "io.spray"          %% "spray-httpx" % "1.3.3"  % "provided",
-  "com.typesafe.akka" %% "akka-actor"  % "2.3.6"  % "provided",
-  "com.typesafe.play" %% "play-json"   % "2.3.8"  % "provided",
-  "org.scalatest"     %% "scalatest"   % "2.2.4"  % "test"
-)
+libraryDependencies ++= {
+  val circeVersion = "0.5.0-M1"
+
+  Seq(
+    "io.spray"          %% "spray-json"    % "1.3.2"      % "provided",
+    "io.spray"          %% "spray-httpx"   % "1.3.3"      % "provided",
+    "com.typesafe.akka" %% "akka-actor"    % "2.3.6"      % "provided",
+    "com.typesafe.play" %% "play-json"     % "2.3.8"      % "provided",
+    "io.circe"          %% "circe-core"    % circeVersion % "provided",
+    "io.circe"          %% "circe-generic" % circeVersion % "provided",
+    "io.circe"          %% "circe-parser"  % circeVersion % "provided",
+    "org.scalatest"     %% "scalatest"     % "2.2.4"      % "test"
+  )
+}
 
 scalariformSettings ++ Seq(
   ScalariformKeys.preferences := ScalariformKeys.preferences.value
