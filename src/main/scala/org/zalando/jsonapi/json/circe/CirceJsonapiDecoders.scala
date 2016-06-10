@@ -4,7 +4,6 @@ import cats.data.Xor
 import io.circe._
 import org.zalando.jsonapi.json.FieldNames
 import org.zalando.jsonapi.model.JsonApiObject._
-import org.zalando.jsonapi.model.Links.Link
 import org.zalando.jsonapi.model.RootObject._
 import org.zalando.jsonapi.model.{ Errors, Error, _ }
 
@@ -22,24 +21,32 @@ trait CirceJsonapiDecoders {
 
   implicit val valueDecoder = Decoder.instance[Value](_.as[Json].map(jsonToValue))
 
-  implicit val attributesDecoder = Decoder.instance[Attributes](_.as[Value].map {
-    case JsObjectValue(value) ⇒
-      value
+  implicit val attributesDecoder = Decoder.instance[Attributes](hcursor ⇒ {
+    hcursor.as[Value].flatMap {
+      case JsObjectValue(value) ⇒
+        Xor.Right(value)
+      case _ ⇒
+        Xor.Left(DecodingFailure("only an object can be decoded to Attributes", hcursor.history))
+    }
   })
 
   implicit val attributeDecoder = Decoder.instance[Attribute](_.as[Attributes].map(_.head))
 
-  implicit val linksDecoder = Decoder.instance[Links](_.as[Value].map {
-    case JsObjectValue(attributes) ⇒
-      attributes.map {
-        case Attribute(FieldNames.`self`, StringValue(url))    ⇒ Links.Self(url)
-        case Attribute(FieldNames.`about`, StringValue(url))   ⇒ Links.About(url)
-        case Attribute(FieldNames.`first`, StringValue(url))   ⇒ Links.First(url)
-        case Attribute(FieldNames.`last`, StringValue(url))    ⇒ Links.Last(url)
-        case Attribute(FieldNames.`next`, StringValue(url))    ⇒ Links.Next(url)
-        case Attribute(FieldNames.`prev`, StringValue(url))    ⇒ Links.Prev(url)
-        case Attribute(FieldNames.`related`, StringValue(url)) ⇒ Links.Related(url)
-      }
+  implicit val linksDecoder = Decoder.instance[Links](hcursor ⇒ {
+    hcursor.as[Value].flatMap {
+      case JsObjectValue(attributes) ⇒
+        Xor.Right(attributes.map {
+          case Attribute(FieldNames.`self`, StringValue(url))    ⇒ Links.Self(url)
+          case Attribute(FieldNames.`about`, StringValue(url))   ⇒ Links.About(url)
+          case Attribute(FieldNames.`first`, StringValue(url))   ⇒ Links.First(url)
+          case Attribute(FieldNames.`last`, StringValue(url))    ⇒ Links.Last(url)
+          case Attribute(FieldNames.`next`, StringValue(url))    ⇒ Links.Next(url)
+          case Attribute(FieldNames.`prev`, StringValue(url))    ⇒ Links.Prev(url)
+          case Attribute(FieldNames.`related`, StringValue(url)) ⇒ Links.Related(url)
+        })
+      case _ ⇒
+        Xor.Left(DecodingFailure("only an object can be decoded to Links", hcursor.history))
+    }
   })
 
   def jsonToData(json: Json): Xor[DecodingFailure, Data] = json match {
@@ -62,18 +69,26 @@ trait CirceJsonapiDecoders {
 
   implicit val relationshipsDecoder = Decoder.instance[Relationships](_.as[Map[String, Relationship]])
 
-  implicit val jsonApiDecoder = Decoder.instance[JsonApi](_.as[Value].map {
-    case JsObjectValue(attributes) ⇒
-      attributes.map {
-        case Attribute(name, value) ⇒ JsonApiProperty(name, value)
-      }
+  implicit val jsonApiDecoder = Decoder.instance[JsonApi](hcursor ⇒ {
+    hcursor.as[Value].flatMap {
+      case JsObjectValue(attributes) ⇒
+        Xor.Right(attributes.map {
+          case Attribute(name, value) ⇒ JsonApiProperty(name, value)
+        })
+      case _ ⇒
+        Xor.Left(DecodingFailure("only an object can be decoded to JsonApi", hcursor.history))
+    }
   })
 
-  implicit val metaDecoder = Decoder.instance[Meta](_.as[Value].map {
-    case JsObjectValue(attributes) ⇒
-      attributes.map {
-        case Attribute(name, value) ⇒ name -> value
-      }.toMap
+  implicit val metaDecoder = Decoder.instance[Meta](hcursor ⇒ {
+    hcursor.as[Value].flatMap {
+      case JsObjectValue(attributes) ⇒
+        Xor.Right(attributes.map {
+          case Attribute(name, value) ⇒ name -> value
+        }.toMap)
+      case _ ⇒
+        Xor.Left(DecodingFailure("only an object can be decoded to Meta", hcursor.history))
+    }
   })
 
   implicit val errorSourceDecoder = Decoder.instance[ErrorSource](hcursor ⇒ {
