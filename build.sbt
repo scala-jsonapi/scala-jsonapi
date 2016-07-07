@@ -12,8 +12,6 @@ scalaVersion := "2.11.8"
 
 scalacOptions ++= Seq("-feature", "-unchecked", "-deprecation")
 
-crossScalaVersions := Seq("2.11.8", "2.10.6")
-
 resolvers ++= Seq(
   "spray" at "http://repo.spray.io/",
   "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/"
@@ -21,16 +19,18 @@ resolvers ++= Seq(
 
 libraryDependencies ++= {
   val circeVersion = "0.5.0-M1"
+  val akkaVersion = "2.4.7"
 
   Seq(
-    "io.spray"          %% "spray-json"    % "1.3.2"      % "provided",
-    "io.spray"          %% "spray-httpx"   % "1.3.3"      % "provided",
-    "com.typesafe.akka" %% "akka-actor"    % "2.3.6"      % "provided",
-    "com.typesafe.play" %% "play-json"     % "2.3.8"      % "provided",
-    "io.circe"          %% "circe-core"    % circeVersion % "provided",
-    "io.circe"          %% "circe-generic" % circeVersion % "provided",
-    "io.circe"          %% "circe-parser"  % circeVersion % "provided",
-    "org.scalatest"     %% "scalatest"     % "2.2.4"      % "test"
+    "io.spray"          %% "spray-json"             % "1.3.2"      % "provided",
+    "io.spray"          %% "spray-httpx"            % "1.3.3"      % "provided",
+    "com.typesafe.akka" %% "akka-actor"             % akkaVersion  % "provided",
+    "com.typesafe.akka" %% "akka-http-experimental" % akkaVersion  % "provided",
+    "com.typesafe.play" %% "play-json"              % "2.3.8"      % "provided",
+    "io.circe"          %% "circe-core"             % circeVersion % "provided",
+    "io.circe"          %% "circe-generic"          % circeVersion % "provided",
+    "io.circe"          %% "circe-parser"           % circeVersion % "provided",
+    "org.scalatest"     %% "scalatest"              % "2.2.4"      % "test"
   )
 }
 
