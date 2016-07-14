@@ -5,7 +5,7 @@
 [![codecov.io](https://codecov.io/github/zalando/scala-jsonapi/coverage.svg?branch=master)](https://codecov.io/github/zalando/scala-jsonapi?branch=master)
 [![Join the chat at https://gitter.im/zalando/scala-jsonapi](https://badges.gitter.im/zalando/scala-jsonapi.svg)](https://gitter.im/zalando/scala-jsonapi?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-**scala-jsonapi** is a Scala library that aims to help you produce JSON output based on the [JSON API specification][jsonapi] easily and painlessly. The library is compatible with Scala version `2.11`. It supports read and write for the following backends:
+scala-jsonapi is a Scala library that aims to help you produce JSON output based on the [JSON API specification][jsonapi] easily and painlessly. The library is compatible with Scala version `2.11`. It supports read and write for the following backends:
 
  * [Play-JSON]
  * [Spray-JSON]
@@ -101,7 +101,7 @@ Publishing and releasing is made with help of the [sbt-sonatype plugin].
 
 # License
 
-_scala-jsonapi_ is licensed under the [MIT][MIT license].
+scala-jsonapi is licensed under the [MIT][MIT license].
 
 [sbt-sonatype plugin]: https://github.com/xerial/sbt-sonatype
 [the specs example]: src/test/scala/org/zalando/jsonapi/json/ExampleSpec.scala
