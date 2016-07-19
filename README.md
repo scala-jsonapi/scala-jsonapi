@@ -50,7 +50,13 @@ The library provides serialization and deserialization of JSON API root objects 
 
 ## Play-JSON
 
-    import org.zalando.jsonapi.json.playjson.PlayJsonJsonapiProtocol._
+Along with adding the scala-jsonapi library dependency, also include spray-httpx for marshalling support
+
+    libraryDependencies += "io.spray" %% "spray-httpx" % "1.3.3"
+
+The JSON API support can then be imported using `PlayJsonJsonapiSupport` as follows
+
+    import org.zalando.jsonapi.json.playjson.PlayJsonJsonapiSupport._
     import play.api.libs.json._
     
     // Serialization
