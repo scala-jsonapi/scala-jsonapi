@@ -12,9 +12,7 @@ import spray.json._
 
 trait AkkaHttpJsonapiSupport extends SprayJsonJsonapiProtocol with DefaultJsonProtocol {
   def akkaHttpJsonapiMarshaller[T: JsonapiRootObjectWriter]: ToEntityMarshaller[T] =
-    Marshaller.withFixedContentType(`application/vnd.api+json`) { obj ⇒
-      HttpEntity(`application/vnd.api+json`, obj.rootObject.toJson.compactPrint)
-    }
+    Marshaller.StringMarshaller.wrap(`application/vnd.api+json`)(_.rootObject.toJson.compactPrint)
 
   def akkaHttpJsonapiUnmarshaller[T: JsonapiRootObjectReader]: FromEntityUnmarshaller[T] =
     Unmarshaller.stringUnmarshaller.forContentTypes(`application/vnd.api+json`).map(_.parseJson.convertTo[RootObject].jsonapi[T])
@@ -22,5 +20,5 @@ trait AkkaHttpJsonapiSupport extends SprayJsonJsonapiProtocol with DefaultJsonPr
 
 object AkkaHttpJsonapiSupport extends AkkaHttpJsonapiSupport {
   implicit def akkaHttpJsonapiMarshallerImplicit[T: JsonapiRootObjectWriter]: ToEntityMarshaller[T] = akkaHttpJsonapiMarshaller
-  implicit def akkaHttpJsonapiMarshallerImplicit[T: JsonapiRootObjectReader]: FromEntityUnmarshaller[T] = akkaHttpJsonapiUnmarshaller
+  implicit def akkaHttpJsonapiUnmarshallerImplicit[T: JsonapiRootObjectReader]: FromEntityUnmarshaller[T] = akkaHttpJsonapiUnmarshaller
 }
