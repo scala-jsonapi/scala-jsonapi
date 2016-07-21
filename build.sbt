@@ -25,12 +25,15 @@ libraryDependencies ++= {
     "io.spray"          %% "spray-json"             % "1.3.2"      % "provided",
     "io.spray"          %% "spray-httpx"            % "1.3.3"      % "provided",
     "com.typesafe.akka" %% "akka-actor"             % akkaVersion  % "provided",
+    "com.typesafe.akka" %% "akka-http-core"         % akkaVersion  % "provided",
     "com.typesafe.akka" %% "akka-http-experimental" % akkaVersion  % "provided",
     "com.typesafe.play" %% "play-json"              % "2.3.8"      % "provided",
     "io.circe"          %% "circe-core"             % circeVersion % "provided",
     "io.circe"          %% "circe-generic"          % circeVersion % "provided",
     "io.circe"          %% "circe-parser"           % circeVersion % "provided",
-    "org.scalatest"     %% "scalatest"              % "2.2.4"      % "test"
+    "org.scalatest"     %% "scalatest"              % "2.2.4"      % "test",
+    "com.typesafe.akka" %% "akka-http-testkit"      % akkaVersion  % "test"
+
   )
 }
 
