@@ -11,6 +11,6 @@ Pull requests should only be merged after all discussions have been concluded an
 
 Here are the guidelines we would like to follow:
 - create a [GitHub issue](https://github.com/zalando/scala-jsonapi/issues) before submitting a pull request
-- use branches named according to issue number with `issue/` prefix (optionally: following with an issue short description) (e.g. `issue/46/this-is-a-new-shiny-issue`) 
+- use branches named according to issue number with `issue/` prefix (optionally: followed by a short issue description) (e.g. `issue/46/this-is-a-new-shiny-issue`)
 - code coverage **must not** decrease in a pull request
 - keep the current code style
