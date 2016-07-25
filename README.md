@@ -10,14 +10,14 @@ scala-jsonapi is a Scala library that aims to help you produce JSON output based
  * [Play-JSON]
  * [Spray-JSON]
  * [Circe]
- 
+
 In addition, scala-jsonapi provides out-of-the-box (un)marshallers for:
 
  * Spray and Play
  * Akka Http
 
 ## Current Status
-This library is very much a work in progress, so expect its API to change. 
+This library is very much a work in progress, so expect its API to change.
 
 # Setup
 
@@ -32,18 +32,18 @@ You also have to provide the used backend (e.g. spray-json).
 The rich JSON API model is available via the following import:
 
     import org.zalando.jsonapi.model._
-    
+
 The library provides serialization and deserialization of JSON API root objects to JSON using either Spray-JSON or Play-JSON. Please note that you need to explicitly add a dependency to either spray-json or play-json to your project.
 
 ## Spray-JSON
 
     import org.zalando.jsonapi.json.sprayjson.SprayJsonJsonapiProtocol._
     import spray.json._
-    
+
     // Serialization
     val rootObject: RootObject = ???
     rootObject.toJson
-    
+
     // Deserialization
     val json: JsValue = ???
     json.convertTo[RootObject]
@@ -58,45 +58,45 @@ The JSON API support can then be imported using `PlayJsonJsonapiSupport` as foll
 
     import org.zalando.jsonapi.json.playjson.PlayJsonJsonapiSupport._
     import play.api.libs.json._
-    
+
     // Serialization
     val rootObject: RootObject = ???
     Json.toJson(rootObject)
-    
+
     // Deserialization
     val json: JsValue = ???
     Json.fromJson[RootObject](json)
 
 ## Creating a JSON API Root Object
 
-scala-jsonapi provides type class `JsonapiRootEntityWriter` so that you can create a JSON API representation for your resources. The following code snippet demonstrates its usage:
+scala-jsonapi provides type class `JsonapiRootObjectWriter` so that you can create a JSON API representation for your resources. The following code snippet demonstrates its usage:
 
     import org.zalando.jsonapi
     import jsonapi.Jsonapi
-    
+
     case class Person(name: String)
-    
+
     implicit val personJsonapiWriter = new JsonapiRootObjectWriter[Person] {
       override def toJsonapi(person: Person) = {
         ???
       }
     }
-    
+
     val personRootObject: RootObject = Jsonapi.asJsonapi(Person("Boris M."))
 
-In contrast there is a type class called `JsonapiRootEntityReader` that supports conversion from JSON API representation to your resources. To illustrate:
+In contrast there is a type class called `JsonapiRootObjectReader` that supports conversion from JSON API representation to your resources. To illustrate:
 
     import org.zalando.jsonapi
     import jsonapi.Jsonapi
-    
+
     case class Person(name: String)
-    
+
     implicit val personJsonapiReader = new JsonapiRootObjectReader[Person] {
       override def fromJsonapi(rootObject: RootObject) = {
         ???
       }
     }
-    
+
     val person: Person = Jsonapi.fromJsonapi[Person](RootObject(...))
 
 For complete usage, see [the specs example].
