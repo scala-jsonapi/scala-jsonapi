@@ -23,7 +23,7 @@ This library is very much a work in progress, so expect its API to change.
 
 To use scala-jsonapi, first add a library dependency—assuming that you have [sonatype resolvers] set up.
 
-    libraryDependencies += "org.zalando" %% "scala-jsonapi" % "0.5.1"
+    libraryDependencies += "org.zalando" %% "scala-jsonapi" % "0.5.2"
 
 You also have to provide the used backend (e.g. spray-json).
 
