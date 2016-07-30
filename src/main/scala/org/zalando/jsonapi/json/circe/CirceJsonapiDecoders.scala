@@ -5,18 +5,19 @@ import io.circe._
 import org.zalando.jsonapi.json.FieldNames
 import org.zalando.jsonapi.model.JsonApiObject._
 import org.zalando.jsonapi.model.RootObject._
-import org.zalando.jsonapi.model.{ Errors, Error, _ }
+import org.zalando.jsonapi.model.{Errors, Error, _}
 
 trait CirceJsonapiDecoders {
   def jsonToValue(json: Json): Value = json.fold[Value](
-    NullValue,
-    BooleanValue.apply,
-    value ⇒ NumberValue(value.toBigDecimal.get),
-    StringValue.apply,
-    values ⇒ JsArrayValue(values.map(jsonToValue)),
-    values ⇒ JsObjectValue(values.toMap.map {
-      case (key, value) ⇒ Attribute(key, jsonToValue(value))
-    }.toList)
+      NullValue,
+      BooleanValue.apply,
+      value ⇒ NumberValue(value.toBigDecimal.get),
+      StringValue.apply,
+      values ⇒ JsArrayValue(values.map(jsonToValue)),
+      values ⇒
+        JsObjectValue(values.toMap.map {
+          case (key, value) ⇒ Attribute(key, jsonToValue(value))
+        }.toList)
   )
 
   implicit val valueDecoder = Decoder.instance[Value](_.as[Json].map(jsonToValue))
@@ -36,13 +37,16 @@ trait CirceJsonapiDecoders {
     hcursor.as[Value].flatMap {
       case JsObjectValue(attributes) ⇒
         Xor.Right(attributes.map {
-          case Attribute(FieldNames.`self`, StringValue(url))    ⇒ Links.Self(url)
-          case Attribute(FieldNames.`about`, StringValue(url))   ⇒ Links.About(url)
-          case Attribute(FieldNames.`first`, StringValue(url))   ⇒ Links.First(url)
-          case Attribute(FieldNames.`last`, StringValue(url))    ⇒ Links.Last(url)
-          case Attribute(FieldNames.`next`, StringValue(url))    ⇒ Links.Next(url)
-          case Attribute(FieldNames.`prev`, StringValue(url))    ⇒ Links.Prev(url)
-          case Attribute(FieldNames.`related`, StringValue(url)) ⇒ Links.Related(url)
+          case Attribute(FieldNames.`self`, StringValue(url)) ⇒ Links.Self(url)
+          case Attribute(FieldNames.`about`, StringValue(url)) ⇒
+            Links.About(url)
+          case Attribute(FieldNames.`first`, StringValue(url)) ⇒
+            Links.First(url)
+          case Attribute(FieldNames.`last`, StringValue(url)) ⇒ Links.Last(url)
+          case Attribute(FieldNames.`next`, StringValue(url)) ⇒ Links.Next(url)
+          case Attribute(FieldNames.`prev`, StringValue(url)) ⇒ Links.Prev(url)
+          case Attribute(FieldNames.`related`, StringValue(url)) ⇒
+            Links.Related(url)
         })
       case _ ⇒
         Xor.Left(DecodingFailure("only an object can be decoded to Links", hcursor.history))
@@ -61,10 +65,11 @@ trait CirceJsonapiDecoders {
       links ← hcursor.downField(FieldNames.`links`).as[Option[Links]]
       // TODO: there's prolly a cleaner way here. there's a circular dependency Data -> ResourceObject(s) -> Relationship(s) -> Data that's giving circe problems
       data ← hcursor.downField(FieldNames.`data`).as[Option[Json]].map(_.flatMap(jsonToData(_).toOption))
-    } yield Relationship(
-      links = links,
-      data = data
-    )
+    } yield
+      Relationship(
+          links = links,
+          data = data
+      )
   })
 
   implicit val relationshipsDecoder = Decoder.instance[Relationships](_.as[Map[String, Relationship]])
@@ -95,10 +100,11 @@ trait CirceJsonapiDecoders {
     for {
       pointer ← hcursor.downField(FieldNames.`pointer`).as[Option[String]]
       parameter ← hcursor.downField(FieldNames.`parameter`).as[Option[String]]
-    } yield ErrorSource(
-      pointer = pointer,
-      parameter = parameter
-    )
+    } yield
+      ErrorSource(
+          pointer = pointer,
+          parameter = parameter
+      )
   })
 
   implicit val errorDecoder = Decoder.instance[Error](hcursor ⇒ {
@@ -111,16 +117,17 @@ trait CirceJsonapiDecoders {
       links ← hcursor.downField(FieldNames.`links`).as[Option[Links]]
       meta ← hcursor.downField(FieldNames.`meta`).as[Option[Meta]]
       source ← hcursor.downField(FieldNames.`source`).as[Option[ErrorSource]]
-    } yield Error(
-      id = id,
-      status = status,
-      code = code,
-      title = title,
-      detail = detail,
-      links = links,
-      meta = meta,
-      source = source
-    )
+    } yield
+      Error(
+          id = id,
+          status = status,
+          code = code,
+          title = title,
+          detail = detail,
+          links = links,
+          meta = meta,
+          source = source
+      )
   })
 
   implicit val resourceObjectDecoder = Decoder.instance[ResourceObject](hcursor ⇒ {
@@ -131,17 +138,19 @@ trait CirceJsonapiDecoders {
       relationships ← hcursor.downField(FieldNames.`relationships`).as[Option[Relationships]]
       links ← hcursor.downField(FieldNames.`links`).as[Option[Links]]
       meta ← hcursor.downField(FieldNames.`meta`).as[Option[Meta]]
-    } yield ResourceObject(
-      id = id,
-      `type` = `type`,
-      attributes = attributes,
-      relationships = relationships,
-      links = links,
-      meta = meta
-    )
+    } yield
+      ResourceObject(
+          id = id,
+          `type` = `type`,
+          attributes = attributes,
+          relationships = relationships,
+          links = links,
+          meta = meta
+      )
   })
 
-  implicit val resourceObjectsDecoder = Decoder.instance[ResourceObjects](_.as[List[ResourceObject]].map(ResourceObjects))
+  implicit val resourceObjectsDecoder =
+    Decoder.instance[ResourceObjects](_.as[List[ResourceObject]].map(ResourceObjects))
 
   implicit val dataDecoder = Decoder.instance[Data](_.as[Json].flatMap(jsonToData))
 
@@ -155,14 +164,15 @@ trait CirceJsonapiDecoders {
       meta ← hcursor.downField(FieldNames.`meta`).as[Option[Meta]]
       included ← hcursor.downField(FieldNames.`included`).as[Option[Included]]
       jsonapi ← hcursor.downField(FieldNames.`jsonapi`).as[Option[JsonApi]]
-    } yield RootObject(
-      data = data,
-      links = links,
-      errors = errors,
-      meta = meta,
-      included = included,
-      jsonApi = jsonapi
-    )
+    } yield
+      RootObject(
+          data = data,
+          links = links,
+          errors = errors,
+          meta = meta,
+          included = included,
+          jsonApi = jsonapi
+      )
   })
 }
 

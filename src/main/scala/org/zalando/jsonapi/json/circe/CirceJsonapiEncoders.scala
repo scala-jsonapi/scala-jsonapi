@@ -37,13 +37,12 @@ trait CirceJsonapiEncoders {
 
   implicit def valueEncoder[V <: Value] = Encoder.instance[V](valueToJson)
 
-
   implicit val attributeEncoder = Encoder.instance[Attribute] {
     case Attribute(name, value) =>
       Json.fromFields(Seq(name -> value.asJson))
   }
   implicit val attributesEncoder = Encoder.instance[Attributes] {
-    case Seq(attributes@_*) =>
+    case Seq(attributes @ _ *) =>
       attributes.map(_.asJson).reduce(_.deepMerge(_))
   }
 
@@ -73,18 +72,19 @@ trait CirceJsonapiEncoders {
 
   lazy implicit val relationshipEncoder = Encoder.instance[Relationship](relationship => {
     jsonFromOptionalFields(
-      FieldNames.`links` -> relationship.links.map(_.asJson),
-      // TODO: there's prolly a cleaner way here. there's a circular dependency Data -> ResourceObject(s) -> Relationship(s) -> Data that's giving circe problems
-      FieldNames.`data` -> relationship.data.map(dataToJson) 
+        FieldNames.`links` -> relationship.links.map(_.asJson),
+        // TODO: there's prolly a cleaner way here. there's a circular dependency Data -> ResourceObject(s) -> Relationship(s) -> Data that's giving circe problems
+        FieldNames.`data` -> relationship.data.map(dataToJson)
     )
   })
 
-  implicit val relationshipsEncoder = Encoder.instance[Relationships](relationships => Json.fromFields(relationships.map {
-    case (name, value) => name -> value.asJson
-  }))
+  implicit val relationshipsEncoder = Encoder.instance[Relationships](relationships =>
+        Json.fromFields(relationships.map {
+      case (name, value) => name -> value.asJson
+    }))
 
   implicit val jsonApiEncoder = Encoder.instance[JsonApi] {
-    case Seq(jsonApiPropertys@_*) =>
+    case Seq(jsonApiPropertys @ _ *) =>
       Json.fromFields(jsonApiPropertys.map {
         case JsonApiProperty(name, value) =>
           name -> value.asJson
@@ -99,32 +99,32 @@ trait CirceJsonapiEncoders {
 
   implicit val errorSourceEncoder = Encoder.instance[ErrorSource](errorSource => {
     jsonFromOptionalFields(
-      FieldNames.`pointer` -> errorSource.pointer.map(Json.fromString),
-      FieldNames.`parameter` -> errorSource.parameter.map(Json.fromString)
+        FieldNames.`pointer` -> errorSource.pointer.map(Json.fromString),
+        FieldNames.`parameter` -> errorSource.parameter.map(Json.fromString)
     )
   })
 
   implicit val errorEncoder = Encoder.instance[Error](error => {
     jsonFromOptionalFields(
-      FieldNames.`id` -> error.id.map(Json.fromString),
-      FieldNames.`status` -> error.status.map(Json.fromString),
-      FieldNames.`code` -> error.code.map(Json.fromString),
-      FieldNames.`title` -> error.title.map(Json.fromString),
-      FieldNames.`detail` -> error.detail.map(Json.fromString),
-      FieldNames.`links` -> error.links.map(_.asJson),
-      FieldNames.`meta` -> error.meta.map(_.asJson),
-      FieldNames.`source` -> error.source.map(_.asJson)
+        FieldNames.`id` -> error.id.map(Json.fromString),
+        FieldNames.`status` -> error.status.map(Json.fromString),
+        FieldNames.`code` -> error.code.map(Json.fromString),
+        FieldNames.`title` -> error.title.map(Json.fromString),
+        FieldNames.`detail` -> error.detail.map(Json.fromString),
+        FieldNames.`links` -> error.links.map(_.asJson),
+        FieldNames.`meta` -> error.meta.map(_.asJson),
+        FieldNames.`source` -> error.source.map(_.asJson)
     )
   })
 
   implicit val resourceObjectEncoder = Encoder.instance[ResourceObject](resourceObject => {
     jsonFromOptionalFields(
-      FieldNames.`type` -> Option(Json.fromString(resourceObject.`type`)),
-      FieldNames.`id` -> resourceObject.id.map(Json.fromString),
-      FieldNames.`attributes` -> resourceObject.attributes.map(_.asJson),
-      FieldNames.`relationships` -> resourceObject.relationships.map(_.asJson),
-      FieldNames.`links` -> resourceObject.links.map(_.asJson),
-      FieldNames.`meta` -> resourceObject.meta.map(_.asJson)
+        FieldNames.`type` -> Option(Json.fromString(resourceObject.`type`)),
+        FieldNames.`id` -> resourceObject.id.map(Json.fromString),
+        FieldNames.`attributes` -> resourceObject.attributes.map(_.asJson),
+        FieldNames.`relationships` -> resourceObject.relationships.map(_.asJson),
+        FieldNames.`links` -> resourceObject.links.map(_.asJson),
+        FieldNames.`meta` -> resourceObject.meta.map(_.asJson)
     )
   })
 
@@ -139,12 +139,12 @@ trait CirceJsonapiEncoders {
 
   implicit val rootObjectEncoder = Encoder.instance[RootObject](rootObject => {
     jsonFromOptionalFields(
-      FieldNames.`data` -> rootObject.data.map(_.asJson),
-      FieldNames.`links` -> rootObject.links.map(_.asJson),
-      FieldNames.`errors` -> rootObject.errors.map(_.asJson),
-      FieldNames.`meta` -> rootObject.meta.map(_.asJson),
-      FieldNames.`included` -> rootObject.included.map(_.asJson),
-      FieldNames.`jsonapi` -> rootObject.jsonApi.map(_.asJson)
+        FieldNames.`data` -> rootObject.data.map(_.asJson),
+        FieldNames.`links` -> rootObject.links.map(_.asJson),
+        FieldNames.`errors` -> rootObject.errors.map(_.asJson),
+        FieldNames.`meta` -> rootObject.meta.map(_.asJson),
+        FieldNames.`included` -> rootObject.included.map(_.asJson),
+        FieldNames.`jsonapi` -> rootObject.jsonApi.map(_.asJson)
     )
   })
 }

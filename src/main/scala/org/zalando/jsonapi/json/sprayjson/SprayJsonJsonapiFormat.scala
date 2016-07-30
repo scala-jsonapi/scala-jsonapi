@@ -2,17 +2,16 @@ package org.zalando.jsonapi.json.sprayjson
 
 import SprayJsonReadSupport._
 import org.zalando.jsonapi.json._
-import org.zalando.jsonapi.model.RootObject.{ Data, ResourceObject, ResourceObjects }
+import org.zalando.jsonapi.model.RootObject.{Data, ResourceObject, ResourceObjects}
 import org.zalando.jsonapi.model._
 import spray.json._
 import scala.language.postfixOps
 
-trait SprayJsonJsonapiFormat {
-  self: DefaultJsonProtocol ⇒
+trait SprayJsonJsonapiFormat { self: DefaultJsonProtocol ⇒
 
   /**
-   * Spray-JSON format for serializing and deserializing Jsonapi [[RootObject]].
-   */
+    * Spray-JSON format for serializing and deserializing Jsonapi [[RootObject]].
+    */
   implicit lazy val rootObjectFormat: RootJsonFormat[RootObject] = new RootJsonFormat[RootObject] {
     override def write(rootObject: RootObject): JsValue = {
       val data = rootObject.data map (FieldNames.`data` -> _.toJson)
@@ -37,8 +36,8 @@ trait SprayJsonJsonapiFormat {
   }
 
   /**
-   * Spray-JSON format for serializing and deserializing Jsonapi [[Data]].
-   */
+    * Spray-JSON format for serializing and deserializing Jsonapi [[Data]].
+    */
   implicit lazy val dataFormat: RootJsonFormat[Data] = new RootJsonFormat[Data] {
     override def write(data: Data): JsValue = {
       data match {
@@ -52,15 +51,17 @@ trait SprayJsonJsonapiFormat {
     override def read(json: JsValue): Data = {
       json match {
         case obj: JsObject ⇒ obj.convertTo[ResourceObject]
-        case arr: JsArray  ⇒ ResourceObjects(arr.convertTo[List[ResourceObject]])
-        case _             ⇒ deserializationError(s"Unable to serialize Data type from json: $json")
+        case arr: JsArray ⇒
+          ResourceObjects(arr.convertTo[List[ResourceObject]])
+        case _ ⇒
+          deserializationError(s"Unable to serialize Data type from json: $json")
       }
     }
   }
 
   /**
-   * Spray-JSON format for serializing and deserializing Jsonapi [[ResourceObject]].
-   */
+    * Spray-JSON format for serializing and deserializing Jsonapi [[ResourceObject]].
+    */
   implicit lazy val resourceObjectFormat: RootJsonFormat[ResourceObject] = new RootJsonFormat[ResourceObject] {
     override def write(resourceObject: ResourceObject): JsValue = {
       val `type` = Some(FieldNames.`type` -> resourceObject.`type`.toJson)
@@ -85,8 +86,8 @@ trait SprayJsonJsonapiFormat {
   }
 
   /**
-   * Spray-JSON format for serializing and deserializing Jsonapi [[Attributes]].
-   */
+    * Spray-JSON format for serializing and deserializing Jsonapi [[Attributes]].
+    */
   implicit lazy val attributesFormat: RootJsonFormat[Attributes] = new RootJsonFormat[Attributes] {
     override def write(attributes: Attributes): JsValue = {
       val fields = attributes map (p ⇒ p.name -> p.value.toJson)
@@ -94,13 +95,16 @@ trait SprayJsonJsonapiFormat {
     }
 
     override def read(json: JsValue): Attributes = {
-      json.asJsObject.fields map { case (name, value) ⇒ Attribute(name, value.convertTo[JsonApiObject.Value]) } toList
+      json.asJsObject.fields map {
+        case (name, value) ⇒
+          Attribute(name, value.convertTo[JsonApiObject.Value])
+      } toList
     }
   }
 
   /**
-   * Spray-JSON format for serializing and deserializing Jsonapi [[JsonApi]].
-   */
+    * Spray-JSON format for serializing and deserializing Jsonapi [[JsonApi]].
+    */
   implicit lazy val jsonApiFormat: RootJsonFormat[JsonApi] = new RootJsonFormat[JsonApi] {
     override def write(jsonApi: JsonApi): JsValue = {
       val fields = jsonApi map (jap ⇒ jap.name -> jap.value.toJson)
@@ -113,8 +117,8 @@ trait SprayJsonJsonapiFormat {
   }
 
   /**
-   * Spray-JSON format for serializing and deserializing Jsonapi [[Errors]].
-   */
+    * Spray-JSON format for serializing and deserializing Jsonapi [[Errors]].
+    */
   implicit lazy val errorsFormat: RootJsonFormat[Errors] = new RootJsonFormat[Errors] {
     override def write(errors: Errors): JsValue = {
       val objects = errors map (e ⇒ e.toJson)
@@ -127,8 +131,8 @@ trait SprayJsonJsonapiFormat {
   }
 
   /**
-   * Spray-JSON format for serializing and deserializing Jsonapi [[Error]].
-   */
+    * Spray-JSON format for serializing and deserializing Jsonapi [[Error]].
+    */
   implicit lazy val errorFormat: RootJsonFormat[Error] = new RootJsonFormat[Error] {
     override def write(error: Error): JsObject = {
       val id = error.id map (FieldNames.`id` -> _.toJson)
@@ -157,8 +161,8 @@ trait SprayJsonJsonapiFormat {
   }
 
   /**
-   * Spray-JSON format for serializing and deserializing Jsonapi [[ErrorSource]].
-   */
+    * Spray-JSON format for serializing and deserializing Jsonapi [[ErrorSource]].
+    */
   implicit lazy val errorSourceFormat: RootJsonFormat[ErrorSource] = new RootJsonFormat[ErrorSource] {
     override def write(errorSource: ErrorSource): JsValue = {
       val pointer = errorSource.pointer map (FieldNames.`pointer` -> _.toJson)
@@ -175,8 +179,8 @@ trait SprayJsonJsonapiFormat {
   }
 
   /**
-   * Spray-JSON format for serializing and deserializing Jsonapi [[Relationship]].
-   */
+    * Spray-JSON format for serializing and deserializing Jsonapi [[Relationship]].
+    */
   implicit lazy val relationshipFormat: RootJsonFormat[Relationship] = new RootJsonFormat[Relationship] {
     override def write(relationship: Relationship): JsValue = {
       val links = relationship.links map (FieldNames.`links` -> _.toJson)
@@ -193,46 +197,53 @@ trait SprayJsonJsonapiFormat {
   }
 
   /**
-   * Spray-JSON format for serializing and deserializing Jsonapi [[JsonApiObject]].
-   */
-  implicit lazy val jsonApiObjectValueFormat: JsonFormat[JsonApiObject.Value] = lazyFormat(new JsonFormat[JsonApiObject.Value] {
+    * Spray-JSON format for serializing and deserializing Jsonapi [[JsonApiObject]].
+    */
+  implicit lazy val jsonApiObjectValueFormat: JsonFormat[JsonApiObject.Value] = lazyFormat(
+      new JsonFormat[JsonApiObject.Value] {
     override def write(oValue: JsonApiObject.Value): JsValue = {
       oValue match {
-        case JsonApiObject.StringValue(s)   ⇒ s.toJson
-        case JsonApiObject.NumberValue(n)   ⇒ n.toJson
-        case JsonApiObject.BooleanValue(b)  ⇒ b.toJson
+        case JsonApiObject.StringValue(s) ⇒ s.toJson
+        case JsonApiObject.NumberValue(n) ⇒ n.toJson
+        case JsonApiObject.BooleanValue(b) ⇒ b.toJson
         case JsonApiObject.JsObjectValue(o) ⇒ o.toJson
-        case JsonApiObject.JsArrayValue(a)  ⇒ a.toJson
-        case JsonApiObject.NullValue        ⇒ JsNull
+        case JsonApiObject.JsArrayValue(a) ⇒ a.toJson
+        case JsonApiObject.NullValue ⇒ JsNull
       }
     }
 
     override def read(json: JsValue): JsonApiObject.Value = {
       json match {
-        case JsString(s)  ⇒ JsonApiObject.StringValue(s)
-        case JsNumber(n)  ⇒ JsonApiObject.NumberValue(n)
+        case JsString(s) ⇒ JsonApiObject.StringValue(s)
+        case JsNumber(n) ⇒ JsonApiObject.NumberValue(n)
         case JsBoolean(b) ⇒ JsonApiObject.BooleanValue(b)
-        case JsNull       ⇒ JsonApiObject.NullValue
-        case JsArray(a)   ⇒ JsonApiObject.JsArrayValue(a map (jsValue ⇒ jsValue.convertTo[JsonApiObject.Value]) toList)
-        case JsObject(o)  ⇒ JsonApiObject.JsObjectValue(o map { case (name, value) ⇒ Attribute(name, value.convertTo[JsonApiObject.Value]) } toList)
+        case JsNull ⇒ JsonApiObject.NullValue
+        case JsArray(a) ⇒
+          JsonApiObject.JsArrayValue(a map (jsValue ⇒ jsValue.convertTo[JsonApiObject.Value]) toList)
+        case JsObject(o) ⇒
+          JsonApiObject.JsObjectValue(o map {
+            case (name, value) ⇒
+              Attribute(name, value.convertTo[JsonApiObject.Value])
+          } toList)
       }
     }
   })
 
   /**
-   * Spray-JSON format for serializing and deserializing Jsonapi [[Links]].
-   */
+    * Spray-JSON format for serializing and deserializing Jsonapi [[Links]].
+    */
   implicit lazy val linksFormat: RootJsonFormat[Links] = new RootJsonFormat[Links] {
     override def write(links: Links): JsValue = {
-      val fields = links map (l ⇒ l match {
-        case Links.Self(url)    ⇒ "self" -> url.toJson
-        case Links.About(url)   ⇒ "about" -> url.toJson
-        case Links.First(url)   ⇒ "first" -> url.toJson
-        case Links.Last(url)    ⇒ "last" -> url.toJson
-        case Links.Next(url)    ⇒ "next" -> url.toJson
-        case Links.Prev(url)    ⇒ "prev" -> url.toJson
-        case Links.Related(url) ⇒ "related" -> url.toJson
-      })
+      val fields = links map (l ⇒
+              l match {
+              case Links.Self(url) ⇒ "self" -> url.toJson
+              case Links.About(url) ⇒ "about" -> url.toJson
+              case Links.First(url) ⇒ "first" -> url.toJson
+              case Links.Last(url) ⇒ "last" -> url.toJson
+              case Links.Next(url) ⇒ "next" -> url.toJson
+              case Links.Prev(url) ⇒ "prev" -> url.toJson
+              case Links.Related(url) ⇒ "related" -> url.toJson
+          })
       JsObject(fields: _*)
     }
 
@@ -250,8 +261,8 @@ trait SprayJsonJsonapiFormat {
   }
 
   /**
-   * Spray-JSON format for serializing and deserializing Jsonapi [[Included]].
-   */
+    * Spray-JSON format for serializing and deserializing Jsonapi [[Included]].
+    */
   implicit lazy val includedFormat: RootJsonFormat[Included] = new RootJsonFormat[Included] {
     override def write(included: Included): JsValue = {
       val objects = included.resourceObjects.array map (_.toJson)

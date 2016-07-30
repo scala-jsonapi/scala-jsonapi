@@ -1,9 +1,5 @@
 import scoverage.ScoverageSbtPlugin
 
-import scalariform.formatter.preferences._
-import com.typesafe.sbt.SbtScalariform.ScalariformKeys
-import com.typesafe.sbt.SbtScalariform.scalariformSettings
-
 organization := "org.zalando"
 
 name := "scala-jsonapi"
@@ -37,14 +33,7 @@ libraryDependencies ++= {
   )
 }
 
-scalariformSettings ++ Seq(
-  ScalariformKeys.preferences := ScalariformKeys.preferences.value
-    .setPreference(AlignSingleLineCaseStatements, true)
-    .setPreference(DoubleIndentClassDeclaration, true)
-    .setPreference(PreserveDanglingCloseParenthesis, true)
-    .setPreference(PreserveSpaceBeforeArguments, true)
-    .setPreference(RewriteArrowSymbols, true)
-)
+scalafmtConfig in ThisBuild := Some(file(".scalafmt"))
 
 ScoverageSbtPlugin.ScoverageKeys.coverageMinimum := 80
 
