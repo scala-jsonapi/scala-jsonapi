@@ -30,7 +30,7 @@ class ExampleSpec extends WordSpec with MustMatchers with SprayJsonJsonapiProtoc
       }
     }
 
-    "serialize accordingly with links object in data array" in {
+    "serialize accordingly with links object in data object" in {
       implicit val personJsonapiRootObjectWriter: JsonapiRootObjectWriter[Person] = new JsonapiRootObjectWriter[Person] {
         override def toJsonapi(person: Person) = {
           RootObject(data = Some(ResourceObject(
@@ -61,7 +61,7 @@ class ExampleSpec extends WordSpec with MustMatchers with SprayJsonJsonapiProtoc
       Person(42, "foobar").rootObject.toJson mustEqual json
     }
 
-    "serialize accordingly with links object in root object " in {
+    "serialize accordingly with links object in root object" in {
       implicit val personJsonapiRootObjectWriter: JsonapiRootObjectWriter[Person] = new JsonapiRootObjectWriter[Person] {
         override def toJsonapi(person: Person) = {
           RootObject(data = Some(ResourceObject(
