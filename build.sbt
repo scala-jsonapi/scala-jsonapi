@@ -1,39 +1,36 @@
 import scoverage.ScoverageSbtPlugin
-
-organization := "org.zalando"
-
-name := "scala-jsonapi"
+import Dependencies._
 
 scalaVersion := "2.11.8"
 
-scalacOptions ++= Seq("-feature", "-unchecked", "-deprecation")
-
-resolvers ++= Seq(
-  "spray" at "http://repo.spray.io/",
-  "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/"
+lazy val commonSettings = Seq(
+  organization := "org.zalando",
+  scalafmtConfig in ThisBuild := Some(file(".scalafmt")),
+  scalaVersion := "2.11.8",
+  scalacOptions ++= Seq(
+    "-feature",
+    "-unchecked",
+    "-deprecation",
+    "-encoding", "UTF-8"
+  )
 )
 
-libraryDependencies ++= {
-  val circeVersion = "0.5.0-M1"
-  val akkaVersion = "2.4.7"
+lazy val core = project.in(file("core")).
+  settings(moduleName := "scala-jsonapi-core").
+  settings(commonSettings: _*).
+  settings(libraryDependencies ++= coreDeps)
 
-  Seq(
-    "io.spray"          %% "spray-json"             % "1.3.2"      % "provided",
-    "io.spray"          %% "spray-httpx"            % "1.3.3"      % "provided",
-    "com.typesafe.akka" %% "akka-actor"             % akkaVersion  % "provided",
-    "com.typesafe.akka" %% "akka-http-core"         % akkaVersion  % "provided",
-    "com.typesafe.akka" %% "akka-http-experimental" % akkaVersion  % "provided",
-    "com.typesafe.play" %% "play-json"              % "2.3.8"      % "provided",
-    "io.circe"          %% "circe-core"             % circeVersion % "provided",
-    "io.circe"          %% "circe-generic"          % circeVersion % "provided",
-    "io.circe"          %% "circe-parser"           % circeVersion % "provided",
-    "org.scalatest"     %% "scalatest"              % "2.2.4"      % "test",
-    "com.typesafe.akka" %% "akka-http-testkit"      % akkaVersion  % "test"
+lazy val spray = project.in(file("spray")).
+  dependsOn(core % "test->test;compile->compile").
+  settings(moduleName := "scala-jsonapi-spray").
+  settings(commonSettings: _*).
+  settings(libraryDependencies ++= sprayDeps)
 
-  )
-}
-
-scalafmtConfig in ThisBuild := Some(file(".scalafmt"))
+lazy val circe = project.in(file("circe")).
+  dependsOn(spray, core % "test->test;compile->compile").
+  settings(moduleName := "scala-jsonapi-circe").
+  settings(commonSettings: _*).
+  settings(libraryDependencies ++= circeDeps)
 
 ScoverageSbtPlugin.ScoverageKeys.coverageMinimum := 80
 
