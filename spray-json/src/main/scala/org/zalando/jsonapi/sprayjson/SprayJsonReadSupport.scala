@@ -2,7 +2,7 @@ package org.zalando.jsonapi.sprayjson
 
 import spray.json._
 
-private[json] object SprayJsonReadSupport {
+private[sprayjson] object SprayJsonReadSupport {
 
   type Seq[+A] = scala.collection.immutable.Seq[A]
   val Seq = scala.collection.immutable.Seq

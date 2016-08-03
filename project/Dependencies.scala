@@ -28,4 +28,8 @@ object Dependencies {
   lazy val sprayDeps = Seq(sprayHttpx, sprayJson, akkaActor, scalaTest)
 
   lazy val circeDeps = Seq(circeCore, circeGeneric, circeParser, sprayJson, sprayHttpx, akkaActor, scalaTest)
+
+  lazy val sprayJsonDeps = Seq(sprayJson)
+
+  lazy val akkaHttpDeps = Seq(akkaHttpCore, akkaHttpExperimental)
 }

@@ -20,17 +20,29 @@ lazy val core = project.in(file("core")).
   settings(commonSettings: _*).
   settings(libraryDependencies ++= coreDeps)
 
-lazy val spray = project.in(file("spray")).
+lazy val `spray-json` = project.in(file("spray-json")).
   dependsOn(core % "test->test;compile->compile").
+  settings(moduleName := "scala-jsonapi-spray-json").
+  settings(commonSettings: _*).
+  settings(libraryDependencies ++= sprayJsonDeps)
+
+lazy val spray = project.in(file("spray")).
+  dependsOn(core % "test->test;compile->compile", `spray-json`).
   settings(moduleName := "scala-jsonapi-spray").
   settings(commonSettings: _*).
   settings(libraryDependencies ++= sprayDeps)
 
 lazy val circe = project.in(file("circe")).
-  dependsOn(spray, core % "test->test;compile->compile").
+  dependsOn(core % "test->test;compile->compile", spray).
   settings(moduleName := "scala-jsonapi-circe").
   settings(commonSettings: _*).
   settings(libraryDependencies ++= circeDeps)
+
+lazy val `akka-http` = project.in(file("akka-http")).
+  dependsOn(core % "test->test;compile->compile", `spray-json`).
+  settings(moduleName := "scala-jsonapi-akka-http").
+  settings(commonSettings: _*).
+  settings(libraryDependencies ++= akkaHttpDeps)
 
 ScoverageSbtPlugin.ScoverageKeys.coverageMinimum := 80
 

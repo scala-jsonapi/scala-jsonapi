@@ -1,6 +1,7 @@
 package org.zalando.jsonapi.sprayjson
 
 import org.zalando.jsonapi.json.JsonapiSupportSpec
+import org.zalando.jsonapi.spray.SprayJsonJsonapiSupport
 import spray.json.CompactPrinter
 
 class SprayJsonJsonapiSupportSpec extends JsonapiSupportSpec {

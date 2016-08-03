@@ -9,6 +9,9 @@ import scala.language.postfixOps
 
 trait SprayJsonJsonapiFormat { self: DefaultJsonProtocol ⇒
 
+  private def collectSome[A](opts: Option[A]*): List[A] =
+    (opts collect { case Some(field) ⇒ field }).toList
+
   /**
     * Spray-JSON format for serializing and deserializing Jsonapi [[RootObject]].
     */

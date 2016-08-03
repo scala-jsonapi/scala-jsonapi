@@ -1,10 +1,11 @@
-package org.zalando.jsonapi.sprayjson
+package org.zalando.jsonapi.spray
 
 import org.zalando.jsonapi.model.RootObject
+import org.zalando.jsonapi.sprayjson.SprayJsonJsonapiFormat
+import spray.http.MediaTypes.`application/vnd.api+json`
+import spray.httpx.marshalling.Marshaller
 import spray.httpx.unmarshalling.Unmarshaller
 import spray.json._
-import spray.httpx.marshalling.Marshaller
-import spray.http.MediaTypes.`application/vnd.api+json`
 
 trait SprayJsonJsonapiSupport extends SprayJsonJsonapiFormat with DefaultJsonProtocol {
 
