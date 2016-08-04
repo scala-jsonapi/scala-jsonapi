@@ -8,7 +8,7 @@ import org.zalando.jsonapi.sprayjson.SprayJsonJsonapiProtocol
 import org.zalando.jsonapi.{JsonapiRootObjectReader, JsonapiRootObjectWriter, _}
 import spray.json._
 
-trait AkkaHttpJsonapiSupport extends SprayJsonJsonapiProtocol with DefaultJsonProtocol {
+trait AkkaHttpJsonapiSupport extends SprayJsonJsonapiProtocol {
   def akkaHttpJsonapiMarshaller[T: JsonapiRootObjectWriter]: ToEntityMarshaller[T] =
     Marshaller.StringMarshaller.wrap(`application/vnd.api+json`)(_.rootObject.toJson.compactPrint)
 
