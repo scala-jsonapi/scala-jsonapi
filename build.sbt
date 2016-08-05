@@ -1,5 +1,3 @@
-import scoverage.ScoverageSbtPlugin
-
 organization := "org.zalando"
 
 name := "scala-jsonapi"
@@ -14,8 +12,8 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= {
-  val circeVersion = "0.5.0-M1"
-  val akkaVersion = "2.4.7"
+  val circeVersion = "0.5.0-M2"
+  val akkaVersion = "2.4.8"
 
   Seq(
     "io.spray"          %% "spray-json"             % "1.3.2"      % "provided",
@@ -23,21 +21,24 @@ libraryDependencies ++= {
     "com.typesafe.akka" %% "akka-actor"             % akkaVersion  % "provided",
     "com.typesafe.akka" %% "akka-http-core"         % akkaVersion  % "provided",
     "com.typesafe.akka" %% "akka-http-experimental" % akkaVersion  % "provided",
-    "com.typesafe.play" %% "play-json"              % "2.3.8"      % "provided",
+    "com.typesafe.play" %% "play-json"              % "2.3.10"     % "provided",
     "io.circe"          %% "circe-core"             % circeVersion % "provided",
     "io.circe"          %% "circe-generic"          % circeVersion % "provided",
     "io.circe"          %% "circe-parser"           % circeVersion % "provided",
-    "org.scalatest"     %% "scalatest"              % "2.2.4"      % "test",
+    "org.scalatest"     %% "scalatest"              % "3.0.0"      % "test",
     "com.typesafe.akka" %% "akka-http-testkit"      % akkaVersion  % "test"
 
   )
 }
 
+lazy val root = (project in file("."))
+  .enablePlugins(ScoverageSbtPlugin)
+
 scalafmtConfig in ThisBuild := Some(file(".scalafmt"))
 
-ScoverageSbtPlugin.ScoverageKeys.coverageMinimum := 80
+coverageMinimum := 80
 
-ScoverageSbtPlugin.ScoverageKeys.coverageFailOnMinimum := true
+coverageFailOnMinimum := true
 
 publishMavenStyle := true
 
