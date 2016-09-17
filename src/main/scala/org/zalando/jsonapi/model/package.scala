@@ -203,6 +203,15 @@ package object model {
       */
     case object NullValue extends Value
 
+    /**
+      * An attribute value that is true
+      */
+    val TrueValue = BooleanValue(true)
+
+    /**
+      * An attribute value that is false
+      */
+    val FalseValue = BooleanValue(false)
   }
 
   /**
