@@ -6,6 +6,7 @@ We are happy to accept your contributions to make scala-jsonapi better and more 
 
 Please do not push to the master branch directly. Always use pull requests and let people discuss changes in the pull request.
 Pull requests should only be merged after all discussions have been concluded and at least one reviewer has offered **approval**.
+If you expect new version to be released please update `version.sbt` and `README.md` accordingly in the same pull request as changes were made.
 
 ## Guidelines
 
