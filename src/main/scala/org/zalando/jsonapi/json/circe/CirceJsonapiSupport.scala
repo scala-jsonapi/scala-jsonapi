@@ -18,7 +18,7 @@ trait CirceJsonapiSupport extends CirceJsonapiEncoders with CirceJsonapiDecoders
   implicit val circeJsonapiUnmarshaller = Unmarshaller.delegate[String, RootObject](
       `application/vnd.api+json`,
       `application/json`
-  )(decode[RootObject](_).toOption.get)
+  )(decode[RootObject](_).right.get)
 }
 
 object CirceJsonapiSupport extends CirceJsonapiSupport
