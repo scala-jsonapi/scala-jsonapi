@@ -9,8 +9,8 @@ import org.zalando.jsonapi.model._
 
 class CirceJsonapiFormatSpec extends JsonBaseSpec[Json] with MustMatchers with CirceJsonapiEncoders with CirceJsonapiDecoders {
 
-  override protected def parseJson(jsonString: String): Json = parse(jsonString).toOption.get
-  protected def decodeJson[T](json: Json)(implicit d: io.circe.Decoder[T]): T = json.as[T].toOption.get
+  override protected def parseJson(jsonString: String): Json = parse(jsonString).right.get
+  protected def decodeJson[T](json: Json)(implicit d: io.circe.Decoder[T]): T = json.as[T].right.get
 
   "CirceJsonapiFormat" when {
     "serializing Jsonapi" must {
