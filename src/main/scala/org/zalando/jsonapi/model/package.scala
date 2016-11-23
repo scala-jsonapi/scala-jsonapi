@@ -92,6 +92,55 @@ package object model {
       * @param url The url to link to.
       */
     case class About(url: String) extends Link
+
+    /**
+      * The link object.
+      * @param href The href to link to.
+      * @param meta The meta to link to.
+      */
+    case class LinkObject(href: String, meta: Meta)
+
+    /**
+      * A link of the "self" type.
+      * @param linkObject Describes the href & meta to link to.
+      */
+    case class SelfObject(linkObject: LinkObject) extends Link
+
+    /**
+      * A link of the "related" type.
+      * @param linkObject Describes the href & meta to link to.
+      */
+    case class RelatedObject(linkObject: LinkObject) extends Link
+
+    /**
+      * A link of the "first" type.
+      * @param linkObject Describes the href & meta to link to.
+      */
+    case class FirstObject(linkObject: LinkObject) extends Link
+
+    /**
+      * A link of the "last" type.
+      * @param linkObject Describes the href & meta to link to.
+      */
+    case class LastObject(linkObject: LinkObject) extends Link
+
+    /**
+      * A link of the "next" type.
+      * @param linkObject Describes the href & meta to link to.
+      */
+    case class NextObject(linkObject: LinkObject) extends Link
+
+    /**
+      * A link of the "prev" type.
+      * @param linkObject Describes the href & meta to link to.
+      */
+    case class PrevObject(linkObject: LinkObject) extends Link
+
+    /**
+      * A link of the "about" type.
+      * @param linkObject Describes the href & meta to link to.
+      */
+    case class AboutObject(linkObject: LinkObject) extends Link
   }
 
   /**

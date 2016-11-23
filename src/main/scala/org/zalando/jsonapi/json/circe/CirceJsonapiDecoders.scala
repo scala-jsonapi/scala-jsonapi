@@ -46,11 +46,42 @@ trait CirceJsonapiDecoders {
           case Attribute(FieldNames.`prev`, StringValue(url)) ⇒ Links.Prev(url)
           case Attribute(FieldNames.`related`, StringValue(url)) ⇒
             Links.Related(url)
+          // Object links.
+          case Attribute(FieldNames.`self`, JsObjectValue(linkObjectAttributes)) =>
+            Links.SelfObject(attributesToLinkObject(linkObjectAttributes))
+          case Attribute(FieldNames.`about`, JsObjectValue(linkObjectAttributes)) =>
+            Links.AboutObject(attributesToLinkObject(linkObjectAttributes))
+          case Attribute(FieldNames.`first`, JsObjectValue(linkObjectAttributes)) =>
+            Links.FirstObject(attributesToLinkObject(linkObjectAttributes))
+          case Attribute(FieldNames.`last`, JsObjectValue(linkObjectAttributes)) =>
+            Links.LastObject(attributesToLinkObject(linkObjectAttributes))
+          case Attribute(FieldNames.`next`, JsObjectValue(linkObjectAttributes)) =>
+            Links.NextObject(attributesToLinkObject(linkObjectAttributes))
+          case Attribute(FieldNames.`prev`, JsObjectValue(linkObjectAttributes)) =>
+            Links.PrevObject(attributesToLinkObject(linkObjectAttributes))
+          case Attribute(FieldNames.`related`, JsObjectValue(linkObjectAttributes)) =>
+            Links.RelatedObject(attributesToLinkObject(linkObjectAttributes))
         })
       case _ ⇒
         Left(DecodingFailure("only an object can be decoded to Links", hcursor.history))
     }
   })
+
+  def attributesToLinkObject(linkObjectAttributes: Attributes): Links.LinkObject = {
+    (linkObjectAttributes.find(_.name == "href"), linkObjectAttributes.find(_.name == "meta")) match {
+      case (Some(hrefAttribute), Some(metaAttribute)) =>
+        val href = hrefAttribute match {
+          case Attribute("href", StringValue(url)) => url
+        }
+        val meta: Map[String, JsonApiObject.Value] = metaAttribute match {
+          case Attribute("meta", JsObjectValue(metaAttributes)) =>
+            metaAttributes.map {
+              case Attribute(name, value) ⇒ name -> value
+            }.toMap
+        }
+        Links.LinkObject(href, meta)
+    }
+  }
 
   def jsonToData(json: Json): Either[DecodingFailure, Data] = json match {
     case json: Json if json.isArray ⇒

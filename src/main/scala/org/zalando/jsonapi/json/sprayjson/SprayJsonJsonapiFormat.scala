@@ -243,19 +243,72 @@ trait SprayJsonJsonapiFormat { self: DefaultJsonProtocol ⇒
               case Links.Next(url) ⇒ "next" -> url.toJson
               case Links.Prev(url) ⇒ "prev" -> url.toJson
               case Links.Related(url) ⇒ "related" -> url.toJson
+              // Object links.
+              case Links.SelfObject(linkObject) => linkObjectToJson("self", linkObject)
+              case Links.AboutObject(linkObject) => linkObjectToJson("about", linkObject)
+              case Links.FirstObject(linkObject) => linkObjectToJson("first", linkObject)
+              case Links.LastObject(linkObject) => linkObjectToJson("last", linkObject)
+              case Links.NextObject(linkObject) => linkObjectToJson("next", linkObject)
+              case Links.PrevObject(linkObject) => linkObjectToJson("prev", linkObject)
+              case Links.RelatedObject(linkObject) => linkObjectToJson("related", linkObject)
           })
       JsObject(fields: _*)
     }
 
+    def linkObjectToJson(name: String, linkObject: Links.LinkObject): (String, JsValue) = {
+      name -> JsObject(
+        "href" -> JsString(linkObject.href),
+        "meta" -> linkObject.meta.toJson
+      )
+    }
+
+    def jsonToLinkObject(linkObjectJson: Map[String, JsValue]): Links.LinkObject = {
+      (linkObjectJson.find(_._1 == "href"), linkObjectJson.find(_._1 == "meta")) match {
+        case(Some(hrefJson), Some(metaJson)) =>
+          val href = hrefJson match {
+            case ("href", JsString(hrefStr)) => hrefStr
+          }
+          val meta: Map[String, JsonApiObject.Value] = metaJson match {
+            case ("meta", JsObject(metaObjectJson)) =>
+              metaObjectJson.map {
+                case (name, value) =>
+                  (name, value.convertTo[JsonApiObject.Value])
+              }
+          }
+          Links.LinkObject(href, meta)
+      }
+    }
+
     override def read(json: JsValue): Links = {
       val obj = json.asJsObject
-      val self = (obj \? FieldNames.`self`) map (url ⇒ Links.Self(url.asString))
-      val about = (obj \? FieldNames.`about`) map (url ⇒ Links.About(url.asString))
-      val first = (obj \? FieldNames.`first`) map (url ⇒ Links.First(url.asString))
-      val last = (obj \? FieldNames.`last`) map (url ⇒ Links.Last(url.asString))
-      val next = (obj \? FieldNames.`next`) map (url ⇒ Links.Next(url.asString))
-      val prev = (obj \? FieldNames.`prev`) map (url ⇒ Links.Prev(url.asString))
-      val related = (obj \? FieldNames.`related`) map (url ⇒ Links.Related(url.asString))
+      val self = (obj \? FieldNames.`self`) map {
+        case(JsString(url)) ⇒ Links.Self(url)
+        case (JsObject(linkObjectJson)) => Links.SelfObject(jsonToLinkObject(linkObjectJson))
+      }
+      val about = (obj \? FieldNames.`about`) map {
+        case(JsString(url)) ⇒ Links.About(url)
+        case (JsObject(linkObjectJson)) => Links.AboutObject(jsonToLinkObject(linkObjectJson))
+      }
+      val first = (obj \? FieldNames.`first`) map {
+        case(JsString(url)) ⇒ Links.First(url)
+        case (JsObject(linkObjectJson)) => Links.FirstObject(jsonToLinkObject(linkObjectJson))
+      }
+      val last = (obj \? FieldNames.`last`) map {
+        case(JsString(url)) ⇒ Links.Last(url)
+        case (JsObject(linkObjectJson)) => Links.LastObject(jsonToLinkObject(linkObjectJson))
+      }
+      val next = (obj \? FieldNames.`next`) map {
+        case(JsString(url)) ⇒ Links.Next(url)
+        case (JsObject(linkObjectJson)) => Links.NextObject(jsonToLinkObject(linkObjectJson))
+      }
+      val prev = (obj \? FieldNames.`prev`) map {
+        case(JsString(url)) ⇒ Links.Prev(url)
+        case (JsObject(linkObjectJson)) => Links.PrevObject(jsonToLinkObject(linkObjectJson))
+      }
+      val related = (obj \? FieldNames.`related`) map {
+        case(JsString(url)) ⇒ Links.Related(url)
+        case (JsObject(linkObjectJson)) => Links.RelatedObject(jsonToLinkObject(linkObjectJson))
+      }
       collectSome(self, about, first, last, next, prev, related)
     }
   }
