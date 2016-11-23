@@ -226,19 +226,19 @@ trait PlayJsonJsonapiFormat {
           case Links.Related(u) ⇒ (FieldNames.`related`, JsString(u))
           case Links.Self(u) ⇒ (FieldNames.`self`, JsString(u))
           // Object links.
-          case Links.AboutObject(linkObject) => jsonForLinkObject(FieldNames.`about`, linkObject)
-          case Links.FirstObject(linkObject) => jsonForLinkObject(FieldNames.`first`, linkObject)
-          case Links.LastObject(linkObject) => jsonForLinkObject(FieldNames.`last`, linkObject)
-          case Links.NextObject(linkObject) => jsonForLinkObject(FieldNames.`next`, linkObject)
-          case Links.PrevObject(linkObject) => jsonForLinkObject(FieldNames.`prev`, linkObject)
-          case Links.RelatedObject(linkObject) => jsonForLinkObject(FieldNames.`related`, linkObject)
-          case Links.SelfObject(linkObject) => jsonForLinkObject(FieldNames.`self`, linkObject)
+          case Links.AboutObject(linkObject) => linkObjectToJson(FieldNames.`about`, linkObject)
+          case Links.FirstObject(linkObject) => linkObjectToJson(FieldNames.`first`, linkObject)
+          case Links.LastObject(linkObject) => linkObjectToJson(FieldNames.`last`, linkObject)
+          case Links.NextObject(linkObject) => linkObjectToJson(FieldNames.`next`, linkObject)
+          case Links.PrevObject(linkObject) => linkObjectToJson(FieldNames.`prev`, linkObject)
+          case Links.RelatedObject(linkObject) => linkObjectToJson(FieldNames.`related`, linkObject)
+          case Links.SelfObject(linkObject) => linkObjectToJson(FieldNames.`self`, linkObject)
         }
       }
       JsObject(fields)
     }
 
-    def jsonForLinkObject(name: String, linkObject: Links.LinkObject): (String, JsValue) = {
+    def linkObjectToJson(name: String, linkObject: Links.LinkObject): (String, JsValue) = {
       (name, JsObject(
         Seq(
           ("href", JsString(linkObject.href)),
@@ -247,7 +247,7 @@ trait PlayJsonJsonapiFormat {
       ))
     }
 
-    def linkObjectForJson(linkObjectJson: Seq[(String, JsValue)]): Links.LinkObject = {
+    def jsonToLinkObject(linkObjectJson: Seq[(String, JsValue)]): Links.LinkObject = {
       (linkObjectJson.find(_._1 == "href"), linkObjectJson.find(_._1 == "meta")) match {
         case(Some(hrefJson), Some(metaJson)) =>
           val href = hrefJson match {
@@ -277,13 +277,13 @@ trait PlayJsonJsonapiFormat {
             case (FieldNames.`related`, JsString(u)) ⇒ Links.Related(u)
             case (FieldNames.`self`, JsString(u)) ⇒ Links.Self(u)
             // Object links.
-            case (FieldNames.`about`, JsObject(linkObjectJson)) => Links.AboutObject(linkObjectForJson(linkObjectJson))
-            case (FieldNames.`first`, JsObject(linkObjectJson)) => Links.FirstObject(linkObjectForJson(linkObjectJson))
-            case (FieldNames.`last`, JsObject(linkObjectJson)) => Links.LastObject(linkObjectForJson(linkObjectJson))
-            case (FieldNames.`next`, JsObject(linkObjectJson)) => Links.NextObject(linkObjectForJson(linkObjectJson))
-            case (FieldNames.`prev`, JsObject(linkObjectJson)) => Links.PrevObject(linkObjectForJson(linkObjectJson))
-            case (FieldNames.`related`, JsObject(linkObjectJson)) => Links.RelatedObject(linkObjectForJson(linkObjectJson))
-            case (FieldNames.`self`, JsObject(linkObjectJson)) => Links.SelfObject(linkObjectForJson(linkObjectJson))
+            case (FieldNames.`about`, JsObject(linkObjectJson)) => Links.AboutObject(jsonToLinkObject(linkObjectJson))
+            case (FieldNames.`first`, JsObject(linkObjectJson)) => Links.FirstObject(jsonToLinkObject(linkObjectJson))
+            case (FieldNames.`last`, JsObject(linkObjectJson)) => Links.LastObject(jsonToLinkObject(linkObjectJson))
+            case (FieldNames.`next`, JsObject(linkObjectJson)) => Links.NextObject(jsonToLinkObject(linkObjectJson))
+            case (FieldNames.`prev`, JsObject(linkObjectJson)) => Links.PrevObject(jsonToLinkObject(linkObjectJson))
+            case (FieldNames.`related`, JsObject(linkObjectJson)) => Links.RelatedObject(jsonToLinkObject(linkObjectJson))
+            case (FieldNames.`self`, JsObject(linkObjectJson)) => Links.SelfObject(jsonToLinkObject(linkObjectJson))
           }
         }.toVector)
       case _ ⇒ JsError("error.expected.links")
