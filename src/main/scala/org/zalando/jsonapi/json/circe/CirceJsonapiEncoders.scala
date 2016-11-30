@@ -5,7 +5,7 @@ import io.circe.generic.auto._
 import io.circe.syntax._
 import org.zalando.jsonapi.json.FieldNames
 import org.zalando.jsonapi.model.JsonApiObject._
-import org.zalando.jsonapi.model.Links.{Link, LinkObject}
+import org.zalando.jsonapi.model.Links.Link
 import org.zalando.jsonapi.model.RootObject.{Data, ResourceObject, ResourceObjects}
 import org.zalando.jsonapi.model.{Error, _}
 
@@ -47,28 +47,32 @@ trait CirceJsonapiEncoders {
   }
 
   implicit val linkEncoder = Encoder.instance[Link] { link =>
-    val (name: String, strValueOpt: Option[String], objValueOpt: Option[LinkObject]) = link match {
-      // String links
-      case Links.Self(url) => (FieldNames.`self`,  Some(url), None)
-      case Links.About(url) => (FieldNames.`about`, Some(url), None)
-      case Links.First(url) => (FieldNames.`first`, Some(url), None)
-      case Links.Last(url) => (FieldNames.`last`, Some(url), None)
-      case Links.Next(url) => (FieldNames.`next`, Some(url), None)
-      case Links.Prev(url) => (FieldNames.`prev`, Some(url), None)
-      case Links.Related(url) => (FieldNames.`related`, Some(url), None)
-      // Object links
-      case Links.SelfObject(linkObject) => (FieldNames.`self`,  None, Some(linkObject))
-      case Links.AboutObject(linkObject) => (FieldNames.`self`,  None, Some(linkObject))
-      case Links.FirstObject(linkObject) => (FieldNames.`self`,  None, Some(linkObject))
-      case Links.LastObject(linkObject) => (FieldNames.`self`,  None, Some(linkObject))
-      case Links.NextObject(linkObject) => (FieldNames.`self`,  None, Some(linkObject))
-      case Links.PrevObject(linkObject) => (FieldNames.`self`,  None, Some(linkObject))
-      case Links.RelatedObject(linkObject) => (FieldNames.`self`,  None, Some(linkObject))
+    val (name: String, href: String, metaOpt: Option[Meta]) = link match {
+      case Links.Self(url, None) => (FieldNames.`self`, url, None)
+      case Links.Self(url, Some(meta)) => (FieldNames.`self`, url, Some(meta))
+
+      case Links.About(url, None) => (FieldNames.`about`, url, None)
+      case Links.About(url, Some(meta)) => (FieldNames.`about`, url, Some(meta))
+
+      case Links.First(url, None) => (FieldNames.`first`, url, None)
+      case Links.First(url, Some(meta)) => (FieldNames.`first`, url, Some(meta))
+
+      case Links.Last(url, None) => (FieldNames.`last`, url, None)
+      case Links.Last(url, Some(meta)) => (FieldNames.`last`, url, Some(meta))
+
+      case Links.Next(url, None) => (FieldNames.`next`, url, None)
+      case Links.Next(url, Some(meta)) => (FieldNames.`next`, url, Some(meta))
+
+      case Links.Prev(url, None) => (FieldNames.`prev`, url, None)
+      case Links.Prev(url, Some(meta)) => (FieldNames.`prev`, url, Some(meta))
+
+      case Links.Related(url, None) => (FieldNames.`related`, url, None)
+      case Links.Related(url, Some(meta)) => (FieldNames.`related`, url, Some(meta))
     }
-    (strValueOpt, objValueOpt) match {
-      case (Some(strValue), _) => Json.fromFields(Seq(name -> Json.fromString(strValue)))
-      case (_, Some(objValue)) =>
-        val linkObjectJson = Json.fromFields(Seq("href" -> Json.fromString(objValue.href), "meta" -> objValue.meta.asJson))
+    metaOpt match {
+      case None => Json.fromFields(Seq(name -> Json.fromString(href)))
+      case Some(meta) =>
+        val linkObjectJson = Json.fromFields(Seq("href" -> Json.fromString(href), "meta" -> meta.asJson))
         Json.fromFields(Seq(name -> linkObjectJson))
     }
   }

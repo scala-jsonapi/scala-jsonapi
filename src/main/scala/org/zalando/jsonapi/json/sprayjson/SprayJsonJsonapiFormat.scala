@@ -236,33 +236,38 @@ trait SprayJsonJsonapiFormat { self: DefaultJsonProtocol ⇒
     override def write(links: Links): JsValue = {
       val fields = links map (l ⇒
               l match {
-              case Links.Self(url) ⇒ "self" -> url.toJson
-              case Links.About(url) ⇒ "about" -> url.toJson
-              case Links.First(url) ⇒ "first" -> url.toJson
-              case Links.Last(url) ⇒ "last" -> url.toJson
-              case Links.Next(url) ⇒ "next" -> url.toJson
-              case Links.Prev(url) ⇒ "prev" -> url.toJson
-              case Links.Related(url) ⇒ "related" -> url.toJson
-              // Object links.
-              case Links.SelfObject(linkObject) => linkObjectToJson("self", linkObject)
-              case Links.AboutObject(linkObject) => linkObjectToJson("about", linkObject)
-              case Links.FirstObject(linkObject) => linkObjectToJson("first", linkObject)
-              case Links.LastObject(linkObject) => linkObjectToJson("last", linkObject)
-              case Links.NextObject(linkObject) => linkObjectToJson("next", linkObject)
-              case Links.PrevObject(linkObject) => linkObjectToJson("prev", linkObject)
-              case Links.RelatedObject(linkObject) => linkObjectToJson("related", linkObject)
+              case Links.Self(url, None) ⇒ "self" -> url.toJson
+              case Links.Self(url, Some(meta)) => linkValuesToJson("self", url, meta)
+
+              case Links.About(url, None) ⇒ "about" -> url.toJson
+              case Links.About(url, Some(meta)) => linkValuesToJson("about", url, meta)
+
+              case Links.First(url, None) ⇒ "first" -> url.toJson
+              case Links.First(url, Some(meta)) => linkValuesToJson("first", url, meta)
+
+              case Links.Last(url, None) ⇒ "last" -> url.toJson
+              case Links.Last(url, Some(meta)) => linkValuesToJson("last", url, meta)
+
+              case Links.Next(url, None) ⇒ "next" -> url.toJson
+              case Links.Next(url, Some(meta)) => linkValuesToJson("next", url, meta)
+
+              case Links.Prev(url, None) ⇒ "prev" -> url.toJson
+              case Links.Prev(url, Some(meta)) => linkValuesToJson("prev", url, meta)
+
+              case Links.Related(url, None) ⇒ "related" -> url.toJson
+              case Links.Related(url, Some(meta)) => linkValuesToJson("related", url, meta)
           })
       JsObject(fields: _*)
     }
 
-    def linkObjectToJson(name: String, linkObject: Links.LinkObject): (String, JsValue) = {
+    def linkValuesToJson(name: String, href: String, meta: Meta): (String, JsValue) = {
       name -> JsObject(
-        "href" -> JsString(linkObject.href),
-        "meta" -> linkObject.meta.toJson
+        "href" -> JsString(href),
+        "meta" -> meta.toJson
       )
     }
 
-    def jsonToLinkObject(linkObjectJson: Map[String, JsValue]): Links.LinkObject = {
+    def jsonToLinkValues(linkObjectJson: Map[String, JsValue]): (String, Option[Meta]) = {
       (linkObjectJson.find(_._1 == "href"), linkObjectJson.find(_._1 == "meta")) match {
         case(Some(hrefJson), Some(metaJson)) =>
           val href = hrefJson match {
@@ -275,40 +280,61 @@ trait SprayJsonJsonapiFormat { self: DefaultJsonProtocol ⇒
                   (name, value.convertTo[JsonApiObject.Value])
               }
           }
-          Links.LinkObject(href, meta)
+          (href, Some(meta))
       }
     }
 
     override def read(json: JsValue): Links = {
       val obj = json.asJsObject
       val self = (obj \? FieldNames.`self`) map {
-        case(JsString(url)) ⇒ Links.Self(url)
-        case (JsObject(linkObjectJson)) => Links.SelfObject(jsonToLinkObject(linkObjectJson))
+        case(JsString(url)) ⇒ Links.Self(url, None)
+        case (JsObject(linkObjectJson)) =>
+          val linkValues = jsonToLinkValues(linkObjectJson)
+          Links.Self(linkValues._1, linkValues._2)
       }
+
       val about = (obj \? FieldNames.`about`) map {
-        case(JsString(url)) ⇒ Links.About(url)
-        case (JsObject(linkObjectJson)) => Links.AboutObject(jsonToLinkObject(linkObjectJson))
+        case(JsString(url)) ⇒ Links.About(url, None)
+        case (JsObject(linkObjectJson)) =>
+          val linkValues = jsonToLinkValues(linkObjectJson)
+          Links.About(linkValues._1, linkValues._2)
       }
+
       val first = (obj \? FieldNames.`first`) map {
-        case(JsString(url)) ⇒ Links.First(url)
-        case (JsObject(linkObjectJson)) => Links.FirstObject(jsonToLinkObject(linkObjectJson))
+        case(JsString(url)) ⇒ Links.First(url, None)
+        case (JsObject(linkObjectJson)) =>
+          val linkValues = jsonToLinkValues(linkObjectJson)
+          Links.First(linkValues._1, linkValues._2)
       }
+
       val last = (obj \? FieldNames.`last`) map {
-        case(JsString(url)) ⇒ Links.Last(url)
-        case (JsObject(linkObjectJson)) => Links.LastObject(jsonToLinkObject(linkObjectJson))
+        case(JsString(url)) ⇒ Links.Last(url, None)
+        case (JsObject(linkObjectJson)) =>
+          val linkValues = jsonToLinkValues(linkObjectJson)
+          Links.Last(linkValues._1, linkValues._2)
       }
+
       val next = (obj \? FieldNames.`next`) map {
-        case(JsString(url)) ⇒ Links.Next(url)
-        case (JsObject(linkObjectJson)) => Links.NextObject(jsonToLinkObject(linkObjectJson))
+        case(JsString(url)) ⇒ Links.Next(url, None)
+        case (JsObject(linkObjectJson)) =>
+          val linkValues = jsonToLinkValues(linkObjectJson)
+          Links.Next(linkValues._1, linkValues._2)
       }
+
       val prev = (obj \? FieldNames.`prev`) map {
-        case(JsString(url)) ⇒ Links.Prev(url)
-        case (JsObject(linkObjectJson)) => Links.PrevObject(jsonToLinkObject(linkObjectJson))
+        case(JsString(url)) ⇒ Links.Prev(url, None)
+        case (JsObject(linkObjectJson)) =>
+          val linkValues = jsonToLinkValues(linkObjectJson)
+          Links.Prev(linkValues._1, linkValues._2)
       }
+
       val related = (obj \? FieldNames.`related`) map {
-        case(JsString(url)) ⇒ Links.Related(url)
-        case (JsObject(linkObjectJson)) => Links.RelatedObject(jsonToLinkObject(linkObjectJson))
+        case(JsString(url)) ⇒ Links.Related(url, None)
+        case (JsObject(linkObjectJson)) =>
+          val linkValues = jsonToLinkValues(linkObjectJson)
+          Links.Related(linkValues._1, linkValues._2)
       }
+
       collectSome(self, about, first, last, next, prev, related)
     }
   }

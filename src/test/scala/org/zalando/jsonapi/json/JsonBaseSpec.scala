@@ -18,7 +18,11 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
 
   protected lazy val rootObjectWithResourceIdentifierObjectsJson = parseJson(rootObjectWithResourceIdentifierObjectsJsonString)
 
-  protected lazy val rootObjectWithResourceObjectsWithAllLinksJson = parseJson(rootObjectWithResourceObjectsWithAllLinksJsonString)
+  protected lazy val rootObjectWithResourceObjectsWithAllLinksAsStringsJson = parseJson(rootObjectWithResourceObjectsWithAllLinksAsStringsJsonString)
+
+  protected lazy val rootObjectWithResourceObjectsWithAllLinksAsObjectsJson = parseJson(rootObjectWithResourceObjectsWithAllLinksAsObjectsJsonString)
+
+  protected lazy val rootObjectWithResourceObjectsWithAllLinksAsStringsAndObjectsJson = parseJson(rootObjectWithResourceObjectsWithAllLinksAsStringsAndObjectsJsonString)
 
   protected lazy val rootObjectWithResourceObjectsWithMetaJson = parseJson(rootObjectWithResourceObjectsWithMetaJsonString)
 
@@ -101,9 +105,9 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
         ResourceObject(
           `type` = "person",
           attributes = Some(List(Attribute("name", StringValue("foobar")))),
-          links = Some(List(Links.Self("/persons/1")))
+          links = Some(List(Links.Self("/persons/1", None)))
         )))),
-      links = Some(List(Links.Next("/persons/2")))
+      links = Some(List(Links.Next("/persons/2", None)))
     )
 
   protected lazy val rootObjectWithResourceIdentifierObjectJsonString =
@@ -140,7 +144,106 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
       ResourceObject(`type` = "cat", id = Some("felix"))
     ))))
 
-  protected lazy val rootObjectWithResourceObjectsWithAllLinksJsonString =
+  protected lazy val rootObjectWithResourceObjectsWithAllLinksAsStringsJsonString =
+    """
+      |{
+      |  "data": [{
+      |    "type": "person",
+      |    "links": {
+      |      "self" : "/someUrl",
+      |      "related": "/persons/10",
+      |      "next": "/persons/3",
+      |      "prev": "/persons/1",
+      |      "about": "/persons/11",
+      |      "first": "/persons/0",
+      |      "last": "/persons/99"
+      |    }
+      |  }]
+      |}
+    """.stripMargin
+
+  protected lazy val rootObjectWithResourceObjectsWithAllLinksAsObjectsJsonString =
+    """
+      |{
+      |  "data": [{
+      |    "type": "person",
+      |    "links": {
+      |      "self" : {
+      |        "href" : "/someUrl",
+      |        "meta" : {
+      |          "foo" : "bar",
+      |            "array" : [
+      |              "one",
+      |              "two"
+      |            ]
+      |        }
+      |      },
+      |      "related": {
+      |        "href" : "/persons/10",
+      |        "meta" : {
+      |          "foo" : "bar",
+      |            "array" : [
+      |              "three",
+      |              "four"
+      |            ]
+      |        }
+      |      },
+      |      "next": {
+      |        "href" : "/persons/3",
+      |        "meta" : {
+      |          "foo" : "bar",
+      |            "array" : [
+      |              "five",
+      |              "six"
+      |            ]
+      |        }
+      |      },
+      |      "prev": {
+      |        "href" : "/persons/1",
+      |        "meta" : {
+      |          "foo" : "bar",
+      |            "array" : [
+      |              "seven",
+      |              "eight"
+      |            ]
+      |        }
+      |      },
+      |      "about": {
+      |        "href" : "/persons/11",
+      |        "meta" : {
+      |          "foo" : "bar",
+      |            "array" : [
+      |              "nine",
+      |              "ten"
+      |            ]
+      |        }
+      |      },
+      |      "first": {
+      |        "href" : "/persons/0",
+      |        "meta" : {
+      |          "foo" : "bar",
+      |            "array" : [
+      |              11,
+      |              12
+      |            ]
+      |        }
+      |      },
+      |      "last": {
+      |        "href" : "/persons/99",
+      |        "meta" : {
+      |          "foo" : "bar",
+      |            "array" : [
+      |              13,
+      |              14
+      |            ]
+      |        }
+      |      }
+      |    }
+      |  }]
+      |}
+    """.stripMargin
+
+  protected lazy val rootObjectWithResourceObjectsWithAllLinksAsStringsAndObjectsJsonString =
     """
       |{
       |  "data": [{
@@ -159,7 +262,16 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
       |      "related": "/persons/10",
       |      "next": "/persons/3",
       |      "prev": "/persons/1",
-      |      "about": "/persons/11",
+      |      "about" : {
+      |        "href" : "/persons/11",
+      |        "meta" : {
+      |          "foo" : "bar",
+      |            "array" : [
+      |              11,
+      |              12
+      |            ]
+      |        }
+      |      },
       |      "first": "/persons/0",
       |      "last": "/persons/99"
       |    }
@@ -167,24 +279,94 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
       |}
     """.stripMargin
 
-  protected lazy val rootObjectWithResourceObjectsWithAllLinks = RootObject(Some(ResourceObjects(List(
+  protected lazy val rootObjectWithResourceObjectsWithAllLinksAsStrings = RootObject(Some(ResourceObjects(List(
     ResourceObject(`type` = "person", links = Some(
       List(
-        Links.SelfObject(
-          Links.LinkObject(
-            href = "/someUrl",
-            meta = Map(
-              "foo" -> StringValue("bar"),
-              "array" -> JsArrayValue(List(StringValue("one"), StringValue("two")))
-            )
-          )
+        Links.Self("/someUrl", None),
+        Links.Related("/persons/10", None),
+        Links.Next("/persons/3", None),
+        Links.Prev("/persons/1", None),
+        Links.About("/persons/11", None),
+        Links.First("/persons/0", None),
+        Links.Last("/persons/99", None)
+      )))))))
+
+  protected lazy val rootObjectWithResourceObjectsWithAllLinksAsObjects = RootObject(Some(ResourceObjects(List(
+    ResourceObject(`type` = "person", links = Some(
+      List(
+        Links.Self(
+          url = "/someUrl",
+          meta = Some(Map(
+            "foo" -> StringValue("bar"),
+            "array" -> JsArrayValue(List(StringValue("one"), StringValue("two")))
+          ))
         ),
-        Links.Related("/persons/10"),
-        Links.Next("/persons/3"),
-        Links.Prev("/persons/1"),
-        Links.About("/persons/11"),
-        Links.First("/persons/0"),
-        Links.Last("/persons/99")
+        Links.Related(
+          url = "/persons/10",
+          meta = Some(Map(
+            "foo" -> StringValue("bar"),
+            "array" -> JsArrayValue(List(StringValue("three"), StringValue("four")))
+          ))
+        ),
+        Links.Next(
+          url = "/persons/3",
+          meta = Some(Map(
+            "foo" -> StringValue("bar"),
+            "array" -> JsArrayValue(List(StringValue("five"), StringValue("six")))
+          ))
+        ),
+        Links.Prev(
+          url = "/persons/1",
+          meta = Some(Map(
+            "foo" -> StringValue("bar"),
+            "array" -> JsArrayValue(List(StringValue("seven"), StringValue("eight")))
+          ))
+        ),
+        Links.About(
+          url = "/persons/11",
+          meta = Some(Map(
+            "foo" -> StringValue("bar"),
+            "array" -> JsArrayValue(List(StringValue("nine"), StringValue("ten")))
+          ))
+        ),
+        Links.First(
+          url = "/persons/0",
+          meta = Some(Map(
+            "foo" -> StringValue("bar"),
+            "array" -> JsArrayValue(List(NumberValue(11), NumberValue(12)))
+          ))
+        ),
+        Links.Last(
+          url = "/persons/99",
+          meta = Some(Map(
+            "foo" -> StringValue("bar"),
+            "array" -> JsArrayValue(List(NumberValue(13), NumberValue(14)))
+          ))
+        )
+      )))))))
+
+  protected lazy val rootObjectWithResourceObjectsWithAllLinksAsStringsAndObjects = RootObject(Some(ResourceObjects(List(
+    ResourceObject(`type` = "person", links = Some(
+      List(
+        Links.Self(
+          url = "/someUrl",
+          meta = Some(Map(
+            "foo" -> StringValue("bar"),
+            "array" -> JsArrayValue(List(StringValue("one"), StringValue("two")))
+          ))
+        ),
+        Links.Related("/persons/10", None),
+        Links.Next("/persons/3", None),
+        Links.Prev("/persons/1", None),
+        Links.About(
+          url = "/persons/11",
+          meta = Some(Map(
+            "foo" -> StringValue("bar"),
+            "array" -> JsArrayValue(List(NumberValue(11), NumberValue(12)))
+          ))
+        ),
+        Links.First("/persons/0", None),
+        Links.Last("/persons/99", None)
       )))))))
 
   protected lazy val rootObjectWithResourceObjectsWithMetaJsonString =
@@ -263,7 +445,7 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
       data = None,
       errors = Some(List(Error(
         id = Some("1"),
-        links = Some(List(Links.Self("self-link"))),
+        links = Some(List(Links.Self("self-link", None))),
         status = Some("status1"),
         code = Some("code1"),
         title = Some("title1"),
@@ -368,7 +550,7 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
           relationships =
             Some(Map("father" -> Relationship(
               data = Some(ResourceObject(`type` = "person")),
-              links = Some(List(Links.Self("http://link.to.self")))
+              links = Some(List(Links.Self("http://link.to.self", None)))
             )))
         )
       ))
@@ -401,7 +583,7 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
     relationships =
       Some(Map("father" -> Relationship(
         data = Some(ResourceObject(`type` = "person")),
-        links = Some(List(Links.Self("http://link.to.self")))
+        links = Some(List(Links.Self("http://link.to.self", None)))
       )))
   )
 
@@ -422,7 +604,7 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
   protected lazy val relationshipsObject = Map(
     "father" -> Relationship(
       data = Some(ResourceObject(`type` = "person")),
-      links = Some(List(Links.Self("http://link.to.self")))
+      links = Some(List(Links.Self("http://link.to.self", None)))
     )
   )
 

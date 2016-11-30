@@ -29,8 +29,14 @@ class CirceJsonapiFormatSpec extends JsonBaseSpec[Json] with MustMatchers with C
       "transform a list of resource identifier objects correctly" in {
         rootObjectWithResourceIdentifierObjects.asJson mustEqual rootObjectWithResourceIdentifierObjectsJson
       }
-      "transform all link types correctly" in {
-        rootObjectWithResourceObjectsWithAllLinks.asJson mustEqual rootObjectWithResourceObjectsWithAllLinksJson
+      "transform all string link types correctly" in {
+        rootObjectWithResourceObjectsWithAllLinksAsStrings.asJson mustEqual rootObjectWithResourceObjectsWithAllLinksAsStringsJson
+      }
+      "transform all object link types correctly" in {
+        rootObjectWithResourceObjectsWithAllLinksAsObjects.asJson mustEqual rootObjectWithResourceObjectsWithAllLinksAsObjectsJson
+      }
+      "transform all string and object link types correctly" in {
+        rootObjectWithResourceObjectsWithAllLinksAsStringsAndObjects.asJson mustEqual rootObjectWithResourceObjectsWithAllLinksAsStringsAndObjectsJson
       }
       "transform all meta object inside resource object correctly" in {
         rootObjectWithResourceObjectsWithMeta.asJson mustEqual rootObjectWithResourceObjectsWithMetaJson
@@ -73,8 +79,14 @@ class CirceJsonapiFormatSpec extends JsonBaseSpec[Json] with MustMatchers with C
       "transform a list of resource identifier objects correctly" in {
         decodeJson[RootObject](rootObjectWithResourceIdentifierObjectsJson) === rootObjectWithResourceIdentifierObjects
       }
-      "transform all link types correctly" in {
-        decodeJson[RootObject](rootObjectWithResourceObjectsWithAllLinksJson) === rootObjectWithResourceObjectsWithAllLinks
+      "transform all string link types correctly" in {
+        decodeJson[RootObject](rootObjectWithResourceObjectsWithAllLinksAsStringsJson) === rootObjectWithResourceObjectsWithAllLinksAsStrings
+      }
+      "transform all object link types correctly" in {
+        decodeJson[RootObject](rootObjectWithResourceObjectsWithAllLinksAsObjectsJson) === rootObjectWithResourceObjectsWithAllLinksAsObjects
+      }
+      "transform all string and object link types correctly" in {
+        decodeJson[RootObject](rootObjectWithResourceObjectsWithAllLinksAsStringsAndObjectsJson) === rootObjectWithResourceObjectsWithAllLinksAsStringsAndObjects
       }
       "transform all meta object inside resource object correctly" in {
         decodeJson[RootObject](rootObjectWithResourceObjectsWithMetaJson) === rootObjectWithResourceObjectsWithMeta
