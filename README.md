@@ -102,6 +102,18 @@ In contrast there is a type class called `JsonapiRootObjectReader` that supports
 
 For complete usage, see [the specs example].
 
+## JSON API Links Support
+
+There is support for string and object links.
+
+To create a string "self" link:
+
+Links.self("href", None)
+
+To create an object "self" link:
+
+Links.self("href", Some(meta))
+
 # Publishing and Releasing
 
 Publishing and releasing is made with help of the [sbt-sonatype plugin].
