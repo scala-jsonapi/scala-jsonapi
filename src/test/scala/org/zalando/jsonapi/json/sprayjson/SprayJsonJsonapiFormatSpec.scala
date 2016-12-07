@@ -26,8 +26,14 @@ class SprayJsonJsonapiFormatSpec extends JsonBaseSpec[JsValue] with MustMatchers
       "transform a list of resource identifier objects correctly" in {
         rootObjectWithResourceIdentifierObjects.toJson mustEqual rootObjectWithResourceIdentifierObjectsJson
       }
-      "transform all link types correctly" in {
-        rootObjectWithResourceObjectsWithAllLinks.toJson mustEqual rootObjectWithResourceObjectsWithAllLinksJson
+      "transform all string link types correctly" in {
+        rootObjectWithResourceObjectsWithAllLinksAsStrings.toJson mustEqual rootObjectWithResourceObjectsWithAllLinksAsStringsJson
+      }
+      "transform all object link types correctly" in {
+        rootObjectWithResourceObjectsWithAllLinksAsObjects.toJson mustEqual rootObjectWithResourceObjectsWithAllLinksAsObjectsJson
+      }
+      "transform all string and object link types correctly" in {
+        rootObjectWithResourceObjectsWithAllLinksAsStringsAndObjects.toJson mustEqual rootObjectWithResourceObjectsWithAllLinksAsStringsAndObjectsJson
       }
       "transform all meta object inside resource object correctly" in {
         rootObjectWithResourceObjectsWithMeta.toJson mustEqual rootObjectWithResourceObjectsWithMetaJson
@@ -70,8 +76,14 @@ class SprayJsonJsonapiFormatSpec extends JsonBaseSpec[JsValue] with MustMatchers
       "transform a list of resource identifier objects correctly" in {
         rootObjectWithResourceIdentifierObjectsJson.convertTo[RootObject] === rootObjectWithResourceIdentifierObjects
       }
-      "transform all link types correctly" in {
-        rootObjectWithResourceObjectsWithAllLinksJson.convertTo[RootObject] === rootObjectWithResourceObjectsWithAllLinks
+      "transform all string link types correctly" in {
+        rootObjectWithResourceObjectsWithAllLinksAsStringsJson.convertTo[RootObject] === rootObjectWithResourceObjectsWithAllLinksAsStrings
+      }
+      "transform all object link types correctly" in {
+        rootObjectWithResourceObjectsWithAllLinksAsObjectsJson.convertTo[RootObject] === rootObjectWithResourceObjectsWithAllLinksAsObjects
+      }
+      "transform all string and object link types correctly" in {
+        rootObjectWithResourceObjectsWithAllLinksAsStringsAndObjectsJson.convertTo[RootObject] === rootObjectWithResourceObjectsWithAllLinksAsStringsAndObjects
       }
       "transform all meta object inside resource object correctly" in {
         rootObjectWithResourceObjectsWithMetaJson.convertTo[RootObject] === rootObjectWithResourceObjectsWithMeta

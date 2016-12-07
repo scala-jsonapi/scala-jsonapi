@@ -36,21 +36,64 @@ trait CirceJsonapiDecoders {
     hcursor.as[Value].right.flatMap {
       case JsObjectValue(attributes) ⇒
         Right(attributes.map {
-          case Attribute(FieldNames.`self`, StringValue(url)) ⇒ Links.Self(url)
+          case Attribute(FieldNames.`self`, StringValue(url)) ⇒ Links.Self(url, None)
+          case Attribute(FieldNames.`self`, JsObjectValue(linkAttributes)) =>
+            val linkValues = attributesToLinkValues(linkAttributes)
+            Links.Self(linkValues._1, linkValues._2)
+
           case Attribute(FieldNames.`about`, StringValue(url)) ⇒
-            Links.About(url)
+            Links.About(url, None)
+          case Attribute(FieldNames.`about`, JsObjectValue(linkAttributes)) =>
+            val linkValues = attributesToLinkValues(linkAttributes)
+            Links.About(linkValues._1, linkValues._2)
+
           case Attribute(FieldNames.`first`, StringValue(url)) ⇒
-            Links.First(url)
-          case Attribute(FieldNames.`last`, StringValue(url)) ⇒ Links.Last(url)
-          case Attribute(FieldNames.`next`, StringValue(url)) ⇒ Links.Next(url)
-          case Attribute(FieldNames.`prev`, StringValue(url)) ⇒ Links.Prev(url)
+            Links.First(url, None)
+          case Attribute(FieldNames.`first`, JsObjectValue(linkAttributes)) =>
+            val linkValues = attributesToLinkValues(linkAttributes)
+            Links.First(linkValues._1, linkValues._2)
+
+          case Attribute(FieldNames.`last`, StringValue(url)) ⇒ Links.Last(url, None)
+          case Attribute(FieldNames.`last`, JsObjectValue(linkAttributes)) =>
+            val linkValues = attributesToLinkValues(linkAttributes)
+            Links.Last(linkValues._1, linkValues._2)
+
+          case Attribute(FieldNames.`next`, StringValue(url)) ⇒ Links.Next(url, None)
+          case Attribute(FieldNames.`next`, JsObjectValue(linkAttributes)) =>
+            val linkValues = attributesToLinkValues(linkAttributes)
+            Links.Next(linkValues._1, linkValues._2)
+
+          case Attribute(FieldNames.`prev`, StringValue(url)) ⇒ Links.Prev(url, None)
+          case Attribute(FieldNames.`prev`, JsObjectValue(linkAttributes)) =>
+            val linkValues = attributesToLinkValues(linkAttributes)
+            Links.Prev(linkValues._1, linkValues._2)
+
           case Attribute(FieldNames.`related`, StringValue(url)) ⇒
-            Links.Related(url)
+            Links.Related(url, None)
+          case Attribute(FieldNames.`related`, JsObjectValue(linkAttributes)) =>
+            val linkValues = attributesToLinkValues(linkAttributes)
+            Links.Related(linkValues._1, linkValues._2)
         })
       case _ ⇒
         Left(DecodingFailure("only an object can be decoded to Links", hcursor.history))
     }
   })
+
+  def attributesToLinkValues(linkObjectAttributes: Attributes): (String, Option[Meta]) = {
+    (linkObjectAttributes.find(_.name == "href"), linkObjectAttributes.find(_.name == "meta")) match {
+      case (Some(hrefAttribute), Some(metaAttribute)) =>
+        val href = hrefAttribute match {
+          case Attribute("href", StringValue(url)) => url
+        }
+        val meta: Map[String, JsonApiObject.Value] = metaAttribute match {
+          case Attribute("meta", JsObjectValue(metaAttributes)) =>
+            metaAttributes.map {
+              case Attribute(name, value) ⇒ name -> value
+            }.toMap
+        }
+        (href, Some(meta))
+    }
+  }
 
   def jsonToData(json: Json): Either[DecodingFailure, Data] = json match {
     case json: Json if json.isArray ⇒
