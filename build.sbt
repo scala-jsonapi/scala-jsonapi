@@ -12,7 +12,7 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= {
-  val circeVersion = "0.6.0"
+  val circeVersion = "0.7.0"
   val akkaVersion = "2.4.8"
 
   Seq(
