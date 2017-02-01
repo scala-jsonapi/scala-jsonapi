@@ -20,17 +20,17 @@ lazy val core = project.in(file("core")).
   settings(commonSettings: _*).
   settings(libraryDependencies ++= coreDeps)
 
-lazy val `spray-json` = project.in(file("spray-json")).
-  dependsOn(core % "test->test;compile->compile").
-  settings(moduleName := "scala-jsonapi-spray-json").
-  settings(commonSettings: _*).
-  settings(libraryDependencies ++= sprayJsonDeps)
-
 lazy val spray = project.in(file("spray")).
-  dependsOn(core % "test->test;compile->compile", `spray-json`).
+  dependsOn(core % "test->test;compile->compile").
   settings(moduleName := "scala-jsonapi-spray").
   settings(commonSettings: _*).
   settings(libraryDependencies ++= sprayDeps)
+
+lazy val `spray-json` = project.in(file("spray-json")).
+  dependsOn(core % "test->test;compile->compile", spray).
+  settings(moduleName := "scala-jsonapi-spray-json").
+  settings(commonSettings: _*).
+  settings(libraryDependencies ++= sprayJsonDeps)
 
 lazy val circe = project.in(file("circe")).
   dependsOn(core % "test->test;compile->compile", spray).
