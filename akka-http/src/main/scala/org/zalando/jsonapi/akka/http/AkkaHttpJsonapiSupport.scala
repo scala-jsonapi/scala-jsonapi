@@ -6,7 +6,7 @@ import akka.http.scaladsl.unmarshalling._
 import org.zalando.jsonapi.model._
 import org.zalando.jsonapi.sprayjson.SprayJsonJsonapiProtocol
 import org.zalando.jsonapi.{JsonapiRootObjectReader, JsonapiRootObjectWriter, _}
-import spray.json._
+import _root_.spray.json._
 
 trait AkkaHttpJsonapiSupport extends SprayJsonJsonapiProtocol {
   def akkaHttpJsonapiMarshaller[T: JsonapiRootObjectWriter]: ToEntityMarshaller[T] =

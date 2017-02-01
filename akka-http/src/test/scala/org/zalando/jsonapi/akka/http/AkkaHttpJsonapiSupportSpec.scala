@@ -5,8 +5,7 @@ import org.scalatest.{EitherValues, WordSpec}
 import org.zalando.jsonapi.JsonapiRootObjectWriter
 import org.zalando.jsonapi.model._
 import org.zalando.jsonapi._
-import org.zalando.jsonapi.akka.http.AkkaHttpJsonapiSupport
-import spray.json._
+import _root_.spray.json._
 
 class AkkaHttpJsonapiSupportSpec extends WordSpec with TypeCheckedTripleEquals with EitherValues with AkkaHttpJsonapiSupport {
   s"AkkaHttpJsonapiSupport" must {
