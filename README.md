@@ -4,6 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/zalando/scala-jsonapi/badge.svg?branch=master&service=github)](https://coveralls.io/github/zalando/scala-jsonapi?branch=master)
 [![codecov.io](https://codecov.io/github/zalando/scala-jsonapi/coverage.svg?branch=master)](https://codecov.io/github/zalando/scala-jsonapi?branch=master)
 [![Join the chat at https://gitter.im/zalando/scala-jsonapi](https://badges.gitter.im/zalando/scala-jsonapi.svg)](https://gitter.im/zalando/scala-jsonapi?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.zalando/scala-jsonapi_2.11/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.zalando/scala-jsonapi_2.11)
 
 scala-jsonapi is a Scala library that aims to help you produce JSON output based on the [JSON API specification][jsonapi] easily and painlessly. The library is compatible with Scala version `2.11`. It supports read and write for the following backends:
 
@@ -23,7 +24,7 @@ This library is very much a work in progress, so expect its API to change.
 
 To use scala-jsonapi, first add a library dependency—assuming that you have [sonatype resolvers] set up.
 
-    libraryDependencies += "org.zalando" %% "scala-jsonapi" % "0.5.2"
+    libraryDependencies += "org.zalando" %% "scala-jsonapi" % "0.6.2"
 
 You also have to provide the used backend (e.g. spray-json).
 
@@ -100,6 +101,18 @@ In contrast there is a type class called `JsonapiRootObjectReader` that supports
     val person: Person = Jsonapi.fromJsonapi[Person](RootObject(...))
 
 For complete usage, see [the specs example].
+
+## JSON API Links Support
+
+There is support for string and object links.
+
+To create a string "self" link:
+
+Links.self("href", None)
+
+To create an object "self" link:
+
+Links.self("href", Some(meta))
 
 # Publishing and Releasing
 

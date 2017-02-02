@@ -218,29 +218,96 @@ trait PlayJsonJsonapiFormat {
     override def writes(links: Links): JsValue = {
       val fields = links.map {
         _ match {
-          case Links.About(u) ⇒ (FieldNames.`about`, JsString(u))
-          case Links.First(u) ⇒ (FieldNames.`first`, JsString(u))
-          case Links.Last(u) ⇒ (FieldNames.`last`, JsString(u))
-          case Links.Next(u) ⇒ (FieldNames.`next`, JsString(u))
-          case Links.Prev(u) ⇒ (FieldNames.`prev`, JsString(u))
-          case Links.Related(u) ⇒ (FieldNames.`related`, JsString(u))
-          case Links.Self(u) ⇒ (FieldNames.`self`, JsString(u))
+          case Links.About(u, None) ⇒ (FieldNames.`about`, JsString(u))
+          case Links.About(u, Some(meta)) ⇒ linkValuesToJson(FieldNames.`about`, u, meta)
+
+          case Links.First(u, None) ⇒ (FieldNames.`first`, JsString(u))
+          case Links.First(u, Some(meta)) ⇒ linkValuesToJson(FieldNames.`first`, u, meta)
+
+          case Links.Last(u, None) ⇒ (FieldNames.`last`, JsString(u))
+          case Links.Last(u, Some(meta)) ⇒ linkValuesToJson(FieldNames.`last`, u, meta)
+
+          case Links.Next(u, None) ⇒ (FieldNames.`next`, JsString(u))
+          case Links.Next(u, Some(meta)) ⇒ linkValuesToJson(FieldNames.`next`, u, meta)
+
+          case Links.Prev(u, None) ⇒ (FieldNames.`prev`, JsString(u))
+          case Links.Prev(u, Some(meta)) ⇒ linkValuesToJson(FieldNames.`prev`, u, meta)
+
+          case Links.Related(u, None) ⇒ (FieldNames.`related`, JsString(u))
+          case Links.Related(u, Some(meta)) ⇒ linkValuesToJson(FieldNames.`related`, u, meta)
+
+          case Links.Self(u, None) ⇒ (FieldNames.`self`, JsString(u))
+          case Links.Self(u, Some(meta)) ⇒ linkValuesToJson(FieldNames.`self`, u, meta)
         }
       }
       JsObject(fields)
+    }
+
+    def linkValuesToJson(name: String, href: String, meta: Meta): (String, JsValue) = {
+      (name, JsObject(
+        Seq(
+          ("href", JsString(href)),
+          ("meta", Json.toJson(meta))
+        )
+      ))
+    }
+
+    def jsonToLinkValues(linkObjectJson: Seq[(String, JsValue)]): (String, Option[Meta]) = {
+      (linkObjectJson.find(_._1 == "href"), linkObjectJson.find(_._1 == "meta")) match {
+        case(Some(hrefJson), Some(metaJson)) =>
+          val href = hrefJson match {
+            case ("href", JsString(hrefStr)) => hrefStr
+          }
+          val meta: Map[String, JsonApiObject.Value] = metaJson match {
+            case ("meta", JsObject(metaObjectJson)) =>
+              metaObjectJson.map {
+                case (name, value) =>
+                  (name, value.as[JsonApiObject.Value])
+
+              }.toMap
+          }
+          (href, Some(meta))
+      }
     }
 
     override def reads(json: JsValue): JsResult[Links] = json match {
       case JsObject(o) ⇒
         JsSuccess(o.map { keyValue ⇒
           keyValue match {
-            case (FieldNames.`about`, JsString(u)) ⇒ Links.About(u)
-            case (FieldNames.`first`, JsString(u)) ⇒ Links.First(u)
-            case (FieldNames.`last`, JsString(u)) ⇒ Links.Last(u)
-            case (FieldNames.`next`, JsString(u)) ⇒ Links.Next(u)
-            case (FieldNames.`prev`, JsString(u)) ⇒ Links.Prev(u)
-            case (FieldNames.`related`, JsString(u)) ⇒ Links.Related(u)
-            case (FieldNames.`self`, JsString(u)) ⇒ Links.Self(u)
+            case (FieldNames.`about`, JsString(u)) ⇒ Links.About(u, None)
+            case (FieldNames.`about`, JsObject(linkObjectJson)) =>
+              val linkValues = jsonToLinkValues(linkObjectJson)
+              Links.About(linkValues._1, linkValues._2)
+
+            case (FieldNames.`first`, JsString(u)) ⇒ Links.First(u, None)
+            case (FieldNames.`first`, JsObject(linkObjectJson)) =>
+              val linkValues = jsonToLinkValues(linkObjectJson)
+              Links.First(linkValues._1, linkValues._2)
+
+            case (FieldNames.`last`, JsString(u)) ⇒ Links.Last(u, None)
+            case (FieldNames.`last`, JsObject(linkObjectJson)) =>
+              val linkValues = jsonToLinkValues(linkObjectJson)
+              Links.Last(linkValues._1, linkValues._2)
+
+            case (FieldNames.`next`, JsString(u)) ⇒ Links.Next(u, None)
+            case (FieldNames.`next`, JsObject(linkObjectJson)) =>
+              val linkValues = jsonToLinkValues(linkObjectJson)
+              Links.Next(linkValues._1, linkValues._2)
+
+            case (FieldNames.`prev`, JsString(u)) ⇒ Links.Prev(u, None)
+            case (FieldNames.`prev`, JsObject(linkObjectJson)) =>
+              val linkValues = jsonToLinkValues(linkObjectJson)
+              Links.Prev(linkValues._1, linkValues._2)
+
+            case (FieldNames.`related`, JsString(u)) ⇒ Links.Related(u, None)
+            case (FieldNames.`related`, JsObject(linkObjectJson)) =>
+              val linkValues = jsonToLinkValues(linkObjectJson)
+              Links.Related(linkValues._1, linkValues._2)
+
+            case (FieldNames.`self`, JsString(u)) ⇒ Links.Self(u, None)
+            case (FieldNames.`self`, JsObject(linkObjectJson)) =>
+              val linkValues = jsonToLinkValues(linkObjectJson)
+              Links.Self(linkValues._1, linkValues._2)
           }
         }.toVector)
       case _ ⇒ JsError("error.expected.links")

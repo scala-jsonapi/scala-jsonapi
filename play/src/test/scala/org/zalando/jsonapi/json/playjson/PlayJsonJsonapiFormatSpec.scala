@@ -27,8 +27,14 @@ class PlayJsonJsonapiFormatSpec extends JsonBaseSpec[JsValue] with MustMatchers 
       "transform a list of resource identifier objects correctly" in {
         Json.toJson(rootObjectWithResourceIdentifierObjects) mustEqual rootObjectWithResourceIdentifierObjectsJson
       }
-      "transform all link types correctly" in {
-        Json.toJson(rootObjectWithResourceObjectsWithAllLinks) mustEqual rootObjectWithResourceObjectsWithAllLinksJson
+      "transform all string link types correctly" in {
+        Json.toJson(rootObjectWithResourceObjectsWithAllLinksAsStrings) mustEqual rootObjectWithResourceObjectsWithAllLinksAsStringsJson
+      }
+      "transform all object link types correctly" in {
+        Json.toJson(rootObjectWithResourceObjectsWithAllLinksAsObjects) mustEqual rootObjectWithResourceObjectsWithAllLinksAsObjectsJson
+      }
+      "transform all string and object link types correctly" in {
+        Json.toJson(rootObjectWithResourceObjectsWithAllLinksAsStringsAndObjects) mustEqual rootObjectWithResourceObjectsWithAllLinksAsStringsAndObjectsJson
       }
       "transform all meta object inside resource object correctly" in {
         Json.toJson(rootObjectWithResourceObjectsWithMeta) mustEqual rootObjectWithResourceObjectsWithMetaJson
@@ -71,8 +77,14 @@ class PlayJsonJsonapiFormatSpec extends JsonBaseSpec[JsValue] with MustMatchers 
       "transform a list of resource identifier objects correctly" in {
         Json.fromJson[RootObject](rootObjectWithResourceIdentifierObjectsJson) mustEqual JsSuccess(rootObjectWithResourceIdentifierObjects)
       }
-      "transform all link types correctly" in {
-        Json.fromJson[RootObject](rootObjectWithResourceObjectsWithAllLinksJson) mustEqual JsSuccess(rootObjectWithResourceObjectsWithAllLinks)
+      "transform all string link types correctly" in {
+        Json.fromJson[RootObject](rootObjectWithResourceObjectsWithAllLinksAsStringsJson) mustEqual JsSuccess(rootObjectWithResourceObjectsWithAllLinksAsStrings)
+      }
+      "transform all object link types correctly" in {
+        Json.fromJson[RootObject](rootObjectWithResourceObjectsWithAllLinksAsObjectsJson) mustEqual JsSuccess(rootObjectWithResourceObjectsWithAllLinksAsObjects)
+      }
+      "transform all string and object link types correctly" in {
+        Json.fromJson[RootObject](rootObjectWithResourceObjectsWithAllLinksAsStringsAndObjectsJson) mustEqual JsSuccess(rootObjectWithResourceObjectsWithAllLinksAsStringsAndObjects)
       }
       "transform all meta object inside resource object correctly" in {
         Json.fromJson[RootObject](rootObjectWithResourceObjectsWithMetaJson) mustEqual JsSuccess(rootObjectWithResourceObjectsWithMeta)

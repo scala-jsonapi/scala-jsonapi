@@ -38,7 +38,7 @@ class ExampleSpec extends WordSpec with MustMatchers with SprayJsonJsonapiProtoc
             id = Some(person.id.toString),
             attributes = Some(List(
               Attribute("name", StringValue(person.name))
-            )), links = Some(List(Links.Self("http://test.link/person/42"))))))
+            )), links = Some(List(Links.Self("http://test.link/person/42", None))))))
         }
       }
 
@@ -69,7 +69,7 @@ class ExampleSpec extends WordSpec with MustMatchers with SprayJsonJsonapiProtoc
             id = Some(person.id.toString),
             attributes = Some(List(
               Attribute("name", StringValue(person.name))
-            )))), links = Some(List(Links.Next("http://test.link/person/43"))))
+            )))), links = Some(List(Links.Next("http://test.link/person/43", None))))
         }
       }
 
