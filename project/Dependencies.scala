@@ -31,5 +31,5 @@ object Dependencies {
 
   lazy val sprayJsonDeps = Seq(sprayJson)
 
-  lazy val akkaHttpDeps = Seq(akkaHttpCore, akkaHttpExperimental, sprayJson)
+  lazy val akkaHttpDeps = Seq(akkaHttpCore, akkaHttpExperimental, akkaHttpTestkit, sprayJson)
 }

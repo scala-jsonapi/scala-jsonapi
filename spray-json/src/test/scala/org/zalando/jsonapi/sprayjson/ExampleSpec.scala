@@ -1,12 +1,12 @@
-package org.zalando.jsonapi.json
+package org.zalando.jsonapi.sprayjson
 
 import org.scalatest.{MustMatchers, WordSpec}
 import org.zalando.jsonapi.model.JsonApiObject.StringValue
 import org.zalando.jsonapi.model.RootObject.ResourceObject
 import org.zalando.jsonapi.model.{Attribute, Links, RootObject}
-import org.zalando.jsonapi.sprayjson.SprayJsonJsonapiProtocol
 import org.zalando.jsonapi.{JsonapiRootObjectWriter, _}
-import spray.json._
+import _root_.spray.json._
+import org.zalando.jsonapi.json.Person
 
 class ExampleSpec extends WordSpec with MustMatchers with SprayJsonJsonapiProtocol {
   "JsonapiRootObject" when {
