@@ -2,12 +2,12 @@ import sbt._
 
 object Dependencies {
   // Versions
-  lazy val circeVersion = "0.5.0-M1"
-  lazy val akkaVersion = "2.4.7"
+  lazy val circeVersion = "0.7.0"
+  lazy val akkaVersion = "2.4.8"
   lazy val sprayJsonVersion = "1.3.2"
   lazy val sprayHttpxVersion = "1.3.3"
-  lazy val playJsonVersion = "2.3.8"
-  lazy val scalatestVersion = "2.2.4"
+  lazy val playJsonVersion = "2.3.10"
+  lazy val scalatestVersion = "3.0.0"
 
   // Libraries
   lazy val sprayJson = "io.spray" %% "spray-json" % sprayJsonVersion

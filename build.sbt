@@ -44,9 +44,9 @@ lazy val `akka-http` = project.in(file("akka-http")).
   settings(commonSettings: _*).
   settings(libraryDependencies ++= akkaHttpDeps)
 
-ScoverageSbtPlugin.ScoverageKeys.coverageMinimum := 80
+coverageMinimum := 80
 
-ScoverageSbtPlugin.ScoverageKeys.coverageFailOnMinimum := true
+coverageFailOnMinimum := true
 
 publishMavenStyle := true
 

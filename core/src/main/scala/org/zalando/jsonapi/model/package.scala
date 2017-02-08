@@ -54,44 +54,51 @@ package object model {
     /**
       * A link of the "self" type.
       * @param url The url to link to.
+      * @param meta The optional meta to link to.
       */
-    case class Self(url: String) extends Link
+    case class Self(url: String, meta: Option[Meta]) extends Link
 
     /**
       * A link of the "related" type.
       * @param url The url to link to.
+      * @param meta The optional meta to link to.
       */
-    case class Related(url: String) extends Link
+    case class Related(url: String, meta: Option[Meta]) extends Link
 
     /**
       * A link of the "first" type.
       * @param url The url to link to.
+      * @param meta The optional meta to link to.
       */
-    case class First(url: String) extends Link
+    case class First(url: String, meta: Option[Meta]) extends Link
 
     /**
       * A link of the "last" type.
       * @param url The url to link to.
+      * @param meta The optional meta to link to.
       */
-    case class Last(url: String) extends Link
+    case class Last(url: String, meta: Option[Meta]) extends Link
 
     /**
       * A link of the "next" type.
       * @param url The url to link to.
+      * @param meta The optional meta to link to.
       */
-    case class Next(url: String) extends Link
+    case class Next(url: String, meta: Option[Meta]) extends Link
 
     /**
       * A link of the "prev" type.
       * @param url The url to link to.
+      * @param meta The optional meta to link to.
       */
-    case class Prev(url: String) extends Link
+    case class Prev(url: String, meta: Option[Meta]) extends Link
 
     /**
       * A link of the "about" type.
       * @param url The url to link to.
+      * @param meta The optional meta to link to.
       */
-    case class About(url: String) extends Link
+    case class About(url: String, meta: Option[Meta]) extends Link
   }
 
   /**
@@ -203,6 +210,15 @@ package object model {
       */
     case object NullValue extends Value
 
+    /**
+      * An attribute value that is true
+      */
+    val TrueValue = BooleanValue(true)
+
+    /**
+      * An attribute value that is false
+      */
+    val FalseValue = BooleanValue(false)
   }
 
   /**
