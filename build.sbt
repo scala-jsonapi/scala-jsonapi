@@ -44,6 +44,12 @@ lazy val `akka-http` = project.in(file("akka-http")).
   settings(commonSettings: _*).
   settings(libraryDependencies ++= akkaHttpDeps)
 
+lazy val play = project.in(file("play")).
+  dependsOn(core % "test->test;compile->compile").
+  settings(moduleName := "scala-jsonapi-play").
+  settings(commonSettings: _*).
+  settings(libraryDependencies ++= playDeps)
+
 coverageMinimum := 80
 
 coverageFailOnMinimum := true
