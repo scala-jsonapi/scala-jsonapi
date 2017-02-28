@@ -1,7 +1,6 @@
-package org.zalando.jsonapi.spray
+package org.zalando.jsonapi.sprayjson
 
 import org.zalando.jsonapi.model.RootObject
-import org.zalando.jsonapi.sprayjson.SprayJsonJsonapiFormat
 import spray.http.MediaTypes.`application/vnd.api+json`
 import spray.httpx.marshalling.Marshaller
 import spray.httpx.unmarshalling.Unmarshaller

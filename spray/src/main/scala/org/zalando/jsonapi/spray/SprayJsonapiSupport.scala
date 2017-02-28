@@ -15,7 +15,9 @@ trait SprayJsonapiSupport {
 }
 
 object SprayJsonapiSupport extends SprayJsonapiSupport {
-  implicit def jsonapiSprayMarshaller[T: JsonapiRootObjectWriter]: Marshaller[T] = jsonapiSprayMarshaller
+  implicit def jsonapiSprayMarshallerImplicit[T: JsonapiRootObjectWriter](implicit m: Marshaller[RootObject])
+    : Marshaller[T] = jsonapiSprayMarshaller
 
-  implicit def jsonapiSprayUnmarshaller[T: JsonapiRootObjectReader]: Unmarshaller[T] = jsonapiSprayUnmarshaller
+  implicit def jsonapiSprayUnmarshallerImplicit[T: JsonapiRootObjectReader](implicit u: Unmarshaller[RootObject])
+    : Unmarshaller[T] = jsonapiSprayUnmarshaller
 }

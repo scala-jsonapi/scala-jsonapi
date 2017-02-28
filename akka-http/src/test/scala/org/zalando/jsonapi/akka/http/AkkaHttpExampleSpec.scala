@@ -1,11 +1,12 @@
 package org.zalando.jsonapi.akka.http
 
-import org.scalatest.{ FlatSpec, Matchers }
-import akka.http.scaladsl.testkit.ScalatestRouteTest
-import akka.http.scaladsl.server.Directives._
-import spray.json._
 import akka.http.scaladsl.model.MediaTypes.`application/vnd.api+json`
+import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.testkit.ScalatestRouteTest
+import org.scalatest.{FlatSpec, Matchers}
+import org.zalando.jsonapi.akka.http.AkkaHttpJsonapiSupport._
 import org.zalando.jsonapi.json.Person
+import spray.json._
 
 class AkkaHttpExampleSpec extends FlatSpec with Matchers with ScalatestRouteTest {
 

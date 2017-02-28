@@ -4,13 +4,13 @@ import org.scalactic.TypeCheckedTripleEquals
 import org.scalatest.{EitherValues, MustMatchers, WordSpec}
 import org.zalando.jsonapi.{JsonapiRootObjectReader, JsonapiRootObjectWriter}
 import org.zalando.jsonapi.model.{JsonApiObject, JsonApiProperty, RootObject}
-import org.zalando.jsonapi.spray.SprayJsonapiSupport
+import org.zalando.jsonapi.spray.SprayJsonapiSupport._
 import spray.http.HttpEntity
 import spray.http.MediaTypes._
 import spray.httpx.marshalling._
 import spray.httpx.unmarshalling._
 
-class CirceJsonapiSupportSpec extends WordSpec with MustMatchers with TypeCheckedTripleEquals with EitherValues with CirceJsonapiSupport with SprayJsonapiSupport {
+class CirceJsonapiSupportSpec extends WordSpec with MustMatchers with TypeCheckedTripleEquals with EitherValues with CirceJsonapiSupport {
   implicit def jsonapiRootObjectMarshaller: Marshaller[RootObject] = circeJsonapiMarshaller
   implicit def jsonapiRootObjectUnmarshaller: Unmarshaller[RootObject] = circeJsonapiUnmarshaller
 

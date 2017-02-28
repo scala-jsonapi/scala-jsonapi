@@ -10,12 +10,12 @@ import spray.httpx.marshalling.Marshaller
 import spray.httpx.unmarshalling.Unmarshaller
 
 trait CirceJsonapiSupport extends CirceJsonapiEncoders with CirceJsonapiDecoders {
-  implicit val circeJsonapiMarshaller = Marshaller.delegate[RootObject, String](
+  implicit val circeJsonapiMarshaller: Marshaller[RootObject] = Marshaller.delegate[RootObject, String](
       `application/vnd.api+json`,
       `application/json`,
       ContentTypes.`application/json`
   )(_.asJson.noSpaces)
-  implicit val circeJsonapiUnmarshaller = Unmarshaller.delegate[String, RootObject](
+  implicit val circeJsonapiUnmarshaller: Unmarshaller[RootObject] = Unmarshaller.delegate[String, RootObject](
       `application/vnd.api+json`,
       `application/json`
   )(decode[RootObject](_).right.get)
