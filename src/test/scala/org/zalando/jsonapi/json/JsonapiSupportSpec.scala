@@ -47,5 +47,10 @@ trait JsonapiSupportSpec extends WordSpec with TypeCheckedTripleEquals with Eith
       val httpEntity = HttpEntity(`application/vnd.api+json`, """{"jsonapi":{"foo":"bar"}}""")
       assert(httpEntity.as[Foo] === Right(foo))
     }
+
+    "unmarshalling a malformed Json with the correct content type throw a malformedContent" in new Context {
+      val httpEntity = HttpEntity(`application/vnd.api+json`, """{{{{"jsonapi":{"foo":"bar"}}""")
+      assert(httpEntity.as[RootObject].left.value.isInstanceOf[MalformedContent])
+    }
   }
 }
