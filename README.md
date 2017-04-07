@@ -121,7 +121,7 @@ Publishing and releasing is made with help of the [sbt-sonatype plugin].
 
 # License
 
-scala-jsonapi is licensed under the [MIT license][MIT license] unless otherwise stated in the license files in higher directories (if any).
+scala-jsonapi is licensed under the [MIT license](LICENSE) unless otherwise stated in the license files in higher directories (if any).
 
 [sbt-sonatype plugin]: https://github.com/xerial/sbt-sonatype
 [the specs example]: src/test/scala/org/zalando/jsonapi/json/ExampleSpec.scala
@@ -130,4 +130,3 @@ scala-jsonapi is licensed under the [MIT license][MIT license] unless otherwise 
 [Play-JSON]: https://www.playframework.com/documentation/2.5.x/ScalaJson
 [Spray-JSON]: https://github.com/spray/spray-json
 [Circe]: https://github.com/travisbrown/circe
-[MIT license]: https://opensource.org/licenses/MIT
