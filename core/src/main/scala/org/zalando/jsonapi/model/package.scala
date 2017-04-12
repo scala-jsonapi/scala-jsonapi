@@ -49,56 +49,142 @@ package object model {
     * Companion object for links.
     */
   object Links {
-    sealed trait Link
+    sealed trait LinkType {
+      val name: String
+    }
+
+    object LinkType {
+      case object Self extends LinkType {
+        val name = "self"
+      }
+      case object Related extends LinkType {
+        val name = "related"
+      }
+      case object First extends LinkType {
+        val name = "first"
+      }
+      case object Last extends LinkType {
+        val name = "last"
+      }
+      case object Next extends LinkType {
+        val name = "next"
+      }
+      case object Prev extends LinkType {
+        val name = "prev"
+      }
+      case object About extends LinkType {
+        val name = "about"
+      }
+
+      def withName(name: String): LinkType = {
+        name match {
+          case Self.name =>
+            Self
+          case Related.name =>
+            Related
+          case First.name =>
+            First
+          case Last.name =>
+            Last
+          case Next.name =>
+            Next
+          case Prev.name =>
+            Prev
+          case About.name =>
+            About
+        }
+      }
+    }
+
+    sealed trait Link {
+      val url: String
+      val meta: Option[Meta]
+      val linkType: LinkType
+    }
+
+    object Link {
+      def apply(name: String, href: String, meta: Option[Meta]): Link = {
+        LinkType.withName(name) match {
+          case LinkType.Self ⇒
+            Links.Self(href, meta)
+          case LinkType.Related ⇒
+            Links.Related(href, meta)
+          case LinkType.First ⇒
+            Links.First(href, meta)
+          case LinkType.Last ⇒
+            Links.Last(href, meta)
+          case LinkType.Next ⇒
+            Links.Next(href, meta)
+          case LinkType.Prev ⇒
+            Links.Prev(href, meta)
+          case LinkType.About ⇒
+            Links.About(href, meta)
+        }
+      }
+    }
 
     /**
       * A link of the "self" type.
       * @param url The url to link to.
       * @param meta The optional meta to link to.
       */
-    case class Self(url: String, meta: Option[Meta]) extends Link
+    case class Self(url: String, meta: Option[Meta]) extends Link {
+      val linkType = LinkType.Self
+    }
 
     /**
       * A link of the "related" type.
       * @param url The url to link to.
       * @param meta The optional meta to link to.
       */
-    case class Related(url: String, meta: Option[Meta]) extends Link
+    case class Related(url: String, meta: Option[Meta]) extends Link {
+      val linkType = LinkType.Related
+    }
 
     /**
       * A link of the "first" type.
       * @param url The url to link to.
       * @param meta The optional meta to link to.
       */
-    case class First(url: String, meta: Option[Meta]) extends Link
+    case class First(url: String, meta: Option[Meta]) extends Link {
+      val linkType = LinkType.First
+    }
 
     /**
       * A link of the "last" type.
       * @param url The url to link to.
       * @param meta The optional meta to link to.
       */
-    case class Last(url: String, meta: Option[Meta]) extends Link
+    case class Last(url: String, meta: Option[Meta]) extends Link {
+      val linkType = LinkType.Last
+    }
 
     /**
       * A link of the "next" type.
       * @param url The url to link to.
       * @param meta The optional meta to link to.
       */
-    case class Next(url: String, meta: Option[Meta]) extends Link
+    case class Next(url: String, meta: Option[Meta]) extends Link {
+      val linkType = LinkType.Next
+    }
 
     /**
       * A link of the "prev" type.
       * @param url The url to link to.
       * @param meta The optional meta to link to.
       */
-    case class Prev(url: String, meta: Option[Meta]) extends Link
+    case class Prev(url: String, meta: Option[Meta]) extends Link {
+      val linkType = LinkType.Prev
+    }
 
     /**
       * A link of the "about" type.
       * @param url The url to link to.
       * @param meta The optional meta to link to.
       */
-    case class About(url: String, meta: Option[Meta]) extends Link
+    case class About(url: String, meta: Option[Meta]) extends Link {
+      val linkType = LinkType.About
+    }
   }
 
   /**
