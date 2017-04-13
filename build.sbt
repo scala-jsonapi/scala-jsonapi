@@ -1,6 +1,11 @@
+scalaVersion := "2.12.1"
+
+crossScalaVersions := Seq(
+  "2.11.8"
+)
+
 lazy val commonSettings = Seq(
   organization := "org.zalando",
-  scalaVersion := "2.12.1",
   scalacOptions ++= Seq("-feature", "-unchecked", "-deprecation")
 )
 

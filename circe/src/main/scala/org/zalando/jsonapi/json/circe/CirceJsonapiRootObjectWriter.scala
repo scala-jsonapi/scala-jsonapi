@@ -12,6 +12,13 @@ import io.circe.Decoder, Decoder.Result
 import scala.collection.immutable.ListMap
 
 trait CirceJsonapiRootObjectWriter extends JsonapiRootObjectWriter[Json] {
+  // proxying Decoder.Result with transparent right biasing for scala 2.11
+  implicit class CrossVersionResult[R](result: Either[DecodingFailure, R]) {
+
+    def map[Y](f: (R) ⇒ Y): Either[DecodingFailure, Y] = result.right.map(f)
+    def flatMap[AA >: DecodingFailure, Y](f: (R) ⇒ Either[AA, Y]): Either[AA, Y] = result.right.flatMap(f)
+  }
+
   def writeValue(json: Json): Value = {
     json.fold[Value](
       NullValue,
