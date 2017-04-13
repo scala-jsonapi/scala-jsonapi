@@ -1,0 +1,5 @@
+package org.zalando.jsonapi.json.circe
+
+trait CirceJsonapiRootObjectFormat extends CirceJsonapiRootObjectWriter with CirceJsonapiRootObjectReader
+
+object CirceJsonapiRootObjectFormat extends CirceJsonapiRootObjectFormat
