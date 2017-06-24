@@ -10,6 +10,7 @@ private[json] object SprayJsonReadSupport {
   implicit class RichJsObject(val obj: JsObject) extends AnyVal {
     def fieldOpt(fieldName: String): Option[JsValue] =
       obj.getFields(fieldName).toList match {
+        case Seq(JsNull) ⇒ None
         case Seq(value) ⇒ Some(value)
         case _ ⇒ None
       }
