@@ -44,6 +44,9 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
 
   protected lazy val resourceObjectWithEmptyRelationshipsJson = parseJson(resourceObjectWithEmptyRelationshipsJsonString)
 
+  protected lazy val resourceObjectWithNullRelationshipJson = parseJson(resourceObjectWithNullRelationshipJsonString)
+
+
   protected lazy val attributesJsonString =
     """
       |{
@@ -627,6 +630,35 @@ trait JsonBaseSpec[JsonBaseType] extends WordSpec {
     ResourceObjects(List(
       ResourceObject(
         `type` = "person",
+        attributes = Some(List(Attribute("name", StringValue("foobar")))),
+        relationships = Some(Map("father" -> Relationship()))
+      )
+    ))
+  ))
+
+  protected lazy val resourceObjectWithNullRelationshipJsonString =
+    """
+      |{
+      |  "data": [{
+      |    "type": "person",
+      |    "id": "1234",
+      |    "attributes": {
+      |      "name": "foobar"
+      |    },
+      |    "relationships": {
+      |      "father": {
+      |        "data": null
+      |      }
+      |    }
+      |  }]
+      |}
+    """.stripMargin
+
+  protected lazy val resourceObjectWithNullRelationshipObject = RootObject(Some(
+    ResourceObjects(List(
+      ResourceObject(
+        `type` = "person",
+        id = Some("1234"),
         attributes = Some(List(Attribute("name", StringValue("foobar")))),
         relationships = Some(Map("father" -> Relationship()))
       )

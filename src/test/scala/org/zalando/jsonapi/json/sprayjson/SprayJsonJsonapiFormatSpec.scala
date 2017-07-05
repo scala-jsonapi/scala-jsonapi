@@ -109,6 +109,9 @@ class SprayJsonJsonapiFormatSpec extends JsonBaseSpec[JsValue] with MustMatchers
       "transform empty relationship object correctly" in {
         resourceObjectWithEmptyRelationshipsJson.convertTo[RootObject] === resourceObjectWithEmptyRelationshipsObject
       }
+      "transform null relationship object correctly" in {
+        resourceObjectWithNullRelationshipJson.convertTo[RootObject] === resourceObjectWithNullRelationshipObject
+      }
       "fail if data is not an array nor an object" in {
         val json = s"""{"data": "foo"}""".parseJson
         intercept[DeserializationException] {
