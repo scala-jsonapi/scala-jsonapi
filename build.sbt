@@ -2,7 +2,7 @@ organization := "org.zalando"
 
 name := "scala-jsonapi"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.11.12"
 
 scalacOptions ++= Seq("-feature", "-unchecked", "-deprecation")
 
@@ -12,22 +12,23 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= {
-  val circeVersion = "0.7.0"
-  val akkaVersion = "2.4.8"
+  val circeVersion    = "0.7.1"
+  val akkaVersion     = "2.4.20"
+  val akkaHttpVersion = "2.4.11.2"
+  val sprayVersion    = "1.3.4"
 
   Seq(
-    "io.spray"          %% "spray-json"             % "1.3.2"      % "provided",
-    "io.spray"          %% "spray-httpx"            % "1.3.3"      % "provided",
-    "com.typesafe.akka" %% "akka-actor"             % akkaVersion  % "provided",
-    "com.typesafe.akka" %% "akka-http-core"         % akkaVersion  % "provided",
-    "com.typesafe.akka" %% "akka-http-experimental" % akkaVersion  % "provided",
-    "com.typesafe.play" %% "play-json"              % "2.3.10"     % "provided",
-    "io.circe"          %% "circe-core"             % circeVersion % "provided",
-    "io.circe"          %% "circe-generic"          % circeVersion % "provided",
-    "io.circe"          %% "circe-parser"           % circeVersion % "provided",
-    "org.scalatest"     %% "scalatest"              % "3.0.0"      % "test",
-    "com.typesafe.akka" %% "akka-http-testkit"      % akkaVersion  % "test"
-
+    "io.spray"          %% "spray-json"             % sprayVersion    % "provided",
+    "io.spray"          %% "spray-httpx"            % sprayVersion    % "provided",
+    "com.typesafe.akka" %% "akka-actor"             % akkaVersion     % "provided",
+    "com.typesafe.akka" %% "akka-http-core"         % akkaHttpVersion % "provided",
+    "com.typesafe.akka" %% "akka-http-experimental" % akkaHttpVersion % "provided",
+    "com.typesafe.play" %% "play-json"              % "2.3.10"        % "provided",
+    "io.circe"          %% "circe-core"             % circeVersion    % "provided",
+    "io.circe"          %% "circe-generic"          % circeVersion    % "provided",
+    "io.circe"          %% "circe-parser"           % circeVersion    % "provided",
+    "org.scalatest"     %% "scalatest"              % "3.0.5"         % "test",
+    "com.typesafe.akka" %% "akka-http-testkit"      % akkaHttpVersion % "test"
   )
 }
 

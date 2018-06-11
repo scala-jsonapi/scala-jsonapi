@@ -109,11 +109,11 @@ There is support for string and object links.
 
 To create a string "self" link:
 
-Links.self("href", None)
+    Links.self("href", None)
 
 To create an object "self" link:
 
-Links.self("href", Some(meta))
+    Links.self("href", Some(meta))
 
 # Publishing and Releasing
 
