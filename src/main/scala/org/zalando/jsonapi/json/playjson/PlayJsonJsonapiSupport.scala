@@ -13,7 +13,7 @@ trait PlayJsonapiSupport {
   implicit def playJsonUnmarshaller[T: Reads] =
     delegate[String, T](`application/json`, `application/vnd.api+json`)(string ⇒
       try {
-        implicitly[Reads[T]].reads(Json.parse(string)).asEither.left.map(e ⇒ MalformedContent(s"Received JSON is not valid.\n${Json.prettyPrint(JsError.toFlatJson(e))}"))
+        implicitly[Reads[T]].reads(Json.parse(string)).asEither.left.map(e ⇒ MalformedContent(s"Received JSON is not valid.\n${Json.prettyPrint(JsError.toJson(e))}"))
       } catch {
         case NonFatal(exc) ⇒ Left(MalformedContent(exc.getMessage, exc))
       })(UTF8StringUnmarshaller)

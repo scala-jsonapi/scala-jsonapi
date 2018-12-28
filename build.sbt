@@ -12,23 +12,22 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= {
-  val circeVersion    = "0.7.1"
+  val circeVersion    = "0.11.0"
   val akkaVersion     = "2.4.20"
-  val akkaHttpVersion = "2.4.11.2"
+  val akkaHttpVersion = "10.0.14"
   val sprayVersion    = "1.3.4"
 
   Seq(
     "io.spray"          %% "spray-json"             % sprayVersion    % "provided",
     "io.spray"          %% "spray-httpx"            % sprayVersion    % "provided",
     "com.typesafe.akka" %% "akka-actor"             % akkaVersion     % "provided",
-    "com.typesafe.akka" %% "akka-http-core"         % akkaHttpVersion % "provided",
-    "com.typesafe.akka" %% "akka-http-experimental" % akkaHttpVersion % "provided",
-    "com.typesafe.play" %% "play-json"              % "2.3.10"        % "provided",
+    "com.typesafe.akka" %% "akka-http"              % akkaHttpVersion % "provided",
+    "com.typesafe.play" %% "play-json"              % "2.6.11"        % "provided",
     "io.circe"          %% "circe-core"             % circeVersion    % "provided",
     "io.circe"          %% "circe-generic"          % circeVersion    % "provided",
     "io.circe"          %% "circe-parser"           % circeVersion    % "provided",
-    "org.scalatest"     %% "scalatest"              % "3.0.5"         % "test",
-    "com.typesafe.akka" %% "akka-http-testkit"      % akkaHttpVersion % "test"
+    "org.scalatest"     %% "scalatest"              % "3.0.6-SNAP5"   % Test,
+    "com.typesafe.akka" %% "akka-http-testkit"      % akkaHttpVersion % Test
   )
 }
 
