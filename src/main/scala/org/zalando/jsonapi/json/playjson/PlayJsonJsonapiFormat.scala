@@ -276,37 +276,37 @@ trait PlayJsonJsonapiFormat {
           keyValue match {
             case (FieldNames.`about`, JsString(u)) ⇒ Links.About(u, None)
             case (FieldNames.`about`, JsObject(linkObjectJson)) =>
-              val linkValues = jsonToLinkValues(linkObjectJson)
+              val linkValues = jsonToLinkValues(linkObjectJson.toSeq)
               Links.About(linkValues._1, linkValues._2)
 
             case (FieldNames.`first`, JsString(u)) ⇒ Links.First(u, None)
             case (FieldNames.`first`, JsObject(linkObjectJson)) =>
-              val linkValues = jsonToLinkValues(linkObjectJson)
+              val linkValues = jsonToLinkValues(linkObjectJson.toSeq)
               Links.First(linkValues._1, linkValues._2)
 
             case (FieldNames.`last`, JsString(u)) ⇒ Links.Last(u, None)
             case (FieldNames.`last`, JsObject(linkObjectJson)) =>
-              val linkValues = jsonToLinkValues(linkObjectJson)
+              val linkValues = jsonToLinkValues(linkObjectJson.toSeq)
               Links.Last(linkValues._1, linkValues._2)
 
             case (FieldNames.`next`, JsString(u)) ⇒ Links.Next(u, None)
             case (FieldNames.`next`, JsObject(linkObjectJson)) =>
-              val linkValues = jsonToLinkValues(linkObjectJson)
+              val linkValues = jsonToLinkValues(linkObjectJson.toSeq)
               Links.Next(linkValues._1, linkValues._2)
 
             case (FieldNames.`prev`, JsString(u)) ⇒ Links.Prev(u, None)
             case (FieldNames.`prev`, JsObject(linkObjectJson)) =>
-              val linkValues = jsonToLinkValues(linkObjectJson)
+              val linkValues = jsonToLinkValues(linkObjectJson.toSeq)
               Links.Prev(linkValues._1, linkValues._2)
 
             case (FieldNames.`related`, JsString(u)) ⇒ Links.Related(u, None)
             case (FieldNames.`related`, JsObject(linkObjectJson)) =>
-              val linkValues = jsonToLinkValues(linkObjectJson)
+              val linkValues = jsonToLinkValues(linkObjectJson.toSeq)
               Links.Related(linkValues._1, linkValues._2)
 
             case (FieldNames.`self`, JsString(u)) ⇒ Links.Self(u, None)
             case (FieldNames.`self`, JsObject(linkObjectJson)) =>
-              val linkValues = jsonToLinkValues(linkObjectJson)
+              val linkValues = jsonToLinkValues(linkObjectJson.toSeq)
               Links.Self(linkValues._1, linkValues._2)
           }
         }.toVector)

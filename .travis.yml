@@ -3,22 +3,7 @@ jdk:
   - oraclejdk8
 scala:
   - 2.11.12
-branches:
-  only:
-    - master
-notifications:
-  email:
-    recipients:
-      - boris.malensek@zalando.de
-    on_success: never
-    on_failure: always
-    on_start: never
-  webhooks:
-    urls:
-      - https://webhooks.gitter.im/e/3eb93f2a0c2931a59d0d
-    on_success: change
-    on_failure: always
-    on_start: never
+  - 2.12.8
 script: "sbt clean coverage test"
 after_success:
   - "sbt coverageReport coveralls"
